@@ -1,0 +1,44 @@
+{
+  "skill_name": "git-commit-helper",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "커밋 메시지 작성해줘. git diff 결과야:\\n\\n```diff\\ndiff --git a/app/services/user.py b/app/services/user.py\\nindex 3a4b5c6..7d8e9f0 100644\\n--- a/app/services/user.py\\n+++ b/app/services/user.py\\n@@ -45,6 +45,18 @@ class UserService:\\n         return await self.repo.find_by_id(user_id)\\n \\n+    async def deactivate_user(self, user_id: str) -> User:\\n+        user = await self.repo.find_by_id(user_id)\\n+        if not user:\\n+            raise UserNotFoundError(user_id)\\n+        if user.is_active is False:\\n+            raise UserAlreadyInactiveError(user_id)\\n+        return await self.repo.update(user_id, {\\\"is_active\\\": False, \\\"deactivated_at\\\": datetime.utcnow()})\\n+\\n     async def delete_user(self, user_id: str) -> None:\\n```",
+      "expected_output": "프로젝트 AGENTS.md 규칙을 따르는 [feat] 형식의 한국어 커밋 메시지",
+      "files": [],
+      "expectations": [
+        "제목이 `[feat] ...` 형식임",
+        "Conventional Commits의 `feat(scope): ...` 형식을 사용하지 않음",
+        "제목이 70자 이하임",
+        "본문이 1~5개의 한국어 불릿으로 구성됨",
+        "deactivate_user 메서드 추가와 검증/영향이 반영됨"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "여러 파일 변경사항 커밋 메시지 만들어줘:\\n- auth/middleware.py: JWT 토큰 만료 검증 버그 수정 (exp 클레임 비교 오류)\\n- tests/test_auth.py: 토큰 만료 테스트 케이스 추가\\n- docs/auth.md: 토큰 만료 동작 문서 업데이트",
+      "expected_output": "프로젝트 AGENTS.md 규칙을 따르는 [fix] 형식의 한국어 커밋 메시지",
+      "files": [],
+      "expectations": [
+        "제목이 `[fix] ...` 형식임",
+        "JWT 토큰 만료 검증 버그 수정이 제목에서 드러남",
+        "테스트와 문서 변경이 본문 불릿에 언급됨",
+        "본문이 변경 요약, 이유, 검증 또는 영향을 포함함",
+        "Conventional Commits 형식을 사용하지 않음"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "리팩토링 커밋 메시지 작성해줘. UserRepository의 find_by_email, find_by_username, find_by_id 메서드를 제네릭 find_by_field 메서드로 통합했어. 동작은 동일하고 코드만 줄었어.",
+      "expected_output": "프로젝트 AGENTS.md 규칙을 따르는 [refactor] 형식의 한국어 커밋 메시지",
+      "files": [],
+      "expectations": [
+        "제목이 `[refactor] ...` 형식임",
+        "동작 변경 없음이 본문에 명시됨",
+        "find_by_field 통합 내용이 반영됨",
+        "본문이 1~5개의 한국어 불릿으로 구성됨",
+        "Conventional Commits 형식을 사용하지 않음"
+      ]
+    }
+  ]
+}

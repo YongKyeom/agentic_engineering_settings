@@ -1,0 +1,32 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local secrets and machine-specific files
+.env
+.env.*
+*.local
+
+# Temporary files
+.tmp/
+tmp/
+logs/
+*.log
+
+# Python artifacts for projects that copy this template
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+dist/
+build/
+*.egg-info/

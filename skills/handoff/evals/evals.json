@@ -1,0 +1,44 @@
+{
+  "skill_name": "handoff",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "HANDOFF.md 만들어줘. 지금까지 한 작업: FastAPI 프로젝트의 JWT 인증 시스템 구현했어. /auth/login, /auth/refresh, /auth/me 엔드포인트 완성. 아직 못한 것: role-based access control (RBAC) 구현, 테스트 작성. 다음 세션에서 RBAC부터 시작해야 해.",
+      "expected_output": "HANDOFF.md 파일 생성, Goal/Progress/Next Steps 섹션 포함",
+      "files": [],
+      "expectations": [
+        "HANDOFF.md 파일이 생성됨",
+        "Goal 또는 목표 섹션이 있고 전체 작업 목적이 설명됨",
+        "완료된 작업(JWT 인증 3개 엔드포인트)이 체크박스 또는 목록으로 표시됨",
+        "미완료 작업(RBAC, 테스트)이 명시됨",
+        "Next Steps가 구체적이고 실행 가능한 형태로 작성됨 (다음 세션에서 RBAC부터)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "세션 마무리해야 해. 오늘 한 작업 요약하고 HANDOFF.md 업데이트해줘:\n- 데이터베이스 마이그레이션 스크립트 3개 작성 (users, posts, comments 테이블)\n- Alembic 설정 완료\n- 근데 마이그레이션 실행하다가 외래키 순서 오류 나서 아직 미해결\n- 내일 외래키 제약조건 순서 수정부터 해야 함",
+      "expected_output": "HANDOFF.md 생성/업데이트, 오류 상황과 미해결 이슈 포함, What Didn't Work 섹션",
+      "files": [],
+      "expectations": [
+        "HANDOFF.md 파일이 생성됨",
+        "완료 작업 (마이그레이션 스크립트 3개, Alembic 설정)이 기록됨",
+        "미해결 이슈(외래키 순서 오류)가 명시됨",
+        "다음 세션 시작점(외래키 제약조건 순서 수정)이 명확함",
+        "What Didn't Work 또는 Issues 섹션에 오류 내용이 포함됨"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "컨텍스트 윈도우가 꽉 찼어. 지금 상태 HANDOFF.md에 저장해줘. 현재 작업: async-sqlalchemy-patterns 스킬 업그레이드 중. evals.json 작성 완료, iteration-1 with_skill 실행 완료, without_skill 아직 실행 중. 핵심 경로: /Users/test/skills/async-sqlalchemy-patterns-workspace/",
+      "expected_output": "HANDOFF.md 생성, 현재 진행 중인 작업 상태 캡처, 재개 포인트 명확",
+      "files": [],
+      "expectations": [
+        "HANDOFF.md 파일이 생성됨",
+        "현재 진행 중인 작업 상태가 정확히 반영됨 (with_skill 완료, without_skill 진행 중)",
+        "핵심 파일 경로(/Users/test/skills/async-sqlalchemy-patterns-workspace/)가 포함됨",
+        "다음 세션에서 without_skill 완료 후 grading 진행이라는 것을 알 수 있음",
+        "Key Paths 또는 중요 경로 섹션이 있음"
+      ]
+    }
+  ]
+}

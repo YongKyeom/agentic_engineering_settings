@@ -1,25 +1,5 @@
 # Global AI Agent Operating Rules
 
-## RTK Usage
-
-- Shell commands should be written with an explicit `rtk` prefix whenever possible when RTK is available.
-- Write RTK-native commands rather than relying on automatic command rewriting.
-- Prefer RTK-native forms for common commands:
-  - `rtk git status`
-  - `rtk git diff`
-  - `rtk ls`
-  - `rtk find . -name "*.py"`
-  - `rtk grep "pattern" path`
-  - `rtk pytest -q`
-  - `rtk ruff check .`
-- If the exact raw command output is required, use `rtk proxy <command>` instead of bypassing RTK entirely.
-- If an RTK wrapper changes behavior or hides information needed for the task, rerun with `rtk proxy` and state why.
-
-### Skill And Hook Interaction With RTK
-
-- Skills may suggest shell commands. Adapt suggested commands to RTK-prefixed forms before execution.
-- Do not patch every installed skill only to add RTK prefixes. Prefer this global rule plus targeted skill edits only when a specific skill repeatedly emits unsuitable commands.
-
 ## Agentic Engineering
 
 - Prefer the simplest workflow that can solve the task. Add agentic complexity only when it improves quality, speed, or context control.

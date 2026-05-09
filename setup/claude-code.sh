@@ -55,7 +55,9 @@ else
   cat > "$SETTINGS" <<'JSON'
 {
   "env": {
-    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "65536"
+    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "65536",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "800000",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "88"
   },
   "permissions": {
     "defaultMode": "auto",

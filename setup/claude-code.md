@@ -11,7 +11,7 @@
 ./setup/claude-code.sh --with-slidev  # Slidev까지 함께 설치
 ```
 
-스크립트 실행 후 5번(Claude Dashboard 플러그인)은 수동으로 처리한다.
+스크립트 실행 후 6번(Claude Dashboard 플러그인)은 수동으로 처리한다.
 
 아래는 수동 설치 단계별 가이드.
 
@@ -163,12 +163,22 @@ done
     "ask": [ "..." ]
   },
   "effortLevel": "xhigh",
-  "advisorModel": "claude-opus-4-7",
+  "advisorModel": "claude-opus-4-8",
   "verbose": true
 }
 ```
 
-## 5. Claude Dashboard 플러그인 (수동)
+## 5. Shell Alias
+
+`claude` 실행 시 권한 프롬프트 없이 자동으로 시작되도록 `~/.zshrc`에 alias를 추가한다. 스크립트가 자동으로 처리한다.
+
+스크립트 실행 후 alias를 즉시 적용하려면:
+
+```sh
+source ~/.zshrc
+```
+
+## 6. Claude Dashboard 플러그인 (수동)
 
 > ⚠️ 수동 단계. 셸이 아니라 **실행 중인 Claude Code 세션 안에서** 슬래시 명령으로 입력해야 한다.
 
@@ -191,7 +201,7 @@ Claude Code를 실행한 뒤 차례대로 입력:
 - plan: `max`
 - language: `auto`
 
-## 6. Slidev (옵션 - 발표자료 작성용)
+## 7. Slidev (옵션 - 발표자료 작성용)
 
 발표자료를 마크다운으로 작성하고 PDF로 렌더하는 워크플로우.
 
@@ -208,7 +218,7 @@ slidev --version
 
 스킬 `presentation-slidev`가 워크플로우를 안내한다.
 
-## 7. 검증
+## 8. 검증
 
 새 셋업이 잘 됐는지 확인.
 

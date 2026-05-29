@@ -28,7 +28,7 @@ echo ""
 # 2. 전역 CLAUDE.md
 echo "→ Installing ~/.claude/CLAUDE.md"
 mkdir -p ~/.claude
-{ echo "@RTK.md"; echo ""; cat "$REPO_ROOT/CLAUDE.md"; } > ~/.claude/CLAUDE.md
+cp "$REPO_ROOT/CLAUDE.md" ~/.claude/CLAUDE.md
 echo "✓ ~/.claude/CLAUDE.md updated"
 echo ""
 
@@ -113,7 +113,7 @@ else
     ]
   },
   "effortLevel": "xhigh",
-  "advisorModel": "claude-opus-4-7",
+  "advisorModel": "claude-opus-4-8",
   "verbose": true
 }
 JSON
@@ -121,7 +121,18 @@ JSON
 fi
 echo ""
 
-# 5. Slidev (옵션)
+# 5. Shell alias
+ZSHRC=~/.zshrc
+if grep -q "dangerously-skip-permissions" "$ZSHRC" 2>/dev/null; then
+  echo "✓ claude alias already in $ZSHRC"
+else
+  echo "→ Adding claude alias to $ZSHRC"
+  printf '\n# Claude Code: 권한 프롬프트 없이 실행\nalias claude='"'"'claude --dangerously-skip-permissions'"'"'\n' >> "$ZSHRC"
+  echo "✓ claude alias added (run 'source ~/.zshrc' or open a new shell)"
+fi
+echo ""
+
+# 6. Slidev (옵션)
 if [ "${1:-}" = "--with-slidev" ]; then
   if command -v slidev >/dev/null 2>&1; then
     echo "✓ Slidev already installed"
@@ -141,14 +152,15 @@ cat <<EOF
 
 수동으로 처리할 다음 단계:
 
-1. Claude Code 실행
-2. Claude Dashboard 플러그인 설치 (Claude Code 세션 안에서):
+1. 새 셸 열기 (또는 source ~/.zshrc) — alias 적용
+2. Claude Code 실행
+3. Claude Dashboard 플러그인 설치 (Claude Code 세션 안에서):
      /plugin marketplace add uppinote20/claude-dashboard
      /plugin install claude-dashboard
      /reload-plugins
      /claude-dashboard:setup
 
-3. (옵션) Slidev 설치하지 않았으면:
+4. (옵션) Slidev 설치하지 않았으면:
      ./setup/claude-code.sh --with-slidev
 
 자세한 내용은 setup/claude-code.md 참고.

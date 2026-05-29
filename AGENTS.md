@@ -29,6 +29,8 @@
 - Do not use sub-agents for small tasks, tightly coupled edits, sequential blockers, or work that would create duplicate effort or merge conflicts.
 - For non-trivial coding work, consider whether a read-only explorer, bounded worker, or independent reviewer would reduce risk before proceeding.
 
+> For detailed delegation, parallelism, review, and verification rules, see the subsections below.
+
 ### Sub-Agent Delegation Contract
 
 Every delegated task should specify:
@@ -75,6 +77,12 @@ Every delegated task should specify:
 - For papers, theses, reports, presentations, and user-facing documents, a cycle is not complete until the artifact is rendered, visually checked, independently reviewed when useful, and patched if needed.
 - Old PASS judgments become stale after new user feedback or major rendering changes. Re-evaluate against the latest artifact.
 - Keep generated notes, review logs, and source assets separate from final user-facing output.
+- Do not treat diagram skills as the default solution for research-paper or thesis figures.
+- For publication-quality research figures, first define the scientific message, data or concepts to show, visual encoding, caption role, and target document layout. Then create a controlled SVG/PDF/PNG asset and verify it inside the rendered document.
+
+## Code Development
+
+Always follow `karpathy-guidelines` when writing or modifying any code.
 
 ## Related Skills
 
@@ -95,8 +103,6 @@ Every delegated task should specify:
 - `c4-architecture`: Use for software system architecture, C4 context/container/component/deployment diagrams, and architecture documentation.
 - `mermaid-diagrams`: Use for software/process diagrams such as flowcharts, sequence diagrams, ERDs, state diagrams, and lightweight technical documentation diagrams.
 - `excalidraw`: Use for rough sketches, planning diagrams, and editable concept sketches.
-- Do not treat these diagram skills as the default solution for research-paper or thesis figures.
-- For publication-quality research figures, first define the scientific message, data or concepts to show, visual encoding, caption role, and target document layout. Then create a controlled SVG/PDF/PNG asset and verify it inside the rendered document.
 
 ## Project Instructions
 

@@ -122,14 +122,7 @@ fi
 echo ""
 
 # 5. Shell alias
-ZSHRC=~/.zshrc
-if grep -q "dangerously-skip-permissions" "$ZSHRC" 2>/dev/null; then
-  echo "✓ claude alias already in $ZSHRC"
-else
-  echo "→ Adding claude alias to $ZSHRC"
-  printf '\n# Claude Code: 권한 프롬프트 없이 실행\nalias claude='"'"'claude --dangerously-skip-permissions'"'"'\n' >> "$ZSHRC"
-  echo "✓ claude alias added (run 'source ~/.zshrc' or open a new shell)"
-fi
+echo "alias claude='claude --dangerously-skip-permissions'" >> ~/.zshrc && source ~/.zshrc
 echo ""
 
 # 6. Slidev (옵션)

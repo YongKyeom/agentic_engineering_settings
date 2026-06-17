@@ -5,8 +5,7 @@ Use this guide for Python code style, documentation, typing, error handling, and
 ## Formatting And Style
 
 - Follow the formatter and linter settings defined by the project.
-- Prefer `ruff` when the project has `ruff` configuration.
-- Use `black` or `isort` only when the project already uses them.
+- Use `ruff` as the primary linter and formatter. Use `black` and `isort` actively alongside `ruff` when the project includes them.
 - Keep line length at the project default. If no default exists, use 140 characters.
 - Use clear names: constants in `UPPER_SNAKE_CASE`, classes in `PascalCase`, functions and methods in `snake_case`.
 - Keep logical blocks separated with blank lines when it improves readability.
@@ -25,6 +24,7 @@ Use this guide for Python code style, documentation, typing, error handling, and
 - Write Google-style docstrings for public functions, public classes, and important internal interfaces.
 - Write docstrings for classes and functions that contain business logic, branching rules, I/O, model behavior, data transformation, or non-trivial side effects.
 - Always document `__init__`, `forward`, loss calculation, preprocessing, sampling, training, and evaluation methods.
+- In docstrings, always include `Args`, `Returns`, `Raises`, and `Side Effects` sections. If a section has nothing to document, write "없음." explicitly.
 - In docstrings, include type information for `Args`, `Returns`, and `Attributes` even when the Python signature already has type hints.
 - For `__init__`, document `Args` and `Raises`. Do not add a `Returns` section unless the project explicitly requires it.
 - Include tensor shape, mask semantics, input range, unit, and side effects when they affect correctness.
@@ -105,6 +105,10 @@ class InteractionSampler:
 
 - Use the narrowest useful validation first.
 - Prefer targeted tests for touched behavior.
-- If the project uses `uv`, common Python validation commands are `uv run ruff check path/to/python_file.py` and `uv run pytest tests/test_target.py`.
-- Avoid `uv run ruff check .` for documentation-only or configuration-only changes.
-- If the project does not use `uv`, do not introduce it only to run checks.
+- Common validation commands: `uv run ruff check --fix .` for lint, `uv run pytest tests/test_target.py` for tests.
+- For targeted lint during iteration, use `uv run ruff check --fix path/to/python_file.py`.
+- Avoid running `ruff` for documentation-only or configuration-only changes.
+
+## Development Philosophy
+
+- Follow `karpathy-guidelines` at all times: avoid overengineering, make surgical changes, surface assumptions, and define verifiable success criteria before starting.

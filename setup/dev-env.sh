@@ -5,7 +5,6 @@
 set -euo pipefail
 
 OS="$(uname -s)"
-ZSHRC="$HOME/.zshrc"
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 echo "→ OS: $OS"
@@ -76,32 +75,11 @@ else
 fi
 echo ""
 
-# ── 4. .zshrc 업데이트 ─────────────────────────────────────────────────────────
-# 테마
-if grep -q 'ZSH_THEME=' "$ZSHRC" 2>/dev/null; then
-  sed -i.bak 's|ZSH_THEME="[^"]*"|ZSH_THEME="powerlevel10k/powerlevel10k"|' "$ZSHRC"
-  echo "✓ ZSH_THEME → powerlevel10k"
-else
-  echo 'ZSH_THEME="powerlevel10k/powerlevel10k"' >> "$ZSHRC"
-  echo "✓ ZSH_THEME added"
-fi
-
-# plugins 라인에 누락된 플러그인 추가
-REQUIRED_PLUGINS=(zsh-autosuggestions zsh-syntax-highlighting fzf zoxide)
-for plugin in "${REQUIRED_PLUGINS[@]}"; do
-  if grep -q "^plugins=" "$ZSHRC" 2>/dev/null && grep "^plugins=" "$ZSHRC" | grep -q "$plugin"; then
-    echo "✓ plugin already in .zshrc: $plugin"
-  else
-    sed -i.bak "s/^plugins=(\(.*\))/plugins=(\1 $plugin)/" "$ZSHRC"
-    echo "✓ plugin added to .zshrc: $plugin"
-  fi
-done
-
-# zoxide init
-if ! grep -q 'zoxide init' "$ZSHRC" 2>/dev/null; then
-  echo 'eval "$(zoxide init zsh)"' >> "$ZSHRC"
-  echo "✓ zoxide init added"
-fi
+# ── 4. ~/.zshrc 덮어쓰기 ──────────────────────────────────────────────────────
+ZSHRC_SRC="$(cd "$(dirname "$0")" && pwd)/zshrc"
+echo "→ Writing ~/.zshrc..."
+cp "$ZSHRC_SRC" "$HOME/.zshrc"
+echo "✓ ~/.zshrc written"
 echo ""
 
 # ── 5. CLI 도구 ────────────────────────────────────────────────────────────────
@@ -139,11 +117,8 @@ echo ""
 
 # ── 9. ~/.tmux.conf ────────────────────────────────────────────────────────────
 TMUX_CONF="$HOME/.tmux.conf"
-if [ -f "$TMUX_CONF" ]; then
-  echo "⚠ ~/.tmux.conf already exists. Skipping."
-else
-  echo "→ Writing ~/.tmux.conf..."
-  cat > "$TMUX_CONF" << 'TMUXEOF'
+echo "→ Writing ~/.tmux.conf..."
+cat > "$TMUX_CONF" << 'TMUXEOF'
 # ── 플러그인 ──────────────────────────────────────────────────────────────────
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
@@ -159,6 +134,9 @@ set -g copy-command "pbcopy"
 
 # ── vi 키바인딩 ────────────────────────────────────────────────────────────────
 setw -g mode-keys vi
+
+# ── 스크롤백 ───────────────────────────────────────────────────────────────────
+set -g history-limit 50000
 
 # ── 창/패널 번호 1부터 ──────────────────────────────────────────────────────────
 set -g base-index 1
@@ -181,21 +159,16 @@ set -g @continuum-restore 'on'
 # ── TPM 초기화 (파일 맨 아래 유지) ────────────────────────────────────────────
 run '~/.tmux/plugins/tpm/tpm'
 TMUXEOF
-  echo "✓ ~/.tmux.conf created"
-fi
+echo "✓ ~/.tmux.conf written"
 echo ""
 
 # ── 10. p10k 설정 복원 ─────────────────────────────────────────────────────────
 P10K_SRC="$(cd "$(dirname "$0")" && pwd)/p10k.zsh"
-if [ -f "$HOME/.p10k.zsh" ]; then
-  echo "⚠ ~/.p10k.zsh already exists. Skipping."
+if [ -f "$P10K_SRC" ]; then
+  cp "$P10K_SRC" "$HOME/.p10k.zsh"
+  echo "✓ ~/.p10k.zsh restored"
 else
-  if [ -f "$P10K_SRC" ]; then
-    cp "$P10K_SRC" "$HOME/.p10k.zsh"
-    echo "✓ ~/.p10k.zsh restored"
-  else
-    echo "⚠ setup/p10k.zsh not found. Run 'p10k configure' manually."
-  fi
+  echo "⚠ setup/p10k.zsh not found. Run 'p10k configure' manually."
 fi
 
 # p10k 소스 라인 추가

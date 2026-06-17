@@ -114,6 +114,8 @@ cd agent_settings
 | `c4-architecture` | C4 아키텍처 다이어그램 |
 | `mermaid-diagrams` | Mermaid 다이어그램 |
 | `excalidraw` | 러프 스케치 다이어그램 |
+| `code-review` | diff 기준 코드 리뷰 (버그, 타입, 스타일, 보안). Claude Code 내장(`/code-review`), Codex는 custom skill |
+| `deep-research` | 멀티 소스 fan-out 리서치 → 사실 검증 → 인용 포함 리포트. Claude Code 내장(`/deep-research`), Codex는 custom skill |
 
 ## Skill 관리 원칙
 

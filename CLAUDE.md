@@ -97,6 +97,8 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 - `karpathy-guidelines`: Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
 - `packet-review`: Use when verifying that current implementation aligns with the active plan document. Detects direction drift, gaps, and must-close items before moving to the next packet.
 - `presentation-slidev`: Use when authoring or iteratively refining presentations (thesis defense, side project decks, technical talks) delivered as PDF via Slidev.
+- `code-review`: Use after making changes to review the diff for bugs, type safety, style, security, and maintainability. Built-in as `/code-review` (use `/code-review ultra` for multi-agent deep review).
+- `deep-research`: Use when researching a topic that requires multiple sources, fact verification, and a structured report with citations. Built-in as `/deep-research`.
 
 ### Diagram Skills
 

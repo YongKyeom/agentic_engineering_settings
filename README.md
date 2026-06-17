@@ -86,7 +86,7 @@ cd agent_settings
 | `tmux-resurrect` | 세션 저장/복원 (`Ctrl+b Ctrl+s / Ctrl+r`) |
 | `tmux-continuum` | 세션 자동 저장 (resurrect 연동) |
 | `tmux-yank` | 드래그 선택 → 클립보드 자동 복사 |
-| `catppuccin/tmux` | Mocha 테마 상태바 |
+| `dracula/tmux` | 상태바 테마 (cwd, git, CPU, RAM, 시간) |
 
 ### CLI 도구
 

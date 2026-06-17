@@ -125,7 +125,7 @@ set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @plugin 'tmux-plugins/tmux-yank'
-set -g @plugin 'catppuccin/tmux#v2.1.3'
+set -g @plugin 'dracula/tmux'
 
 # ── 마우스 / 복사 ──────────────────────────────────────────────────────────────
 set -g mouse on
@@ -150,14 +150,24 @@ set -ag terminal-overrides ",xterm-256color:RGB"
 # ── 상태바 ─────────────────────────────────────────────────────────────────────
 set -g status-position top
 
-# ── Catppuccin Mocha ───────────────────────────────────────────────────────────
-set -g @catppuccin_flavor 'mocha'
+# ── Dracula ────────────────────────────────────────────────────────────────────
+set -g @dracula-plugins "cwd git cpu-usage ram-usage time"
+set -g @dracula-show-left-icon "#S"
+set -g @dracula-show-powerline true
+set -g @dracula-refresh-rate 5
+set -g @dracula-show-timezone false
+set -g @dracula-time-format "%m/%d %H:%M"
+set -g @dracula-cwd-max-dirs 3
+
+# ── 색상: Catppuccin Mocha 팔레트 적용 (어둡고 눈 편한 파스텔) ────────────────
+set -g @dracula-colors "dark_gray='#1e1e2e' gray='#313244' white='#cdd6f4' cyan='#89dceb' green='#a6e3a1' orange='#fab387' pink='#f38ba8' yellow='#f9e2af' red='#f38ba8'"
 
 # ── 세션 자동 저장/복원 ────────────────────────────────────────────────────────
 set -g @continuum-restore 'on'
 
 # ── TPM 초기화 (파일 맨 아래 유지) ────────────────────────────────────────────
 run '~/.tmux/plugins/tpm/tpm'
+
 TMUXEOF
 echo "✓ ~/.tmux.conf written"
 echo ""

@@ -110,3 +110,5 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 
 - Repository-local instruction files (`AGENTS.md`, `CLAUDE.md`) may add stricter rules for a project.
 - If project instructions conflict with these global rules, follow the project instructions.
+
+@RTK.md

@@ -8,19 +8,46 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 echo "→ Repo root: $REPO_ROOT"
 echo ""
 
+find_rtk_binary() {
+  if command -v rtk >/dev/null 2>&1; then
+    command -v rtk
+    return 0
+  fi
+
+  if [ -x "$HOME/.local/bin/rtk" ]; then
+    printf '%s\n' "$HOME/.local/bin/rtk"
+    return 0
+  fi
+
+  return 1
+}
+
+run_rtk_init() {
+  local rtk_path="$1"
+
+  if "$rtk_path" init -g >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "⚠ rtk init -g failed; continuing."
+  return 0
+}
+
 # 1. RTK (Rust Token Killer)
-if command -v rtk >/dev/null 2>&1; then
-  echo "✓ RTK already installed ($(rtk --version 2>/dev/null || echo unknown))"
+if rtk_path="$(find_rtk_binary)"; then
+  echo "✓ RTK already installed ($("$rtk_path" --version 2>/dev/null || echo unknown))"
 else
   echo "→ Installing RTK..."
   curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh | sh
-  if command -v rtk >/dev/null 2>&1; then
-    rtk init -g
+  if rtk_path="$(find_rtk_binary)"; then
     echo "✓ RTK installed"
   else
     echo "⚠ RTK installer finished but 'rtk' not on PATH yet."
     echo "   새 셸을 열거나 PATH를 다시 로드한 뒤 'rtk init -g'를 직접 실행하라."
   fi
+fi
+if [ -n "${rtk_path:-}" ]; then
+  run_rtk_init "$rtk_path"
 fi
 echo ""
 

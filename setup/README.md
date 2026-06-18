@@ -11,7 +11,7 @@
 | `p10k.zsh` | `dev-env.sh`가 `~/.p10k.zsh`로 복사하는 powerlevel10k 설정. |
 | `claude-code.sh` | Claude Code 전역 설정, custom skills, Codex plugin, 기본 settings, alias를 설치한다. |
 | `claude-code.md` | Claude Code 셋업 세부 가이드. Dashboard plugin처럼 수동 확인이 필요한 내용도 포함한다. |
-| `codex.sh` | Codex 전역 `AGENTS.md`와 custom skills를 설치한다. |
+| `codex.sh` | Codex 전역 `AGENTS.md`, custom skills를 설치하고 Codex core PATH에서 `rtk`가 보이도록 보조한다. |
 
 ## 실행 순서
 
@@ -29,3 +29,35 @@
 ```
 
 `dev-env.sh`는 dotfile을 덮어쓰는 것이 의도된 동작이다. 개인 설정을 보존해야 하는 머신에서는 실행 전에 백업한다.
+
+## Codex와 RTK PATH
+
+Codex는 `~/.codex/config.toml`에서 `[shell_environment_policy] inherit = "core"`를 쓰는 환경이 많다. 이 설정은 안전하지만, 사용자 셸 PATH에만 있는 `~/.local/bin`이나 Homebrew 경로가 빠질 수 있다.
+
+`setup/codex.sh`는 `rtk` 설치/탐지 후 `/usr/local/bin/rtk` symlink 생성을 시도한다. `rtk`가 아직 PATH에 없어도 `$HOME/.local/bin/rtk`를 확인한다. sudo가 필요하거나 사용할 수 없는 환경에서는 경고만 출력하고 나머지 셋업은 계속 진행한다.
+
+Claude Code는 `rtk init -g`가 연결한 hook을 통해 명령을 rewrite할 수 있다. Codex는 hook rewrite에 의존하지 않고, agent 지침의 명시적 `rtk` prefix와 core PATH에서 찾을 수 있는 `rtk` 실행 파일을 함께 사용한다.
+
+수동 복구:
+
+```sh
+RTK_PATH="$(command -v rtk || true)"
+if [ -z "$RTK_PATH" ] && [ -x "$HOME/.local/bin/rtk" ]; then
+  RTK_PATH="$HOME/.local/bin/rtk"
+fi
+if [ -z "$RTK_PATH" ]; then
+  echo "rtk not found"
+  exit 1
+fi
+sudo ln -sf "$RTK_PATH" /usr/local/bin/rtk
+```
+
+검증:
+
+```sh
+command -v rtk
+rtk --version
+/usr/local/bin/rtk --version
+```
+
+마지막으로 새 Codex 세션에서 `rtk --version`을 실행해 Codex 실행 환경에서도 보이는지 확인한다.

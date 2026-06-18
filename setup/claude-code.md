@@ -24,6 +24,8 @@
 
 토큰 절약용 CLI proxy. Claude Code가 자주 호출하는 git/ls/grep 등을 효율적으로 처리한다.
 
+`setup/claude-code.sh`는 RTK가 이미 설치되어 있어도 `rtk init -g`를 다시 시도한다. `rtk`가 아직 PATH에 없어도 `$HOME/.local/bin/rtk`를 확인한다. 이 명령은 전역 RTK 설정과 Claude Code hook 연결을 맞추는 idempotent 단계다.
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/master/install.sh | sh
 rtk init -g

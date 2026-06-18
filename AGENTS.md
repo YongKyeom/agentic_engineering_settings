@@ -89,7 +89,7 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 - `handoff`: Use when context is long, work must continue in a new thread, or current state must be preserved.
 - `requirements-clarity`: Use before implementation when scope, constraints, or completion criteria are unclear.
 - `skill-judge`: Use when reviewing or modifying installed skills.
-- `agent-md-refactor`: Use when `AGENTS.md`, `CLAUDE.md`, or long instruction files need progressive disclosure.
+- `agent-md-refactor`: Use when agent instruction files need progressive disclosure.
 - `humanizer`: Use when prose needs to remove AI-like writing, translationese, or unnatural phrasing.
 - `writing-clearly-and-concisely`: Use when producing or editing prose that humans will read.
 - `lesson-learned`: Use after repeated mistakes or significant debugging to extract reusable engineering rules.
@@ -107,7 +107,7 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 
 ## Project Instructions
 
-- Repository-local instruction files (`AGENTS.md`, `CLAUDE.md`) may add stricter rules for a project.
+- Repository-local instruction files may add stricter rules for a project.
 - If project instructions conflict with these global rules, follow the project instructions.
 
 @RTK.md

@@ -61,6 +61,8 @@ cd agent_settings
 
 `dev-env.sh`는 `~/.zshrc`, `~/.tmux.conf`, `~/.p10k.zsh`를 항상 repo 기준으로 덮어쓴다. 기존 설정이 있어도 그대로 덮어씌워진다.
 
+`setup/codex.sh`는 RTK 설치/탐지 후 Codex core PATH에서도 `rtk`가 보이도록 보조한다. 자세한 fallback과 검증 방법은 setup 폴더 가이드를 참고한다.
+
 스크립트는 자동화 가능한 부분만 처리한다. Claude Dashboard 플러그인 설치 등 수동 단계는 셋업 가이드 참고.
 
 - **Claude Code 셋업 가이드**: [`setup/claude-code.md`](setup/claude-code.md)

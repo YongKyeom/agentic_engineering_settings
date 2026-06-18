@@ -4,14 +4,14 @@
 
 ## 빠른 셋업 (권장)
 
-자동화 가능한 부분(1~4, 6번)은 스크립트로 한 번에 처리:
+자동화 가능한 부분(RTK, 전역 지침, 스킬, Codex plugin, settings, alias, Slidev 옵션)은 스크립트로 한 번에 처리:
 
 ```sh
 ./setup/claude-code.sh                # 기본 셋업
 ./setup/claude-code.sh --with-slidev  # Slidev까지 함께 설치
 ```
 
-스크립트 실행 후 6번(Claude Dashboard 플러그인)은 수동으로 처리한다.
+스크립트 실행 후 Claude Dashboard 플러그인은 수동으로 처리한다.
 
 아래는 수동 설치 단계별 가이드.
 
@@ -37,10 +37,10 @@ rtk gain
 
 ## 2. 전역 CLAUDE.md 설치
 
-이 레포의 `CLAUDE.md` 내용을 `~/.claude/CLAUDE.md`로 복사. 상단에 `@RTK.md`를 추가한다.
+이 레포의 `CLAUDE.md` 내용을 `~/.claude/CLAUDE.md`로 복사한다.
 
 ```sh
-{ echo "@RTK.md"; echo ""; cat CLAUDE.md; } > ~/.claude/CLAUDE.md
+cp CLAUDE.md ~/.claude/CLAUDE.md
 ```
 
 > **주의**: symlink 사용 금지. Codex와의 호환성 문제로 항상 복사 방식을 쓴다.
@@ -53,17 +53,34 @@ rtk gain
 mkdir -p ~/.claude/commands
 for dir in skills/*/; do
   name=$(basename "$dir")
+  if [ "$name" = "code-review" ] || [ "$name" = "deep-research" ]; then
+    continue
+  fi
   cp "$dir/SKILL.md" "$HOME/.claude/commands/${name}.md"
 done
 ```
 
+`code-review`, `deep-research`는 Claude Code built-in 기능과 중복되므로 command로 복사하지 않는다.
+
 설치 후 Claude Code를 재시작해야 인식된다.
 
-## 4. settings.json 설정
+## 4. Codex plugin 설치
+
+Claude Code 안에서 Codex를 호출하기 위한 OpenAI Codex plugin은 스크립트가 자동으로 설치한다.
+
+수동으로 복구할 때는 다음 명령을 셸에서 실행한다.
+
+```sh
+claude plugin marketplace add openai/codex-plugin-cc
+claude plugin install codex@openai-codex
+claude plugin list
+```
+
+## 5. settings.json 설정
 
 `~/.claude/settings.json`에 다음 항목을 설정한다.
 
-### 4.1 Auto 모드 + 권한 화이트리스트
+### 5.1 Auto 모드 + 권한 화이트리스트
 
 ```json
 {
@@ -127,7 +144,7 @@ done
 - `ask`: 파괴적/되돌리기 어려운 명령은 항상 컨펌
 - `defaultMode: "auto"`: 위 목록에 없는 명령은 auto classifier가 판단
 
-### 4.2 출력 토큰 / 추론 강도
+### 5.2 출력 토큰 / 추론 강도
 
 ```json
 {
@@ -138,7 +155,7 @@ done
 }
 ```
 
-### 4.3 Advisor 모델 (옵션)
+### 5.3 Advisor 모델 (옵션)
 
 복잡한 판단 시 Opus를 어드바이저로 사용. 비용 절감 + 품질 향상.
 
@@ -150,7 +167,7 @@ done
 
 참고: [The Advisor Strategy](https://claude.com/blog/the-advisor-strategy)
 
-### 4.4 통합 예시
+### 5.4 통합 예시
 
 ```json
 {
@@ -168,7 +185,7 @@ done
 }
 ```
 
-## 5. Shell Alias
+## 6. Shell Alias
 
 `claude` 실행 시 권한 프롬프트 없이 자동으로 시작되도록 `~/.zshrc`에 alias를 추가한다. 스크립트가 자동으로 처리한다.
 
@@ -178,7 +195,7 @@ done
 source ~/.zshrc
 ```
 
-## 6. Claude Dashboard 플러그인 (수동)
+## 7. Claude Dashboard 플러그인 (수동)
 
 > ⚠️ 수동 단계. 셸이 아니라 **실행 중인 Claude Code 세션 안에서** 슬래시 명령으로 입력해야 한다.
 
@@ -201,7 +218,7 @@ Claude Code를 실행한 뒤 차례대로 입력:
 - plan: `max`
 - language: `auto`
 
-## 7. Slidev (옵션 - 발표자료 작성용)
+## 8. Slidev (옵션 - 발표자료 작성용)
 
 발표자료를 마크다운으로 작성하고 PDF로 렌더하는 워크플로우.
 
@@ -218,7 +235,7 @@ slidev --version
 
 스킬 `presentation-slidev`가 워크플로우를 안내한다.
 
-## 8. 검증
+## 9. 검증
 
 새 셋업이 잘 됐는지 확인.
 
@@ -229,6 +246,9 @@ claude --version
 # 글로벌 인스트럭션 로드 확인
 ls -la ~/.claude/CLAUDE.md
 ls ~/.claude/commands/
+
+# Codex plugin
+claude plugin list
 
 # settings.json 유효성
 cat ~/.claude/settings.json | python3 -m json.tool

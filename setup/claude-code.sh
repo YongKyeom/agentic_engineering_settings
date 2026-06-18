@@ -38,13 +38,34 @@ mkdir -p ~/.claude/commands
 for dir in "$REPO_ROOT"/skills/*/; do
   name=$(basename "$dir")
   if [ -f "$dir/SKILL.md" ]; then
+    if [ "$name" = "code-review" ] || [ "$name" = "deep-research" ]; then
+      echo "  - $name (skip: Claude Code built-in)"
+      continue
+    fi
     cp "$dir/SKILL.md" ~/.claude/commands/"${name}.md"
     echo "  ✓ $name"
   fi
 done
 echo ""
 
-# 4. settings.json
+# 4. Codex plugin
+if command -v claude >/dev/null 2>&1; then
+  if claude plugin list 2>/dev/null | grep -q 'codex@openai-codex'; then
+    echo "✓ Codex plugin already installed"
+  else
+    echo "→ Installing Codex plugin for Claude Code..."
+    claude plugin marketplace add openai/codex-plugin-cc || true
+    claude plugin install codex@openai-codex
+    echo "✓ Codex plugin installed"
+  fi
+else
+  echo "⚠ claude command not found. Install Claude Code, then run:"
+  echo "   claude plugin marketplace add openai/codex-plugin-cc"
+  echo "   claude plugin install codex@openai-codex"
+fi
+echo ""
+
+# 5. settings.json
 SETTINGS=~/.claude/settings.json
 if [ -f "$SETTINGS" ]; then
   echo "⚠ $SETTINGS already exists. Skipping."
@@ -121,17 +142,16 @@ JSON
 fi
 echo ""
 
-# 5. Shell alias
+# 6. Shell alias
 if ! grep -q "alias claude=" ~/.zshrc 2>/dev/null; then
   echo "alias claude='claude --dangerously-skip-permissions'" >> ~/.zshrc
   echo "✓ claude alias added"
 else
   echo "✓ claude alias already in .zshrc"
 fi
-source ~/.zshrc
 echo ""
 
-# 6. Slidev (옵션)
+# 7. Slidev (옵션)
 if [ "${1:-}" = "--with-slidev" ]; then
   if command -v slidev >/dev/null 2>&1; then
     echo "✓ Slidev already installed"
@@ -159,7 +179,10 @@ cat <<EOF
      /reload-plugins
      /claude-dashboard:setup
 
-4. (옵션) Slidev 설치하지 않았으면:
+4. Codex plugin 확인:
+     claude plugin list
+
+5. (옵션) Slidev 설치하지 않았으면:
      ./setup/claude-code.sh --with-slidev
 
 자세한 내용은 setup/claude-code.md 참고.

@@ -28,6 +28,7 @@
 - Use sub-agents when independent research, codebase exploration, verification, or review can run in parallel and materially improve the result.
 - Do not use sub-agents for small tasks, tightly coupled edits, sequential blockers, or work that would create duplicate effort or merge conflicts.
 - For non-trivial coding work, consider whether a read-only explorer, bounded worker, or independent reviewer would reduce risk before proceeding.
+- In Claude Code, use the `codex@openai-codex` plugin when Codex assistance is needed.
 
 > For detailed delegation, parallelism, review, and verification rules, see the subsections below.
 

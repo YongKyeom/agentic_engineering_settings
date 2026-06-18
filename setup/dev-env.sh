@@ -132,6 +132,10 @@ set -g mouse on
 set -g @yank_with_mouse on
 set -g copy-command "pbcopy"
 
+# ── 마우스 스크롤 속도 (7줄) ───────────────────────────────────────────────────
+bind -n WheelUpPane if -Ft= '#{mouse_any_flag}' 'send-keys -M' 'if -Ft= "#{pane_in_mode}" "send-keys -X -N 7 scroll-up" "copy-mode -e; send-keys -X -N 7 scroll-up"'
+bind -n WheelDownPane if -Ft= '#{pane_in_mode}' 'send-keys -X -N 7 scroll-down' 'send-keys -M'
+
 # ── vi 키바인딩 ────────────────────────────────────────────────────────────────
 setw -g mode-keys vi
 
@@ -154,7 +158,7 @@ set -g status-position top
 set -g @dracula-plugins "cwd git cpu-usage ram-usage time"
 set -g @dracula-show-left-icon "#S"
 set -g @dracula-show-powerline true
-set -g @dracula-refresh-rate 5
+set -g @dracula-refresh-rate 10
 set -g @dracula-show-timezone false
 set -g @dracula-time-format "%m/%d %H:%M"
 set -g @dracula-cwd-max-dirs 3

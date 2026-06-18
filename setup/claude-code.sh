@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code 환경 셋업.
-# 자동화 가능한 단계만 처리. 플러그인 설치는 셸에서 불가능하므로
-# 스크립트 실행 후 수동 단계 안내를 따라가야 한다.
+# 자동화 가능한 단계만 처리한다.
 
 set -euo pipefail
 
@@ -33,8 +32,8 @@ echo "✓ ~/.claude/CLAUDE.md updated"
 echo ""
 
 # 3. 스킬 설치
-echo "→ Installing skills to ~/.claude/commands/"
-mkdir -p ~/.claude/commands
+echo "→ Installing skills to ~/.claude/skills/"
+mkdir -p ~/.claude/skills
 for dir in "$REPO_ROOT"/skills/*/; do
   name=$(basename "$dir")
   if [ -f "$dir/SKILL.md" ]; then
@@ -42,7 +41,11 @@ for dir in "$REPO_ROOT"/skills/*/; do
       echo "  - $name (skip: Claude Code built-in)"
       continue
     fi
-    cp "$dir/SKILL.md" ~/.claude/commands/"${name}.md"
+    target="$HOME/.claude/skills/$name"
+    rm -rf "$target"
+    mkdir -p "$target"
+    cp -R "$dir/." "$target/"
+    rm -f "$HOME/.claude/commands/${name}.md"
     echo "  ✓ $name"
   fi
 done

@@ -122,7 +122,7 @@ cd agent_settings
 
 새 skill을 추가할 때:
 
-1. `~/.codex/skills/<skill-name>/` 또는 `~/.claude/commands/<skill-name>.md`에 설치하거나 수정한다.
+1. `~/.codex/skills/<skill-name>/` 또는 `~/.claude/skills/<skill-name>/`에 설치하거나 수정한다.
 2. 동작을 확인한다.
 3. 이 레포의 `skills/<skill-name>/SKILL.md`에 복사한다.
 4. `AGENTS.md`와 `CLAUDE.md`의 Related Skills 섹션에 항목을 추가한다.

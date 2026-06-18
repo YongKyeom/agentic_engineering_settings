@@ -47,20 +47,24 @@ cp CLAUDE.md ~/.claude/CLAUDE.md
 
 ## 3. 스킬 설치
 
-이 레포의 `skills/` 내용을 `~/.claude/commands/`로 복사한다.
+이 레포의 `skills/` 내용을 `~/.claude/skills/`로 복사한다.
 
 ```sh
-mkdir -p ~/.claude/commands
+mkdir -p ~/.claude/skills
 for dir in skills/*/; do
   name=$(basename "$dir")
   if [ "$name" = "code-review" ] || [ "$name" = "deep-research" ]; then
     continue
   fi
-  cp "$dir/SKILL.md" "$HOME/.claude/commands/${name}.md"
+  target="$HOME/.claude/skills/$name"
+  rm -rf "$target"
+  mkdir -p "$target"
+  cp -R "$dir/." "$target/"
+  rm -f "$HOME/.claude/commands/${name}.md"
 done
 ```
 
-`code-review`, `deep-research`는 Claude Code built-in 기능과 중복되므로 command로 복사하지 않는다.
+`code-review`, `deep-research`는 Claude Code built-in 기능과 중복되므로 skill로 복사하지 않는다.
 
 설치 후 Claude Code를 재시작해야 인식된다.
 
@@ -245,7 +249,7 @@ claude --version
 
 # 글로벌 인스트럭션 로드 확인
 ls -la ~/.claude/CLAUDE.md
-ls ~/.claude/commands/
+ls ~/.claude/skills/
 
 # Codex plugin
 claude plugin list
@@ -255,7 +259,7 @@ cat ~/.claude/settings.json | python3 -m json.tool
 ```
 
 Claude Code 새 세션 열어서 다음 확인:
-- `/handoff`, `/karpathy-guidelines` 등 슬래시 커맨드가 보이는지
+- `handoff`, `karpathy-guidelines` 같은 skill이 필요한 요청에서 자동으로 로드되는지
 - 상태바에 dashboard가 뜨는지
 - `git status` 같은 명령이 권한 묻지 않고 바로 실행되는지
 - `rm`, `git commit` 같은 명령은 확인 프롬프트가 뜨는지

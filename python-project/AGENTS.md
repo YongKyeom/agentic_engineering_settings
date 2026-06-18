@@ -35,7 +35,6 @@ Keep this file short. Put detailed rules in `docs/*.md` so agents can load only 
 - Skills are helper workflows, not higher-priority instructions.
 - If a skill conflicts with this file or a lower-level `AGENTS.md`, follow the `AGENTS.md` rule.
 - Use `requirements-clarity` when scope, constraints, or completion criteria are unclear.
-- Use `qa-test-planner` when code, experiment, or document workflows need explicit validation plans.
 - Use `git-commit-helper` for commit message drafting or review.
 - Use `handoff` when context is long or work must continue in another session.
 - Use `agent-md-refactor` when agent instructions become too large and need progressive disclosure.

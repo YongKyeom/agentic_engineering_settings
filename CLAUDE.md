@@ -89,7 +89,6 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 
 - `handoff`: Use when context is long, work must continue in a new thread, or current state must be preserved.
 - `requirements-clarity`: Use before implementation when scope, constraints, or completion criteria are unclear.
-- `qa-test-planner`: Use when code, experiments, or document workflows need explicit verification plans.
 - `skill-judge`: Use when reviewing or modifying installed skills.
 - `agent-md-refactor`: Use when `AGENTS.md`, `CLAUDE.md`, or long instruction files need progressive disclosure.
 - `humanizer`: Use when prose needs to remove AI-like writing, translationese, or unnatural phrasing.

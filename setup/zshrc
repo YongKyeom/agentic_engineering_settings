@@ -15,4 +15,12 @@ eval "$(zoxide init zsh)"
 
 alias claude='claude --dangerously-skip-permissions'
 
+export PIP_BREAK_SYSTEM_PACKAGES=1
+
+setopt HIST_IGNORE_ALL_DUPS
+HISTSIZE=10000
+SAVEHIST=10000
+
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+neofetch --ascii_distro mac

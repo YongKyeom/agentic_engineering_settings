@@ -1,3 +1,8 @@
+---
+name: deep-research
+description: Research a topic using multiple sources with fact verification and structured output. Use when a question requires broad coverage, cross-source validation, and a cited report.
+---
+
 # Deep Research
 
 주제나 질문에 대해 여러 소스를 fan-out으로 조사하고, 사실 검증을 거쳐 인용 포함 리포트를 생성한다.

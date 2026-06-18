@@ -1,3 +1,8 @@
+---
+name: code-review
+description: Review code changes for bugs, type safety, style, security, and maintainability. Use after making changes to a codebase. Supports --fix to auto-apply Critical and Warning items.
+---
+
 # Code Review
 
 diff 또는 지정 파일을 기준으로 코드 리뷰를 수행한다.

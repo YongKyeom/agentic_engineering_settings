@@ -6,6 +6,7 @@ set -euo pipefail
 
 OS="$(uname -s)"
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+ZSHRC="$HOME/.zshrc"
 
 echo "→ OS: $OS"
 echo ""
@@ -78,12 +79,12 @@ echo ""
 # ── 4. ~/.zshrc 덮어쓰기 ──────────────────────────────────────────────────────
 ZSHRC_SRC="$(cd "$(dirname "$0")" && pwd)/zshrc"
 echo "→ Writing ~/.zshrc..."
-cp "$ZSHRC_SRC" "$HOME/.zshrc"
+cp "$ZSHRC_SRC" "$ZSHRC"
 echo "✓ ~/.zshrc written"
 echo ""
 
 # ── 5. CLI 도구 ────────────────────────────────────────────────────────────────
-for tool in btop ncdu; do
+for tool in btop ncdu neofetch; do
   if command -v "$tool" >/dev/null 2>&1; then
     echo "✓ $tool already installed"
   else

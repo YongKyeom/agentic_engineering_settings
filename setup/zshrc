@@ -9,9 +9,13 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting fzf zoxide)
 
-source $ZSH/oh-my-zsh.sh
+if [[ -r "$ZSH/oh-my-zsh.sh" ]]; then
+  source "$ZSH/oh-my-zsh.sh"
+fi
 
-eval "$(zoxide init zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
 
 alias claude='claude --dangerously-skip-permissions'
 
@@ -23,4 +27,6 @@ SAVEHIST=10000
 
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-neofetch --ascii_distro mac
+if command -v neofetch >/dev/null 2>&1; then
+  neofetch --ascii_distro mac
+fi

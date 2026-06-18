@@ -37,7 +37,7 @@ for dir in "$REPO_ROOT"/skills/*/; do
   name=$(basename "$dir")
   if [ -f "$dir/SKILL.md" ]; then
     mkdir -p ~/.codex/skills/"$name"
-    cp "$dir/SKILL.md" ~/.codex/skills/"$name"/SKILL.md
+    cp -R "$dir/." ~/.codex/skills/"$name"/
     echo "  ✓ $name"
   fi
 done
@@ -65,5 +65,5 @@ Codex를 재시작하면 새 skill이 인식된다.
 (옵션) Slidev 설치하지 않았으면:
   ./setup/codex.sh --with-slidev
 
-자세한 내용은 setup/codex.md 참고.
+자세한 내용은 README.md와 setup/README.md 참고.
 EOF

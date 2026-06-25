@@ -10,6 +10,7 @@
 | `agent-md-refactor` | 긴 `AGENTS.md`, `CLAUDE.md`를 progressive disclosure 구조로 정리 | agent instruction 정리 |
 | `c4-architecture` | C4 모델 기반 아키텍처 문서와 Mermaid 다이어그램 작성 | system/container/component/deployment 문서 |
 | `code-review` | diff나 파일 기준 코드 리뷰 | Codex custom skill. Claude Code는 built-in 사용 |
+| `dark-theme-pdf` | 다크+마젠타 하우스 테마로 발표자료 작성 후 PDF 내보내기 | 다크 테마 덱, `presentation-slidev`에 빌드 위임 |
 | `deep-research` | 여러 소스 조사, 사실 검증, 인용 포함 리포트 작성 | Codex custom skill. Claude Code는 built-in 사용 |
 | `excalidraw` | Excalidraw 파일 작업을 sub-agent에 위임 | `.excalidraw`, `.excalidraw.json` |
 | `git-commit-helper` | 한국어 커밋 메시지 작성과 커밋 분리 판단 | staged/unstaged diff 검토 |
@@ -82,6 +83,9 @@ flowchart, sequence diagram, ERD, state diagram처럼 C4가 아닌 기술 다이
 
 `presentation-slidev`는 Slidev로 발표자료를 만들고 PDF로 렌더링할 때 사용한다.
 코드, Mermaid, 수식, 반복 렌더링이 많은 기술 발표에 맞춰져 있다.
+
+`dark-theme-pdf`는 다크+마젠타 하우스 테마(배경 `#0c0d12`, 강조 `#ff2d78`, Pretendard)로 발표자료를 만들 때 사용한다.
+디자인 시스템(`assets/style.css`)과 슬라이드 골격, 컴포넌트 패턴만 제공하고 실제 scaffold/export/검수 루프는 `presentation-slidev`에 위임한다.
 
 ## 관리 원칙
 

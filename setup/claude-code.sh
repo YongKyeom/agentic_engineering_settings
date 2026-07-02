@@ -164,7 +164,7 @@ else
     ]
   },
   "effortLevel": "xhigh",
-  "advisorModel": "claude-opus-4-8",
+  "advisorModel": "claude-fable-5",
   "verbose": true
 }
 JSON

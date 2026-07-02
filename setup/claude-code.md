@@ -163,11 +163,11 @@ claude plugin list
 
 ### 5.3 Advisor 모델 (옵션)
 
-복잡한 판단 시 Opus를 어드바이저로 사용. 비용 절감 + 품질 향상.
+복잡한 판단 시 Fable을 어드바이저로 사용. 비용 절감 + 품질 향상.
 
 ```json
 {
-  "advisorModel": "claude-opus-4-7"
+  "advisorModel": "claude-fable-5"
 }
 ```
 
@@ -186,7 +186,7 @@ claude plugin list
     "ask": [ "..." ]
   },
   "effortLevel": "xhigh",
-  "advisorModel": "claude-opus-4-8",
+  "advisorModel": "claude-fable-5",
   "verbose": true
 }
 ```

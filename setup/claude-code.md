@@ -167,7 +167,7 @@ claude plugin list
 
 ```json
 {
-  "advisorModel": "claude-fable-5"
+  "advisorModel": "fable"
 }
 ```
 
@@ -186,7 +186,7 @@ claude plugin list
     "ask": [ "..." ]
   },
   "effortLevel": "xhigh",
-  "advisorModel": "claude-fable-5",
+  "advisorModel": "fable",
   "verbose": true
 }
 ```

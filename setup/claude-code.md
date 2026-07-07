@@ -176,7 +176,6 @@ claude plugin list
 ```json
 {
   "advisorModel": "fable"
-  "advisorModel": "fable"
 }
 ```
 

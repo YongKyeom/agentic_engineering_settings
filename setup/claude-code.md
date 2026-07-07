@@ -163,13 +163,23 @@ claude plugin list
 
 ### 5.3 Advisor 모델 (옵션)
 
-복잡한 판단 시 Fable을 어드바이저로 사용. 비용 절감 + 품질 향상.
+복잡한 판단 시 더 강력한 모델(Opus)을 어드바이저로 사용해 품질 향상.
 
 ```json
 {
-  "advisorModel": "claude-fable-5"
+  "advisorModel": "opus"
 }
 ```
+
+`fable`도 어드바이저로 지정할 수 있다.
+
+```json
+{
+  "advisorModel": "fable"
+}
+```
+
+> ⚠️ **비용 유의**: Fable은 최상위 모델이라 호출 비용이 높다. 어드바이저는 매 호출마다 전체 대화 트랜스크립트를 전달하므로 토큰 사용량이 크게 늘 수 있으니, 비용을 고려해 신중히 설정할 것.
 
 참고: [The Advisor Strategy](https://claude.com/blog/the-advisor-strategy)
 
@@ -186,7 +196,7 @@ claude plugin list
     "ask": [ "..." ]
   },
   "effortLevel": "xhigh",
-  "advisorModel": "claude-fable-5",
+  "advisorModel": "opus",
   "verbose": true
 }
 ```

@@ -96,6 +96,7 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 - `lesson-learned`: Use after repeated mistakes or significant debugging to extract reusable engineering rules.
 - `karpathy-guidelines`: Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
 - `packet-review`: Use when verifying that current implementation aligns with the active plan document. Detects direction drift, gaps, and must-close items before moving to the next packet.
+- `decision-record`: Use when a durable technical decision (architecture, module boundary, dependency, storage, API contract, hard-to-reverse direction) has just been made and should be recorded as an ADR in docs/decisions/.
 - `presentation-slidev`: Use when authoring or iteratively refining presentations (thesis defense, side project decks, technical talks) delivered as PDF via Slidev.
 - `code-review`: Use after making changes to review the diff for bugs, type safety, style, security, and maintainability. Built-in as `/code-review` (use `/code-review ultra` for multi-agent deep review).
 - `deep-research`: Use when researching a topic that requires multiple sources, fact verification, and a structured report with citations. Built-in as `/deep-research`.

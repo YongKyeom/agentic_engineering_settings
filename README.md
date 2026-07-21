@@ -111,6 +111,7 @@ cd agent_settings
 | `writing-clearly-and-concisely` | 명확하고 간결한 글쓰기 |
 | `karpathy-guidelines` | Karpathy 코딩 원칙 (과잉 구현 방지, 외과적 수정) |
 | `packet-review` | 플랜 문서 대비 현재 구현 리뷰 (drift, 미흡, must-close 항목) |
+| `decision-record` | 장기 기술 결정을 ADR로 기록 (산출물은 각 프로젝트 `docs/decisions/`) |
 | `presentation-slidev` | Slidev로 발표자료 작성 및 반복 수정 (학위논문/사이드 프로젝트) |
 | `dark-theme-pdf` | 다크+마젠타 하우스 테마 발표자료를 PDF로 생성 (presentation-slidev에 빌드 위임) |
 | `c4-architecture` | C4 아키텍처 다이어그램 |

@@ -11,6 +11,7 @@
 | `c4-architecture` | C4 모델 기반 아키텍처 문서와 Mermaid 다이어그램 작성 | system/container/component/deployment 문서 |
 | `code-review` | diff나 파일 기준 코드 리뷰 | Codex custom skill. Claude Code는 built-in 사용 |
 | `dark-theme-pdf` | 다크+마젠타 하우스 테마로 발표자료 작성 후 PDF 내보내기 | 다크 테마 덱, `presentation-slidev`에 빌드 위임 |
+| `decision-record` | 오래 유지해야 하는 기술 결정을 ADR로 기록 | 산출물은 각 프로젝트 `docs/decisions/`에 commit |
 | `deep-research` | 여러 소스 조사, 사실 검증, 인용 포함 리포트 작성 | Codex custom skill. Claude Code는 built-in 사용 |
 | `excalidraw` | Excalidraw 파일 작업을 sub-agent에 위임 | `.excalidraw`, `.excalidraw.json` |
 | `git-commit-helper` | 한국어 커밋 메시지 작성과 커밋 분리 판단 | staged/unstaged diff 검토 |
@@ -69,6 +70,9 @@ Strunk 계열의 간결한 문장 원칙과 AI 문체 회피 기준을 함께 �
 
 `handoff`는 긴 작업을 끊거나 다음 세션으로 넘길 때 사용한다.
 결정, 변경사항, 검증, 남은 위험을 짧게 정리하는 것이 핵심이다.
+
+`decision-record`는 아키텍처, dependency, 모듈 경계처럼 오래 유지해야 하는 기술 결정을 ADR로 기록할 때 사용한다.
+작성 시점 판단, 채번, 템플릿, supersede 절차를 스킬이 담당하고, 산출물은 각 프로젝트의 `docs/decisions/`에 commit한다.
 
 ### Diagrams And Presentations
 

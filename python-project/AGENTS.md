@@ -37,6 +37,7 @@ Keep this file short. Put detailed rules in `docs/*.md` so agents can load only 
 - Use `requirements-clarity` when scope, constraints, or completion criteria are unclear.
 - Use `git-commit-helper` for commit message drafting or review.
 - Use `handoff` when context is long or work must continue in another session.
+- Use `decision-record` when a durable technical decision needs to be recorded in `docs/decisions/`.
 - Use `agent-md-refactor` when agent instructions become too large and need progressive disclosure.
 - Use `humanizer` and `writing-clearly-and-concisely` for prose that must sound natural and concise.
 

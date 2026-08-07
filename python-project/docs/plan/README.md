@@ -24,13 +24,13 @@ PRD 초안, task breakdown, 실험 계획, 실행 순서, 조사 메모처럼 �
 
 ## 권장 파일명
 
-로컬에서 사용할 때는 아래처럼 날짜나 주제를 포함하면 찾기 쉽습니다.
+로컬에서 사용할 때는 아래처럼 날짜와 주제를 포함하면 찾기 쉽습니다.
 
 ```text
-YYYY-MM-DD-topic-plan.md
-feature-name-v1-prd.md
-experiment-name-plan.md
-refactor-target-plan.md
+YYYYMMDD_topic-plan.md
+YYYYMMDD_feature-name-v1-prd.md
+YYYYMMDD_experiment-name-plan.md
+YYYYMMDD_refactor-target-plan.md
 ```
 
 ## Plan Template

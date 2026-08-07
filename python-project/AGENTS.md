@@ -47,7 +47,7 @@ Keep this file short. Put detailed rules in `docs/*.md` so agents can load only 
 
 아래 규칙은 Python 소스코드를 탐색하거나 수정할 때 적용한다.
 
-- **PEP8**: `ruff`, `black`, `isort` 자동화 도구를 적극 사용한다. 최대 줄 길이 140자. 상수는 `UPPER_SNAKE_CASE`, 클래스는 `PascalCase`, 함수·메서드는 `snake_case`.
+- **PEP8**: `ruff`, `black`, `isort` 자동화 도구를 적극 사용한다. 줄 길이는 프로젝트 기본값을 따르고, 기본값이 없으면 140자. 상수는 `UPPER_SNAKE_CASE`, 클래스는 `PascalCase`, 함수·메서드는 `snake_case`.
 - **Docstring**: 모든 공개/내부 함수와 클래스에 Google 스타일 Docstring을 작성한다. `Args`/`Returns`/`Raises`/`Side Effects` 섹션을 반드시 포함하고, 해당 내용이 없으면 "없음."으로 명시한다. `__init__`, `forward`, loss 계산, 전처리·샘플링·평가 메서드는 필수.
 - **주석 언어**: Docstring과 주석은 간결한 한글로 작성한다. 명령어, 식별자, API 명은 영어 유지.
 - **실행 흐름 주석**: 주요 객체 생성, 데이터 로딩, 학습 루프, 평가 등 관문마다 주석으로 "왜"와 "무엇"을 먼저 설명한다. CLI 진입점과 `if __name__ == "__main__":` 이하 절차형 로직에는 번호·시퀀스 주석을 달아 추적이 쉽도록 한다.
@@ -56,6 +56,42 @@ Keep this file short. Put detailed rules in `docs/*.md` so agents can load only 
 - **에러 처리**: `logger.exception(...)` 또는 `logger.error(..., exc_info=True)`로 예외 정보를 기록한다. 사용자 응답 메시지와 개발자용 로그 메시지를 구분해서 작성한다.
 - **검증**: `uv run ruff check --fix .`로 린트를 확인하고, `uv run pytest`로 테스트를 실행한다.
 - **개발 철학**: `karpathy-guidelines`를 반드시 준수한다.
+
+---
+
+# 문서화 표준
+
+## 모듈 상단 docstring
+
+모든 `.py` 파일 상단에 **그 모듈이 무엇을 어떻게 하는지** 상세히 쓴다. 한 줄 요약으로 끝내지 않는다.
+
+- 모듈의 책임, 주요 진입점, 데이터 흐름, 다른 모듈과의 관계
+- **아스키 다이어그램을 적극 사용한다** — 파이프라인 단계, 상태 전이, 계층 구조는 그림이 문장보다 빠르다
+- 설계 문서 § 번호를 출처로 남긴다
+- 비자명한 판단(왜 이 알고리즘인지, 무엇을 의도적으로 하지 않았는지)을 적는다
+
+```
+예) 배분 파이프라인
+    projection ──scale──▶ tier 절삭 ──place──▶ 세션 버킷 ──order──▶ WeekPlan
+                                          │
+                                          └─ 하드 제약 3종 검증 (48h · 25세트 · Tier1)
+```
+
+## 클래스·함수 docstring
+
+Google 스타일 + `Args`/`Returns`/`Raises`/`Side Effects`는 기본이고, 여기에 더한다.
+
+- 알고리즘이 비자명하면 **단계별 설명**을 넣는다
+- 경계 조건과 그 근거를 적는다
+- 왜 이렇게 했는지가 코드에서 안 보이면 반드시 쓴다
+
+## README
+
+- **폴더별 README**: `src/.../README.md` — 그 폴더의 책임, 모듈 지도, 진입점, 의존 방향
+- **루트 README**: 시스템 전체 관점. 문제 정의, 아키텍처, 핫·콜드 패스, 시작 방법
+- **사람이 읽는 문서다.** AI 문체(과장된 형용사, 불필요한 병렬 구조, "~을 통해" 남발)를 쓰지 않는다. `humanizer`·`writing-clearly-and-concisely` 스킬을 적용한다
+- **Mermaid·C4 다이어그램**을 적극 쓴다 — 시스템 컨텍스트·컨테이너·시퀀스·상태 전이가 후보
+- 루트 README는 전체 시스템을 아는 주체가 쓴다. 모듈 docstring은 해당 모듈만 주로 보면 되므로 분업 가능하다
 
 ---
 

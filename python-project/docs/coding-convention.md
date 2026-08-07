@@ -21,12 +21,11 @@ Use this guide for Python code style, documentation, typing, error handling, and
 
 - Add a module-level docstring at the top of each `.py` file.
 - The module docstring should explain the file's responsibility, main entry points, important dependencies, and any domain assumptions.
-- Write Google-style docstrings for public functions, public classes, and important internal interfaces.
-- Write docstrings for classes and functions that contain business logic, branching rules, I/O, model behavior, data transformation, or non-trivial side effects.
+- Write Google-style docstrings for all public and internal functions and classes.
+- Pay particular attention to classes and functions that contain business logic, branching rules, I/O, model behavior, data transformation, or non-trivial side effects.
 - Always document `__init__`, `forward`, loss calculation, preprocessing, sampling, training, and evaluation methods.
 - In docstrings, always include `Args`, `Returns`, `Raises`, and `Side Effects` sections. If a section has nothing to document, write "없음." explicitly.
 - In docstrings, include type information for `Args`, `Returns`, and `Attributes` even when the Python signature already has type hints.
-- For `__init__`, document `Args` and `Raises`. Do not add a `Returns` section unless the project explicitly requires it.
 - Include tensor shape, mask semantics, input range, unit, and side effects when they affect correctness.
 - Prefer concise Korean explanations for project-specific reasoning.
 - Keep commands, identifiers, tensor names, and API names in English.
@@ -61,8 +60,14 @@ class InteractionSampler:
             max_sequence_length (int): 모델에 입력할 최대 sequence 길이.
             negative_sample_count (int): positive item 하나당 생성할 negative item 수.
 
+        Returns:
+            없음.
+
         Raises:
             ValueError: `max_sequence_length`가 1보다 작거나, `negative_sample_count`가 음수인 경우.
+
+        Side Effects:
+            내부 random generator 상태를 초기화한다.
         """
 
     def sample(self, sequence: list[int]) -> list[int]:

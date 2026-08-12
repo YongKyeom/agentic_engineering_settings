@@ -27,7 +27,8 @@ Codex / Claude Code 개발환경을 다른 머신에서도 같은 방식으로 �
 ├── skills/
 │   ├── README.md
 │   └── <skill-name>/
-│       └── SKILL.md
+│       ├── SKILL.md
+│       └── [agents/, assets/, references/, scripts/]
 └── python-project/         # Python 프로젝트 템플릿
     ├── AGENTS.md
     ├── CLAUDE.md
@@ -110,8 +111,9 @@ cd agent_settings
 | `lesson-learned` | 반복 실수에서 규칙 추출 |
 | `writing-clearly-and-concisely` | 명확하고 간결한 글쓰기 |
 | `karpathy-guidelines` | Karpathy 코딩 원칙 (과잉 구현 방지, 외과적 수정) |
-| `packet-review` | 플랜 문서 대비 현재 구현 리뷰 (drift, 미흡, must-close 항목) |
+| `packet-review` | frozen packet의 계획 정합성·코드 품질 통합 리뷰 (대형 packet은 범위 분할 병렬 리뷰) |
 | `decision-record` | 장기 기술 결정을 ADR로 기록 (산출물은 각 프로젝트 `docs/decisions/`) |
+| `structured-prompt-template` | provider-neutral XML 스타일 Jinja2 system prompt 설계·검증 |
 | `presentation-slidev` | Slidev로 발표자료 작성 및 반복 수정 (학위논문/사이드 프로젝트) |
 | `dark-theme-pdf` | 다크+마젠타 하우스 테마 발표자료를 PDF로 생성 (presentation-slidev에 빌드 위임) |
 | `c4-architecture` | C4 아키텍처 다이어그램 |
@@ -128,7 +130,7 @@ cd agent_settings
 
 1. `~/.codex/skills/<skill-name>/` 또는 `~/.claude/skills/<skill-name>/`에 설치하거나 수정한다.
 2. 동작을 확인한다.
-3. 이 레포의 `skills/<skill-name>/SKILL.md`에 복사한다.
+3. 필요한 `agents/`, `assets/`, `references/`, `scripts/`를 포함해 이 레포의 `skills/<skill-name>/` 전체를 복사한다. `__pycache__/` 같은 생성물은 제외한다.
 4. `AGENTS.md`와 `CLAUDE.md`의 Related Skills 섹션에 항목을 추가한다.
 5. 변경사항을 Git으로 commit한다.
 

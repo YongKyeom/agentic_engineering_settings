@@ -1,0 +1,4 @@
+interface:
+  display_name: "Structured Prompt Template"
+  short_description: "Provider-neutral tagged Jinja2 prompt architecture"
+  default_prompt: "Use $structured-prompt-template to design or audit a provider-neutral tagged Jinja2 system prompt."

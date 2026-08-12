@@ -9,26 +9,31 @@ Use this guide when changing module boundaries, dependencies, data flow, or proj
 - Define boundaries by input, output, and ownership.
 - If SRP increases complexity, pause and ask the user before over-splitting.
 
-## Suggested Python Layout
+## Suggested Backend Agent Layout
 
-Adapt this layout to the project instead of forcing it.
+For an agent-enabled backend, use the `Project Map` in the root `AGENTS.md` as the starting point. Adapt the layout to the project instead of forcing it, and replace it for non-agent backends.
 
 ```text
-src/
-├── data/        # Loading, preprocessing, datasets, samplers
-├── models/      # Model definitions and model utilities
-├── training/    # Training loops, losses, optimizers, schedulers
-├── evaluation/  # Metrics, validation, reports
-├── services/    # Application services or orchestration
-└── utils/       # Small shared helpers with low coupling
+src/<package>/
+├── core/        # Pure domain rules, models, and contracts
+├── app/         # Application use cases and composition root
+│   ├── http/    # HTTP/SSE API, authentication boundary, and response mapping
+│   └── storage/ # Repository, transaction, database, and external-service adapters
+├── agents/      # LLM-facing layer: roles, Tools, policies, providers, and evaluation
+├── cli/         # Development and operations command entry points
+└── main.py      # Application startup entry point
+tests/           # Tests organized to mirror the relevant source area
 ```
+
+Keep the detailed `agents/` subpackage map in the root `AGENTS.md` rather than duplicating it here.
 
 ## Dependency Direction
 
-- Keep lower-level modules independent from orchestration code.
+- Keep `core/` independent from `app/`, `agents/`, HTTP, ORM, and provider SDKs.
+- Let `app/` own application composition and inject approved ports into `agents/`.
+- Keep `agents/` independent from HTTP routes and ORM implementations; it may depend on `core/` contracts.
 - Avoid circular imports.
-- Keep data preprocessing separate from model definition when possible.
-- Keep training and evaluation logic testable without a full CLI run.
+- Keep the agent runtime and Tool contracts testable without a full HTTP or CLI run.
 
 ## Configuration
 

@@ -5,7 +5,7 @@ Use this guide for Python code style, documentation, typing, error handling, and
 ## Formatting And Style
 
 - Follow the formatter and linter settings defined by the project.
-- Use `ruff` as the primary linter and formatter. Use `black` and `isort` actively alongside `ruff` when the project includes them.
+- Use the project's configured formatting and linting tools actively. Prefer `ruff` as the primary linter and formatter; use `black` and `isort` alongside it when they are configured.
 - Keep line length at the project default. If no default exists, use 140 characters.
 - Use clear names: constants in `UPPER_SNAKE_CASE`, classes in `PascalCase`, functions and methods in `snake_case`.
 - Keep logical blocks separated with blank lines when it improves readability.
@@ -110,8 +110,8 @@ class InteractionSampler:
 
 - Use the narrowest useful validation first.
 - Prefer targeted tests for touched behavior.
-- Common validation commands: `uv run ruff check --fix .` for lint, `uv run pytest tests/test_target.py` for tests.
-- For targeted lint during iteration, use `uv run ruff check --fix path/to/python_file.py`.
+- For lint validation, use `uv run ruff check path/to/touched_python_file.py`; for tests, use `uv run pytest tests/test_target.py`.
+- Use `uv run ruff check --fix path/to/touched_python_file.py` only when intentionally applying automatic fixes, then inspect the diff.
 - Avoid running `ruff` for documentation-only or configuration-only changes.
 
 ## Development Philosophy

@@ -70,5 +70,5 @@ YYYYMMDD_refactor-target-plan.md
 
 ## Agent 사용 기준
 
-Codex나 Claude는 이 폴더의 plan을 참고할 수 있지만, 오래된 plan을 최신 source of truth로 취급하면 안 됩니다.
-사용자 지시, 현재 코드, 최신 decision 문서와 충돌하면 최신 source of truth를 우선합니다.
+Codex나 Claude는 이 폴더의 plan을 활성 실행 기록으로 사용합니다.
+사용자 지시, 현재 코드, 최신 decision 문서에 변경이 생기면 plan의 범위, task, 진행 상태를 먼저 조정하고 작업을 이어갑니다.

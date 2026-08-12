@@ -59,7 +59,10 @@ result = main_function(...)
 
 ```sh
 # lint
-uv run ruff check --fix .
+uv run ruff check .
+
+# apply automatic fixes to a target only when intended
+uv run ruff check --fix path/to/python_file.py
 
 # test
 uv run pytest

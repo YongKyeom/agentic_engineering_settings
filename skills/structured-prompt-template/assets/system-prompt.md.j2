@@ -1,0 +1,60 @@
+<ROLE>
+{{ role|e }}
+</ROLE>
+
+<PRIORITIES>
+{% for priority in priorities %}
+<{{ priority.level }}>
+{{ priority.instruction|e }}
+</{{ priority.level }}>
+{% endfor %}
+</PRIORITIES>
+
+<BOUNDARIES>
+{% for boundary in boundaries %}
+<BOUNDARY>
+{{ boundary|e }}
+</BOUNDARY>
+{% endfor %}
+</BOUNDARIES>
+
+<SKILLS>
+{% for skill in skills %}
+<SKILL name="{{ skill.name|e }}">
+<DESCRIPTION>{{ skill.description|e }}</DESCRIPTION>
+<USE_WHEN>{{ skill.use_when|e }}</USE_WHEN>
+<RECOMMENDED_TOOLS>
+{% for tool_name in skill.recommended_tools %}
+<TOOL_REF>{{ tool_name|e }}</TOOL_REF>
+{% endfor %}
+</RECOMMENDED_TOOLS>
+</SKILL>
+{% endfor %}
+</SKILLS>
+
+<TOOLS>
+<TOOL_SCHEMA_AUTHORITY>
+Native Tool schemas are supplied by the runtime. This section does not duplicate argument schemas.
+</TOOL_SCHEMA_AUTHORITY>
+<TOOL_AUTHORIZATION>
+Skill Tool references are advisory. The role manifest and runtime broker own availability and authorization.
+</TOOL_AUTHORIZATION>
+{% for tool in tools %}
+<TOOL name="{{ tool.name|e }}">
+<PURPOSE>{{ tool.description|e }}</PURPOSE>
+<USAGE>{{ tool.usage_guidance|e }}</USAGE>
+</TOOL>
+{% endfor %}
+</TOOLS>
+
+<WORKFLOW>
+{% for step in workflow_steps %}
+<STEP_{{ loop.index }}>
+{{ step|e }}
+</STEP_{{ loop.index }}>
+{% endfor %}
+</WORKFLOW>
+
+<OUTPUT_CONTRACT>
+{{ output_contract|e }}
+</OUTPUT_CONTRACT>

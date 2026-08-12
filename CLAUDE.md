@@ -95,8 +95,9 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 - `writing-clearly-and-concisely`: Use when producing or editing prose that humans will read.
 - `lesson-learned`: Use after repeated mistakes or significant debugging to extract reusable engineering rules.
 - `karpathy-guidelines`: Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
-- `packet-review`: Use when verifying that current implementation aligns with the active plan document. Detects direction drift, gaps, and must-close items before moving to the next packet.
+- `packet-review`: Use for an integrated read-only review of a frozen implementation packet against its active plan and code-quality contracts. For large packets, partition reviewers by bounded scope and consolidate one verdict; do not add a duplicate broad code review.
 - `decision-record`: Use when a durable technical decision (architecture, module boundary, dependency, storage, API contract, hard-to-reverse direction) has just been made and should be recorded as an ADR in docs/decisions/.
+- `structured-prompt-template`: Use when designing, generating, refactoring, or auditing provider-neutral tagged Jinja2 system prompts, Skill and Tool catalogs, priority rules, or output contracts.
 - `presentation-slidev`: Use when authoring or iteratively refining presentations (thesis defense, side project decks, technical talks) delivered as PDF via Slidev.
 - `code-review`: Use after making changes to review the diff for bugs, type safety, style, security, and maintainability. Built-in as `/code-review` (use `/code-review ultra` for multi-agent deep review).
 - `deep-research`: Use when researching a topic that requires multiple sources, fact verification, and a structured report with citations. Built-in as `/deep-research`.

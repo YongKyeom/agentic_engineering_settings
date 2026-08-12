@@ -40,6 +40,13 @@ Every delegated task should include:
 
 ## Review Discipline
 
+- For one frozen implementation packet, use integrated `packet-review`.
+- It checks plan and ADR alignment, packet completeness, correctness, type safety, security and privacy, performance, and maintainability.
+- A small packet can use one reviewer.
+- A large packet can use several packet reviewers split by module, contract boundary, or risk area; give them bounded primary scopes and consolidate their findings into one verdict.
+- Do not assign a separate broad `code-review` over the same packet. That repeats source loading without adding a distinct acceptance gate.
+- Use `code-review` separately only for a small hotfix without an active plan packet, or when the user explicitly requests it.
+
 Classify review feedback before acting on it:
 
 - `accepted`: Apply or address now.

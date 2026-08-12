@@ -20,10 +20,11 @@
 | `karpathy-guidelines` | 과잉 구현 방지, 외과적 수정, 검증 기준 명확화 | 코드 작성/수정 전반 |
 | `lesson-learned` | 실제 코드 변경에서 재사용 가능한 엔지니어링 교훈 추출 | 회고, 반복 실수 정리 |
 | `mermaid-diagrams` | Mermaid 기반 다이어그램 작성 | flowchart, sequence, ERD, state 등 |
-| `packet-review` | 현재 작업 packet이 active plan과 어긋나지 않는지 검토 | plan 기반 장기 작업 |
+| `packet-review` | frozen packet의 계획 정합성·코드 품질 통합 리뷰 | 대형 packet은 module/contract/risk 기준으로 범위 분할 병렬 리뷰 |
 | `presentation-slidev` | Slidev 발표자료 작성과 PDF 렌더링 워크플로우 | 학위논문/기술 발표 |
 | `requirements-clarity` | 모호한 요구사항을 구현 가능한 범위로 좁힘 | 구현 전 요구사항 정리 |
 | `skill-judge` | skill 품질 평가와 개선점 도출 | `SKILL.md` 리뷰/개선 |
+| `structured-prompt-template` | provider-neutral tagged Jinja2 system prompt 설계·검증 | native Tool calling, OpenAI-compatible API, vLLM, text-only Tool protocol |
 | `writing-clearly-and-concisely` | 명확하고 간결한 글쓰기 | 문서, 커밋 메시지, 설명문 |
 
 ## 세부 설명
@@ -36,6 +37,11 @@
 `skill-judge`는 skill 자체를 평가할 때 사용한다.
 frontmatter description, trigger clarity, progressive disclosure, anti-pattern, token waste를 기준으로 본다.
 
+### Prompt Engineering
+
+`structured-prompt-template`는 XML 스타일 section tag와 Jinja2로 system prompt를 설계하거나 검토할 때 사용한다.
+Skill·Tool manifest의 authority를 분리하고, native schema 중복 없이 닫힌 context, escaping, byte budget을 검증한다.
+
 ### Coding Workflow
 
 `karpathy-guidelines`는 코드 작업의 기본 안전장치다.
@@ -44,8 +50,9 @@ frontmatter description, trigger clarity, progressive disclosure, anti-pattern, 
 `code-review`는 Codex에서 custom skill로 사용한다.
 Claude Code에서는 built-in `/code-review`가 있으므로 `setup/claude-code.sh`가 command로 복사하지 않는다.
 
-`packet-review`는 active plan 문서가 있는 장기 작업에서 방향 이탈을 확인한다.
-코드 리뷰와 달리 구현 품질보다 계획 대비 누락, drift, must-close 항목을 본다.
+`packet-review`는 frozen packet을 active plan·ADR과 대조하면서 구현 품질까지 함께 검토한다.
+작은 packet은 한 reviewer가 보고, 큰 packet은 module·contract·risk 영역을 겹치지 않게 나눈 뒤 하나의 verdict로 통합한다.
+같은 범위에 broad `code-review`를 추가로 돌리지는 않는다.
 
 ### Research And Retrospective
 

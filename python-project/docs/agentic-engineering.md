@@ -40,10 +40,12 @@ Every delegated task should include:
 
 ## Review Discipline
 
-- For one frozen implementation packet, use integrated `packet-review`.
-- It checks plan and ADR alignment, packet completeness, correctness, type safety, security and privacy, performance, and maintainability.
-- A small packet can use one reviewer.
-- A large packet can use several packet reviewers split by module, contract boundary, or risk area; give them bounded primary scopes and consolidate their findings into one verdict.
+- Separate implementation packets from review bundles. Define both scopes and dependencies in the Plan.
+- For each implementation packet, run targeted tests and a narrow lead diff check, then allow intermediate commits and integration into the development branch. Clean up worker worktrees immediately after integration.
+- Freeze a coherent bundle of related packets for one full gate and one integrated `packet-review`. These checks may run independently in parallel on the same candidate; adjudicate their combined results.
+- Review at a completed feature boundary, a material shared-contract/state/transaction boundary, or before PR delivery. A high-risk small packet may justify its own review; small size alone does not require one.
+- The review checks plan and ADR alignment, completeness, correctness, type safety, security and privacy, performance, and maintainability.
+- Use one reviewer when sufficient. Split a large bundle by bounded module or risk ownership and consolidate one verdict.
 - Do not assign a separate broad `code-review` over the same packet. That repeats source loading without adding a distinct acceptance gate.
 - Use `code-review` separately only for a small hotfix without an active plan packet, or when the user explicitly requests it.
 
@@ -55,11 +57,16 @@ Classify review feedback before acting on it:
 
 Keep rejected feedback when the reason affects future work.
 
-## Handoff
+- Give each must-close item a deadline and impact-based reason. Fix or isolate unsafe writes, approval bypasses, and state corruption immediately. Close other blocking defects at the bundle boundary; defer non-blocking improvements with an owner and revisit condition.
+- Do not interpret "before the next packet" as a mandatory stop after every small implementation unit.
+- Recheck only the affected regression and fix diff. Repeat the full gate only when later changes invalidate its coverage; record why. Validate documentation-only changes with rendering, links, and content checks.
+- Finish implementation and required fixes, finalize documentation, then perform lead final verification. Intermediate commits are allowed; they are not final bundle approval or permission to bypass the PR boundary.
 
-Use `docs/handoff/` when:
+## Work Records and Handoff
 
-- Context is long.
-- Work must continue in another session.
-- Another agent or human needs current state.
-- Important commands, decisions, or risks should not be lost.
+Follow [docs writing guidance](AGENTS.md) for record ownership and status format.
+
+- Update the existing Handoff for short tasks: status, result, and next action.
+- Keep detailed specifications, ownership, verification, and lessons for long-running or multi-agent work in the Plan. Handoff holds only the summary and link.
+- The lead updates the same Plan after delegation and adjudication so agents share one objective and current status.
+- Create a separate Handoff or perform an explicit transfer only at the user's request, not merely because context is long.

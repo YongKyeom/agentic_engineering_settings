@@ -91,6 +91,12 @@ class InteractionSampler:
 - For complex algorithms, split the implementation into blocks and explain the reason for each block.
 - Do not add comments that merely repeat the code.
 
+## Imports
+
+- **Import는 모듈 최상단에만 둔다. 함수·클래스·메서드 내부 import를 금지한다** — 설치되지 않은 의존성과 꼬인 import 경로는 호출 시점이 아니라 import(기동) 시점에 드러나야 한다.
+- `if TYPE_CHECKING:` 블록(타입 전용 참조)은 모듈 최상단에 있으므로 허용한다.
+- 순환 import가 생기면 내부 import로 감추지 말고 모듈 경계를 고친다.
+
 ## Typing
 
 - Add precise type hints to function signatures.
@@ -105,6 +111,12 @@ class InteractionSampler:
 - Separate user-facing error messages from developer-facing log messages.
 - Use `logger.exception(...)` inside exception handlers when stack traces are useful.
 - Do not use `logger.exception(..., exp_info=True)`. The correct keyword is `exc_info=True`, and `logger.exception` already includes exception info.
+- **No silent fallback.** Missing configuration or an unavailable dependency fails fast at startup with an explicit error; it never silently degrades to an alternative behavior (e.g., never infer mock mode from an unset URL).
+  A wrong-but-loud failure beats a plausible-but-fake success.
+- **Error codes live in one dedicated module.** Expected failures are enumerated as typed errors with their defined action and log message.
+  Handlers catch these types and apply the defined action, so a log line alone tells "this known problem occurred and was handled this way."
+- **Unexpected exceptions must always be identified.** Log with `logger.exception` and re-raise(or surface as an error event).
+  Never swallow them in a broad `except` — an unidentified error running in production is worse than a visible failure.
 
 ## Validation
 
@@ -117,3 +129,5 @@ class InteractionSampler:
 ## Development Philosophy
 
 - Follow `karpathy-guidelines` at all times: avoid overengineering, make surgical changes, surface assumptions, and define verifiable success criteria before starting.
+- Keep code hand-editable under pressure: no excessive abstraction layers, no helper-function proliferation, minimal exception hierarchies.
+  A developer must be able to read a module top-to-bottom and patch it by hand in an emergency.

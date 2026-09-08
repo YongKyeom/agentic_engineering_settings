@@ -1,0 +1,13 @@
+# handoff/·plan/은 로컬 세션 산출물 — git으로 관리하지 않는다 (docs/README.md 참조)
+handoff/*
+plan/*
+
+# 폴더 규칙 문서는 항상 추적한다
+!handoff/AGENTS.md
+!handoff/CLAUDE.md
+!handoff/README.md
+!plan/AGENTS.md
+!plan/CLAUDE.md
+!plan/README.md
+
+# 공유하고자는 handoff, plan문서 수기로 추가

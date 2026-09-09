@@ -84,12 +84,12 @@ The rules below are sufficient for everyday work. [Agentic Engineering](docs/age
 
 | 작업 | 기본 배정 | 상향 기준 |
 |---|---|---|
-| 작은 문서 정리, docstring, 링크·표기 확인 | 5.4 mini `high` | 문서 간 계약 판단이 필요하면 Terra `high` |
+| 작은 문서 정리, docstring, 링크·표기 확인 | Luna `high` | 문서 간 계약 판단이 필요하면 Terra `high` |
 | 범위가 분명한 구현·테스트 | Luna `xhigh` 또는 Terra `high` | State·graph·transaction 경계를 함께 바꾸면 Sol `high` |
 | 다중 모듈 설계, 원자성, 복잡한 상태 전이 | Sol `high` | 반례가 반복되거나 안전 경계를 재설계하면 Sol `xhigh` |
-| 읽기 전용 탐색과 기계적 검증 | Luna 또는 5.4 mini `high` | 원인 추론이 필요하면 Terra `high` |
-| 반복 테스트, 대용량 로그·artifact 분석 | Luna `high` | 아키텍처 결함이 의심되면 Sol `high` |
-| 독립 Packet Review | Terra `high` | write·보안·상태 정합성 위험이 높으면 Sol `xhigh` |
+| 읽기 전용 탐색과 기계적 검증 | Luna `high` | 원인 추론이 필요하면 Terra `high` |
+| 반복 테스트, 대용량 로그·artifact 분석 | Luna `high` | 아키텍처 결함이 의심되면 Sol `mid` or Sol `high` |
+| 독립 Packet Review | Terra `high` | write·보안·상태 정합성 위험이 높으면 Sol `high` or Sol `xhigh` |
 
 - 모델·추론 강도는 위 표를 따르고, 추가 상향은 어려운 경계에만 적용한다. 단순 실행·문서화에 고성능 모델을 쓰지 않는다.
 - 문서 워커도 병렬 운용할 수 있지만 상위 문서·ADR·Plan·Handoff의 판정과 통합은 메인이 맡는다.

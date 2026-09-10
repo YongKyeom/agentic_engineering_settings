@@ -85,15 +85,19 @@ The rules below are sufficient for everyday work. [Agentic Engineering](docs/age
 | 작업 | 기본 배정 | 상향 기준 |
 |---|---|---|
 | 작은 문서 정리, docstring, 링크·표기 확인 | Luna `high` | 문서 간 계약 판단이 필요하면 Terra `high` |
-| 범위가 분명한 구현·테스트 | Luna `xhigh` 또는 Terra `high` | State·graph·transaction 경계를 함께 바꾸면 Sol `high` |
-| 다중 모듈 설계, 원자성, 복잡한 상태 전이 | Sol `high` | 반례가 반복되거나 안전 경계를 재설계하면 Sol `xhigh` |
+| 계약·수정 위치가 고정된 작은 구현·회귀 테스트 | Luna `xhigh` | 요구 해석·기존 구조와의 조율이 필요하면 Terra `high` |
+| 일반 기능 구현·다중 문서 계약 반영 | Terra `high` | 반례가 반복되거나 state·graph·transaction 경계를 함께 바꾸면 sol `high` |
+| 다중 모듈 설계, 원자성, 복잡한 상태 전이 | sol `high` | 반례가 반복되거나 안전 경계를 재설계하면 sol `xhigh` |
 | 읽기 전용 탐색과 기계적 검증 | Luna `high` | 원인 추론이 필요하면 Terra `high` |
-| 반복 테스트, 대용량 로그·artifact 분석 | Luna `high` | 아키텍처 결함이 의심되면 Sol `mid` or Sol `high` |
-| 독립 Packet Review | Terra `high` | write·보안·상태 정합성 위험이 높으면 Sol `high` or Sol `xhigh` |
+| 반복 테스트, 대용량 로그·artifact 분류 | Luna `high` | 원인 분석은 Terra `high`, 아키텍처 결함은 sol `high` |
+| 독립 Packet Review | Terra `high` | write·보안·상태 정합성 위험이 높으면 sol `xhigh` |
 
 - 모델·추론 강도는 위 표를 따르고, 추가 상향은 어려운 경계에만 적용한다. 단순 실행·문서화에 고성능 모델을 쓰지 않는다.
+- 배정은 호출 단가뿐 아니라 총괄 검수·재설명·수정까지 포함한 토큰 비용으로 판단한다. 같은 유형의 실수가 반복되면 범위를 줄이거나 상향하며, 정상 진행 중인 워커를 비용 추정만으로 재시작하지 않는다.
 - 문서 워커도 병렬 운용할 수 있지만 상위 문서·ADR·Plan·Handoff의 판정과 통합은 메인이 맡는다.
-- 워커는 명령·exit code·실제 수치·첫 실패 원인·artifact 경로/hash를 간결히 보고한다. 메인은 요약을 원본 근거와 대조한다.
+- 워커 보고는 기본 10줄 이내로 결론·변경 경로·검증 명령/exit code/수치·첫 실패·잔여 위험만 쓴다. 원문·전체 diff·로그 덩어리는 붙이지 않고 파일:줄 또는 artifact 경로/hash로 참조한다. 중요한 결함은 줄 때문에 생략하지 않는다.
+- 총괄은 완료·차단 알림을 기준으로 움직인다. 완료 여부만 묻는 반복 polling이나 작업 중 diff 재열람을 피하고, 독립 작업 또는 대기 도구를 사용한다. 중간 확인은 충돌·안전 위험·실행 이상 등 개입할 이유가 있을 때만 한다.
+- 통합 시에는 요약의 핵심 주장과 영향 경계를 원본·타깃 검증으로 확인한다. 워커가 읽은 자료 전체를 다시 읽거나 유효한 검증을 기계적으로 반복하지 않는다.
 
 ### 구현·검수·마감
 

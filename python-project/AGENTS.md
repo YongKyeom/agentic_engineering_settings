@@ -86,7 +86,7 @@ The rules below are sufficient for everyday work. [Agentic Engineering](docs/age
 |---|---|---|
 | 작은 문서 정리, docstring, 링크·표기 확인 | Luna `high` | 문서 간 계약 판단이 필요하면 Terra `high` |
 | 계약·수정 위치가 고정된 작은 구현·회귀 테스트 | Luna `xhigh` | 요구 해석·기존 구조와의 조율이 필요하면 Terra `high` |
-| 일반 기능 구현·다중 문서 계약 반영 | Terra `high` | 반례가 반복되거나 state·graph·transaction 경계를 함께 바꾸면 sol `high` |
+| 일반 기능 구현 | Luna `xhigh` | 다중 문서 계약 반영 Terra `high`, 반례가 반복되거나 state·graph·transaction 경계를 함께 바꾸면 sol `high` |
 | 다중 모듈 설계, 원자성, 복잡한 상태 전이 | sol `high` | 반례가 반복되거나 안전 경계를 재설계하면 sol `xhigh` |
 | 읽기 전용 탐색과 기계적 검증 | Luna `high` | 원인 추론이 필요하면 Terra `high` |
 | 반복 테스트, 대용량 로그·artifact 분류 | Luna `high` | 원인 분석은 Terra `high`, 아키텍처 결함은 sol `high` |

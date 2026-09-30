@@ -168,7 +168,7 @@ set -g @dracula-cwd-max-dirs 3
 set -g @dracula-colors "dark_gray='#1e1e2e' gray='#313244' white='#cdd6f4' cyan='#89dceb' green='#a6e3a1' orange='#fab387' pink='#f38ba8' yellow='#f9e2af' red='#f38ba8'"
 
 # ── 세션 자동 저장/복원 ────────────────────────────────────────────────────────
-set -g @continuum-restore 'on'
+set -g @continuum-restore 'off'
 
 # ── TPM 초기화 (파일 맨 아래 유지) ────────────────────────────────────────────
 run '~/.tmux/plugins/tpm/tpm'

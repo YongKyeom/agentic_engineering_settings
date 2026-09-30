@@ -84,13 +84,13 @@ The rules below are sufficient for everyday work. [Agentic Engineering](docs/age
 
 | 작업 | 기본 배정 | 상향 기준 |
 |---|---|---|
-| 작은 문서 정리, docstring, 링크·표기 확인 | GPT-6 Luna `high` | 문서 간 계약 판단이 필요하면 GPT-6 Sol `medium` |
-| 계약·수정 위치가 고정된 작은 구현·회귀 테스트 | GPT-6 Luna `high` | 요구 해석·기존 구조와의 조율이 필요하면 GPT-6 Sol `medium` |
-| 일반 기능 구현 | GPT-6 Luna `xhigh` | 다중 문서 계약 반영은 Sol `high`; 복잡한 상태·트랜잭션 경계에서 범위가 명확하고 깊은 검증이 필요하면 Sol `xhigh`, 요구가 모호하거나 여러 영역을 함께 조율해야 하면 Astra `medium` |
-| 다중 모듈 설계, 원자성, 복잡한 상태 전이 | GPT-6 Luna `xhigh` or GPT-6 Sol `high` | 반례가 반복되거나 안전 경계를 재설계하면 GPT-6 Sol `xhigh` or GPT-6 Astra `high` |
-| 읽기 전용 탐색과 기계적 검증 | GPT-6 Luna `high` | 원인 추론이 필요하면 GPT-6 Sol `medium` |
-| 반복 테스트, 대용량 로그·artifact 분류 | GPT-6 Luna `high` | 원인 분석은 Sol `medium`, 아키텍처 결함은 Astra `high` |
-| 독립 Packet Review | GPT-6 Sol `high` | write·보안·상태 정합성 위험이 높으면 GPT-6 Astra `high` |
+| 작은 문서 정리, docstring, 링크·표기 확인 | Luna `high` | 문서 간 계약 판단이 필요하면 Sol `medium` |
+| 계약·수정 위치가 고정된 작은 구현·회귀 테스트 | Luna `high` | 요구 해석·기존 구조와의 조율이 필요하면 Sol `medium` |
+| 일반 기능 구현 | Luna `xhigh` | 다중 문서 계약 반영은 Sol `high`; 복잡한 상태·트랜잭션 경계에서 범위가 명확하고 깊은 검증이 필요하면 Sol `xhigh`; 요구가 모호하거나 여러 영역을 함께 조율해야 하면 Astra `medium` |
+| 다중 모듈 설계, 원자성 | Luna `xhigh`; 복잡한 상태 전이 Sol `high` | 반례가 반복되거나 안전 경계를 재설계하면 Sol `xhigh` or Astra `high` |
+| 읽기 전용 탐색과 기계적 검증 | Luna `high` | 원인 추론이 필요하면 Sol `medium` |
+| 반복 테스트, 대용량 로그·artifact 분류 | Luna `high` | 원인 분석은 Sol `medium`, 아키텍처 결함은 Astra `high` |
+| 독립 Packet Review | Sol `high` | write·보안·상태 정합성 위험이 높으면 Astra `high` |
 
 - 모델·추론 강도는 위 표를 따르고, 추가 상향은 어려운 경계에만 적용한다. 단순 실행·문서화에 고성능 모델을 쓰지 않는다.
 - 배정은 호출 단가뿐 아니라 총괄 검수·재설명·수정까지 포함한 토큰 비용으로 판단한다. 같은 유형의 실수가 반복되면 범위를 줄이거나 상향하며, 정상 진행 중인 워커를 비용 추정만으로 재시작하지 않는다.

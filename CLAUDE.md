@@ -23,7 +23,7 @@
 ## Agentic Engineering
 
 - Prefer the simplest workflow that can solve the task. Add agentic complexity only when it improves quality, speed, or context control.
-- The main agent owns task framing, source-of-truth selection, integration, final decisions, and final verification.
+- The main agent owns task framing, source-of-truth selection, delegation, integration, final decisions, and final verification. Only the main agent may spawn or assign sub-agents; workers must not delegate further.
 - Treat sub-agent output as evidence, not authority. Do not blindly accept sub-agent findings or patches.
 - Use sub-agents when independent research, codebase exploration, verification, or review can run in parallel and materially improve the result.
 - Do not use sub-agents for small tasks, tightly coupled edits, sequential blockers, or work that would create duplicate effort or merge conflicts.

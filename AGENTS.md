@@ -86,7 +86,7 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 
 ## Related Skills
 
-- `handoff`: Use when context is long, work must continue in a new thread, or current state must be preserved.
+- `handoff`: Use for session context transfer and coordination documents with fellow developers or related departments. Put the overview, item summary, priorities, decisions needed, and related documents before item-level details; include diagrams for collaboration. Default file location: `docs/handoff/`. Prefer managed `handoff`; choose `source-command-handoff` only when that legacy skill is explicitly requested.
 - `requirements-clarity`: Use before implementation when scope, constraints, or completion criteria are unclear.
 - `skill-judge`: Use when reviewing or modifying installed skills.
 - `agent-md-refactor`: Use when agent instruction files need progressive disclosure.

@@ -102,7 +102,7 @@ cd agent_settings
 
 | Skill | 설명 |
 |-------|------|
-| `handoff` | 컨텍스트 전달 및 세션 이어받기 |
+| `handoff` | 세션 인계·개발자/유관부서 협의 문서. 상단 요약 → 항목별 상세, 도식 포함, `docs/handoff/` 저장 |
 | `humanizer` | AI 문체 제거, 자연스러운 산문 |
 | `git-commit-helper` | 커밋 메시지 작성 |
 | `requirements-clarity` | 요구사항 명확화 |

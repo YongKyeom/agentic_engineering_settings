@@ -1,5 +1,7 @@
 ## III. Elementary Principles Of Composition
 
+> Editorial note: Historical English reference adapted from Strunk (1918). Examples below illustrate that source's style preferences, not permission to strengthen a claim, infer an author's intention, or remove necessary detail. Follow the current language, genre, and meaning-preservation requirements in [SKILL.md](../SKILL.md).
+
 ### Rule 8. Make the paragraph the unit of composition: one paragraph to each topic.
 
 If the subject on which you are writing is of slight extent, or if you intend to treat it very briefly, there may be no need of subdividing it into topics. Thus a brief description, a brief summary of a literary work, a brief account of a single incident, a narrative merely outlining an action, the setting forth of a single idea, any one of these is best written in a single paragraph. After the paragraph has been written, examine it to see whether subdivision will not improve it.
@@ -138,6 +140,8 @@ The habitual use of the active voice makes for forcible writing. This is true no
 
 ### Rule 11. Put statements in positive form.
 
+> Editorial note: Prefer direct phrasing only when the proposition stays the same. Preserve logical negation, absence of evidence, exceptions, uncertainty, and deliberate contrast. The historical examples below can change nuance; the Shakespeare example even acknowledges guessing the author's intention. Such guessing is not an acceptable copyediting method.
+
 Make definite assertions. Avoid tame, colorless, hesitating, non-committal language. Use the word *not* as a means of denial or in antithesis, never as a means of evasion.
 
 | Original | Revision |
@@ -169,6 +173,8 @@ Negative words other than *not* are usually strong:
 The sun never sets upon the British flag.
 
 ### Rule 12. Use definite, specific, concrete language.
+
+> Editorial note: Use specific details already supplied or established. The illustrative substitutions below are not grounds to invent weather, motives, actions, or other facts missing from the input.
 
 Prefer the specific to the general, the definite to the vague, the concrete to the abstract.
 

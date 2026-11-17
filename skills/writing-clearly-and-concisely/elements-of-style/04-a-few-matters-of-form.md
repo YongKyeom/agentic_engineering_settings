@@ -1,5 +1,7 @@
 ## IV. A Few Matters of Form
 
+> Editorial note: Historical English manuscript conventions adapted from Strunk (1918). Use the destination's current typography, citation, quotation, and line-breaking rules instead of treating this source as a universal format standard. Preserve quoted text and exact references under [SKILL.md](../SKILL.md).
+
 **Headings.** Leave a blank line, or its equivalent in space, after the title or heading of a manuscript. On succeeding pages, if using ruled paper, begin on the first line.
 
 **Numerals.** Do not spell out dates or other serial numbers. Write them in figures or in Roman notation, as may be appropriate.

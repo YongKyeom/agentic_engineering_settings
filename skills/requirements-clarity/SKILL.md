@@ -1,324 +1,61 @@
 ---
 name: requirements-clarity
-description: Clarify ambiguous requirements through focused dialogue before implementation. Use when requirements are unclear, features are complex, or involve cross-team coordination. Ask two core questions - Why? (YAGNI check) and Simpler? (KISS check) - to ensure clarity before coding.
+description: Resolve requirements whose missing scope, behavior, or acceptance decisions would materially change implementation. Use for ambiguous feature requests or unresolved product contracts; handle clear fixes directly without a clarification ceremony.
 ---
 
-# Requirements Clarity Skill
-
-## Description
+# Requirements Clarity
 
-Automatically transforms vague requirements into actionable PRDs through systematic clarification with a 100-point scoring system.
+Turn uncertainty into enough shared understanding to perform the user's task. Preserve the requested product, constraints, and authorized scope.
 
+## Establish what is already known
 
-## Instructions
+Read the current request and relevant existing context before asking questions: project instructions, active Plan or Handoff, requirements, related code, tests, and integration contracts. Use the project's source-of-truth order to resolve differences. Inspect only the context needed for this request.
 
-When invoked, detect vague requirements:
+Separate:
 
-1. **Vague Feature Requests**
-   - User says: "add login feature", "implement payment", "create dashboard"
-   - Missing: How, with what technology, what constraints?
+- Confirmed requirements and constraints, with their source.
+- Reversible implementation choices that can follow existing conventions.
+- Missing user or external-owner decisions that would change behavior, scope, authority, or acceptance.
 
-2. **Missing Technical Context**
-   - No technology stack mentioned
-   - No integration points identified
-   - No performance/security constraints
+A file path, code snippet, or named function does not prove the requirements are clear. Complexity alone does not justify more questions. If the task is already actionable, proceed with the requested work.
 
-3. **Incomplete Specifications**
-   - No acceptance criteria
-   - No success metrics
-   - No edge cases considered
-   - No error handling mentioned
+## Clarify decisions that affect the work
 
-4. **Ambiguous Scope**
-   - Unclear boundaries ("user management" - what exactly?)
-   - No distinction between MVP and future enhancements
-   - Missing "what's NOT included"
+Use these as reasoning lenses, rather than questions the user must always answer:
 
-**Do NOT activate when**:
-- Specific file paths mentioned (e.g., "auth.go:45")
-- Code snippets included
-- Existing functions/classes referenced
-- Bug fixes with clear reproduction steps
+- **Why?** Identify the problem and intended outcome; do not invent business metrics or challenge an already settled need.
+- **Simpler?** Check whether existing behavior or a smaller change satisfies the request. Preserve explicit user choices when considering alternatives.
 
-## Core Principles
+Ask only when a missing answer would materially change the work and cannot reasonably be inferred or found in available sources. Explain the decision and its consequence briefly. Offer concrete options when useful; ask the smallest useful set of questions instead of working through a fixed questionnaire.
 
-1. **Systematic Questioning**
-   - Ask focused, specific questions
-   - One category at a time (2-3 questions per round)
-   - Build on previous answers
-   - Avoid overwhelming users
-
-2. **Quality-Driven Iteration**
-   - Continuously assess clarity score (0-100)
-   - Identify gaps systematically
-   - Iterate until ≥ 90 points
-   - Document all clarification rounds
-
-3. **Actionable Output**
-   - Generate concrete specifications
-   - Include measurable acceptance criteria
-   - Provide executable phases
-   - Enable direct implementation
+For example, before adding an approval action, determine who may approve and what state changes. Styling details can usually follow the existing interface. A request to fix a clear validation error can proceed using the reproduction and existing contract.
 
-## Clarification Process
+Keep dependent work pending when an essential decision is unanswered. Continue independent inspection or implementation within the authorized scope. For reversible choices, state the assumption and proceed; do not treat silence as approval or invent external business rules.
 
-### Step 1: Initial Requirement Analysis
+## Record enough to implement and verify
 
-**Input**: User's requirement description
+Scale the result to the task:
 
-**Tasks**:
-1. Parse and understand core requirement
-2. Generate feature name (kebab-case format)
-3. Determine document version (default `1.0` unless user specifies otherwise)
-4. Ensure `./docs/prds/` exists for PRD output
-5. Perform initial clarity assessment (0-100)
-
-**Assessment Rubric**:
-```
-Functional Clarity: /30 points
-- Clear inputs/outputs: 10 pts
-- User interaction defined: 10 pts
-- Success criteria stated: 10 pts
+| Task | Useful result |
+|---|---|
+| Clear small fix | Brief scope and observable completion criterion, then implementation |
+| Feature with a few decisions | Confirmed behavior, relevant constraints, acceptance examples, and remaining blockers |
+| Requested specification or sustained project work | Update the existing specification or Plan with the settled contract and open decisions |
 
-Technical Specificity: /25 points
-- Technology stack mentioned: 8 pts
-- Integration points identified: 8 pts
-- Constraints specified: 9 pts
+Follow the project's document locations, language, and ownership rules. Keep detailed specifications and current state in their existing source of truth. A Handoff should point to the Plan when the Plan owns those details; do not create a separate PRD or Handoff merely because this skill was invoked.
 
-Implementation Completeness: /25 points
-- Edge cases considered: 8 pts
-- Error handling mentioned: 9 pts
-- Data validation specified: 8 pts
+When a detailed specification is useful, include only relevant material:
 
-Business Context: /20 points
-- Problem statement clear: 7 pts
-- Target users identified: 7 pts
-- Success metrics defined: 6 pts
-```
+- Problem, intended users, scope, and explicit exclusions.
+- Inputs, outputs, state changes, permissions, and integration boundaries.
+- Failure or recovery behavior that affects acceptance.
+- Observable acceptance examples, including meaningful boundary cases.
+- Unresolved decisions, their owner, and which work they block.
 
-**Initial Response Format**:
-```markdown
-I understand your requirement. Let me help you refine this specification.
+Distinguish confirmed requirements from assumptions and proposals. Do not fill a template with invented versions, estimates, metrics, architecture choices, or deployment phases. Use the tools available in the current environment.
 
-**Current Clarity Score**: X/100
+## Proceed when the task is actionable
 
-**Clear Aspects**:
-- [List what's clear]
+Continue once the goal, affected behavior, applicable constraints, and completion criteria are clear enough for the next authorized step. Open decisions may remain if their dependent work is identified and kept pending.
 
-**Needs Clarification**:
-- [List gaps]
-
-Let me systematically clarify these points...
-```
-
-### Step 2: Gap Analysis
-
-Identify missing information across four dimensions:
-
-**1. Functional Scope**
-- What is the core functionality?
-- What are the boundaries?
-- What is out of scope?
-- What are edge cases?
-
-**2. User Interaction**
-- How do users interact?
-- What are the inputs?
-- What are the outputs?
-- What are success/failure scenarios?
-
-**3. Technical Constraints**
-- Performance requirements?
-- Compatibility requirements?
-- Security considerations?
-- Scalability needs?
-
-**4. Business Value**
-- What problem does this solve?
-- Who are the target users?
-- What are success metrics?
-- What is the priority?
-
-### Step 3: Interactive Clarification
-
-**Question Strategy**:
-1. Start with highest-impact gaps
-2. Ask 2-3 questions per round
-3. Build context progressively
-4. Use user's language
-5. Provide examples when helpful
-
-**Question Format**:
-```markdown
-I need to clarify the following points to complete the requirements document:
-
-1. **[Category]**: [Specific question]?
-   - For example: [Example if helpful]
-
-2. **[Category]**: [Specific question]?
-
-3. **[Category]**: [Specific question]?
-
-Please provide your answers, and I'll continue refining the PRD.
-```
-
-**After Each User Response**:
-1. Update clarity score
-2. Capture new information in the working PRD outline
-3. Identify remaining gaps
-4. If score < 90: Continue with next round of questions
-5. If score ≥ 90: Proceed to PRD generation
-
-**Score Update Format**:
-```markdown
-Thank you for the additional information!
-
-**Clarity Score Update**: X/100 → Y/100
-
-**New Clarified Content**:
-- [Summarize new information]
-
-**Remaining Points to Clarify**:
-- [List remaining gaps if score < 90]
-
-[If score < 90: Continue with next round of questions]
-[If score ≥ 90: "Perfect! I will now generate the complete PRD document..."]
-```
-
-### Step 4: PRD Generation
-
-Once clarity score ≥ 90, generate comprehensive PRD.
-
-**Output File**:
-
-1. **Final PRD**: `./docs/prds/{feature_name}-v{version}-prd.md`
-
-Use the `Write` tool to create or update this file. Derive `{version}` from the document version recorded in the PRD (default `1.0`).
-
-## PRD Document Structure
-
-```markdown
-# {Feature Name} - Product Requirements Document (PRD)
-
-## Requirements Description
-
-### Background
-- **Business Problem**: [Describe the business problem to solve]
-- **Target Users**: [Target user groups]
-- **Value Proposition**: [Value this feature brings]
-
-### Feature Overview
-- **Core Features**: [List of main features]
-- **Feature Boundaries**: [What is and isn't included]
-- **User Scenarios**: [Typical usage scenarios]
-
-### Detailed Requirements
-- **Input/Output**: [Specific input/output specifications]
-- **User Interaction**: [User operation flow]
-- **Data Requirements**: [Data structures and validation rules]
-- **Edge Cases**: [Edge case handling]
-
-## Design Decisions
-
-### Technical Approach
-- **Architecture Choice**: [Technical architecture decisions and rationale]
-- **Key Components**: [List of main technical components]
-- **Data Storage**: [Data models and storage solutions]
-- **Interface Design**: [API/interface specifications]
-
-### Constraints
-- **Performance Requirements**: [Response time, throughput, etc.]
-- **Compatibility**: [System compatibility requirements]
-- **Security**: [Security considerations]
-- **Scalability**: [Future expansion considerations]
-
-### Risk Assessment
-- **Technical Risks**: [Potential technical risks and mitigation plans]
-- **Dependency Risks**: [External dependencies and alternatives]
-- **Schedule Risks**: [Timeline risks and response strategies]
-
-## Acceptance Criteria
-
-### Functional Acceptance
-- [ ] Feature 1: [Specific acceptance conditions]
-- [ ] Feature 2: [Specific acceptance conditions]
-- [ ] Feature 3: [Specific acceptance conditions]
-
-### Quality Standards
-- [ ] Code Quality: [Code standards and review requirements]
-- [ ] Test Coverage: [Testing requirements and coverage]
-- [ ] Performance Metrics: [Performance test pass criteria]
-- [ ] Security Review: [Security review requirements]
-
-### User Acceptance
-- [ ] User Experience: [UX acceptance criteria]
-- [ ] Documentation: [Documentation delivery requirements]
-- [ ] Training Materials: [If needed, training material requirements]
-
-## Execution Phases
-
-### Phase 1: Preparation
-**Goal**: Environment preparation and technical validation
-- [ ] Task 1: [Specific task description]
-- [ ] Task 2: [Specific task description]
-- **Deliverables**: [Phase deliverables]
-- **Time**: [Estimated time]
-
-### Phase 2: Core Development
-**Goal**: Implement core functionality
-- [ ] Task 1: [Specific task description]
-- [ ] Task 2: [Specific task description]
-- **Deliverables**: [Phase deliverables]
-- **Time**: [Estimated time]
-
-### Phase 3: Integration & Testing
-**Goal**: Integration and quality assurance
-- [ ] Task 1: [Specific task description]
-- [ ] Task 2: [Specific task description]
-- **Deliverables**: [Phase deliverables]
-- **Time**: [Estimated time]
-
-### Phase 4: Deployment
-**Goal**: Release and monitoring
-- [ ] Task 1: [Specific task description]
-- [ ] Task 2: [Specific task description]
-- **Deliverables**: [Phase deliverables]
-- **Time**: [Estimated time]
-
----
-
-**Document Version**: 1.0
-**Created**: {timestamp}
-**Clarification Rounds**: {clarification_rounds}
-**Quality Score**: {quality_score}/100
-```
-
-## Behavioral Guidelines
-
-### DO
-- Ask specific, targeted questions
-- Build on previous answers
-- Provide examples to guide users
-- Maintain conversational tone
-- Summarize clarification rounds within the PRD
-- Use clear, professional English
-- Generate concrete specifications
-- Stay in clarification mode until score ≥ 90
-
-### DON'T
-- Ask all questions at once
-- Make assumptions without confirmation
-- Generate PRD before 90+ score
-- Skip any required sections
-- Use vague or abstract language
-- Proceed without user responses
-- Exit skill mode prematurely
-
-## Success Criteria
-
-- Clarity score ≥ 90/100
-- All PRD sections complete with substance
-- Acceptance criteria checklistable (using `- [ ]` format)
-- Execution phases actionable with concrete tasks
-- User approves final PRD
-- Ready for development handoff
+Do not gate progress on a numeric clarity score, a number of clarification rounds, a complete PRD template, or repeated confirmation of decisions already settled. Report what was resolved, material assumptions, and any remaining blocker in the user's requested language.

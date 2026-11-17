@@ -1,5 +1,7 @@
 ## V. Words And Expressions Commonly Misused
 
+> Editorial note: Historical English usage reference adapted from Strunk (1918), retained for source context. Several prescriptions below are dated, dialect-dependent, or matters of house style. They do not define current correctness. In particular, do not apply its generic masculine pronoun, first-person shall/should, split-infinitive, or colloquial-language prescriptions as universal rules. Follow the author's language, terminology, register, current publication conventions, and meaning-preservation requirements in [SKILL.md](../SKILL.md).
+
 (Some of the forms here listed, as *like I did*, are downright bad English; others, as the split infinitive, have their defenders, but are in such general disfavor that it is at least inadvisable to use them; still others, as *case*, *factor*, *feature*, *interesting*, *one of the most*, are good in their place, but are constantly obtruding themselves into places where they have no right to be. If the writer will make it his purpose from the beginning to express accurately his own individual thought, and will refuse to be satisfied with a ready-made formula that saves him the trouble of doing so, this last set of expressions will cause him little trouble. But if he finds that in a moment of inadvertence he has used one of them, his proper course will probably be not to patch up the sentence by substituting one word or set of words for another, but to recast it completely, as illustrated in a number of examples below and in others under Rules 12 and 13.)
 
 **All right.** Idiomatic in familiar speech as a detached phrase in the sense, “Agreed,” or “Go ahead.” In other uses better avoided. Always written as two words.
@@ -101,6 +103,8 @@ As a verb, in the advertising sense of *offer as a special attraction*, to be av
 
 **Fix.** Colloquial in America for *arrange*, *prepare*, *mend*. In writing restrict it to its literary senses, *fasten*, *make firm or immovable*, etc.
 
+> Current-use note: This historical restriction and the following advice on “get” are not mandates for modern technical prose. Preserve ordinary uses such as “fix a bug” and the author's English variety.
+
 **Get.** The colloquial *have got* for *have* should not be used in writing. The preferable form of the participle is *got*.
 
 **He is a man who.** A common type of redundant expression; see Rule 13.
@@ -113,6 +117,8 @@ As a verb, in the advertising sense of *offer as a special attraction*, to be av
 **Help.** See under **But**.
 
 **However.** In the meaning *nevertheless*, not to come first in its sentence or clause.
+
+> Current-use note: This is a historical stylistic prescription, not a universal prohibition on sentence-initial “however.”
 
 | Original | Revision |
 | --- | --- |
@@ -249,6 +255,8 @@ In some kinds of formal writing, as geometrical proofs, it may be necessary to u
 
 **Shall, Will.** The future tense requires *shall* for the first person, *will* for the second and third. The formula to express the speaker's belief regarding his future action or state is *I shall*; *I will* expresses his determination or his consent.
 
+> Current-use note: Retain the passage as historical usage, not a current person-based tense rule. In legal or technical text, “shall,” “must,” “will,” and “should” may encode distinct obligations or expectations; do not substitute them to satisfy this prescription.
+
 **Should.** See under **Would**.
 
 **So.** Avoid, in writing, the use of *so* as an intensifier: “so good;” “so warm;” “so delightful.”
@@ -258,6 +266,8 @@ On the use of *so* to introduce clauses, see Rule 4.
 **Sort of.** See under **Kind of**.
 
 **Split Infinitive.** There is precedent from the fourteenth century downward for interposing an adverb between *to* and the infinitive which it governs, but the construction is in disfavor and is avoided by nearly all careful writers.
+
+> Current-use note: This historical preference is not a blanket ban. Choose modifier placement for clarity and the intended scope.
 
 | Original | Revision |
 | --- | --- |
@@ -285,6 +295,8 @@ On the use of *so* to introduce clauses, see Rule 4.
 **They.** A common inaccuracy is the use of the plural pronoun when the antecedent is a distributive expression such as *each*, *each one*, *everybody*, *every one*, *many a man*, which, though implying more than one person, requires the pronoun to be in the singular. Similar to this, but with even less justification, is the use of the plural pronoun with the antecedent *anybody*, *any one*, *somebody*, *some one*, the intention being either to avoid the awkward “he or she,” or to avoid committing oneself to either. Some bashful speakers even say, “A friend of mine told me that they, etc.”
 
 Use *he* with all the above words, unless the antecedent is or must be feminine.
+
+> Current-use note: The preceding objection to singular “they” and instruction to use generic “he” are historical, not operational guidance. Preserve a person's stated pronouns and use appropriate inclusive language for an unspecified person.
 
 **Very.** Use this word sparingly. Where emphasis is necessary, use words strong in themselves.
 
@@ -334,6 +346,8 @@ In general, the writer will do well to use *while* only with strict literalness,
 The use of *worth while* before a noun (“a worth while story”) is indefensible.
 
 **Would.** A conditional statement in the first person requires *should*, not *would*.
+
+> Current-use note: This historical first-person prescription is not a current universal rule. Preserve the intended conditional meaning and obligation rather than automatically exchanging “would” and “should.”
 
 I should not have succeeded without his help.
 

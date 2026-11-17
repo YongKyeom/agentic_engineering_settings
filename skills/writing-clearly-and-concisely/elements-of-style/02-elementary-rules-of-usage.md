@@ -1,5 +1,7 @@
 ## II. Elementary Rules Of Usage
 
+> Editorial note: Historical English reference adapted from Strunk (1918). Its punctuation and grammar prescriptions reflect that source and are not rules for Korean or every modern English style. Current publication conventions and the meaning-preservation requirements in [SKILL.md](../SKILL.md) take priority.
+
 ### Rule 1. Form the possessive singular of nouns by adding 's.
 
 Follow this rule whatever the final consonant. Thus write,

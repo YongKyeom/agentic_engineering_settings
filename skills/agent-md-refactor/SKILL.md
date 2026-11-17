@@ -1,287 +1,58 @@
 ---
 name: agent-md-refactor
-description: Refactor bloated AGENTS.md, CLAUDE.md, or similar agent instruction files to follow progressive disclosure principles. Splits monolithic files into organized, linked documentation.
+description: Reorganize AGENTS.md, CLAUDE.md, or similar agent instructions for progressive disclosure while preserving authority, essential root rules, and task discovery. Use when instruction files need restructuring or deduplication; handle narrow wording edits directly.
 license: MIT
 ---
 
 # Agent MD Refactor
 
-Refactor bloated agent instruction files (AGENTS.md, CLAUDE.md, COPILOT.md, etc.) to follow **progressive disclosure principles** - keeping essentials at root and organizing the rest into linked, categorized files.
+Make instructions easier to find and apply without changing their meaning or the user's conventions. Keep executable baseline summaries in the root and move detail only when agents can reliably discover it.
 
----
+## Establish scope and authority
 
-## Triggers
+Inspect the requested files, their callers and links, applicable parent and scoped instruction files, and the project's document rules. Preserve unrelated working-tree changes. Reorganizing repository files does not authorize edits to installed or global agent configuration.
 
-Use this skill when:
-- "refactor my AGENTS.md" / "refactor my CLAUDE.md"
-- "split my agent instructions"
-- "organize my CLAUDE.md file"
-- "my AGENTS.md is too long"
-- "progressive disclosure for my instructions"
-- "clean up my agent config"
-
----
+Determine which agents consume the files and how they load instructions in this environment. Distinguish automatic root or ancestor loading, scoped `AGENTS.md` rules, linked Markdown references, and agent-specific imports. Do not assume that a link automatically loads its target or that different agents share discovery behavior. Verify uncertain behavior from available authoritative documentation when it affects the proposed move.
 
-## Quick Reference
-
-| Phase | Action | Output |
-|-------|--------|--------|
-| 1. Analyze | Find contradictions | List of conflicts to resolve |
-| 2. Extract | Identify essentials | Core instructions for root file |
-| 3. Categorize | Group remaining instructions | Logical categories |
-| 4. Structure | Create file hierarchy | Root + linked files |
-| 5. Prune | Flag for deletion | Redundant/vague instructions |
+Resolve apparent conflicts using applicable instruction precedence and existing sources of truth. Preserve intentional conditions and exceptions. Ask the user only when a material ambiguity remains after that analysis; continue independent restructuring when possible.
 
----
+## Decide what stays at the root
 
-## Process
+Keep enough information in the root for an agent to obey essential rules before opening another file:
 
-### Phase 1: Find Contradictions
+- Project purpose, source-of-truth order, and relevant work areas.
+- Required authority, safety, user conventions, and execution boundaries.
+- Essential coding, verification, Git, and delegation summaries when the project requires them.
+- Clear routing to detailed rules, stating when they must be read.
 
-Identify any instructions that conflict with each other.
+Preserve any baseline sections the project requires unchanged. A rule need not apply to every task to warrant a root summary: it may govern the next tool call or tell the agent which detail to read. Do not optimize for a fixed line count.
 
-**Look for:**
-- Contradictory style guidelines (e.g., "use semicolons" vs "no semicolons")
-- Conflicting workflow instructions
-- Incompatible tool preferences
-- Mutually exclusive patterns
+Project instructions may deliberately repeat global guidance or skill essentials. Preserve the required operational rules and apply the relevant skills to carry them out; do not replace the actual obligations with skill names or personal paths merely to reduce duplication. This differs from duplicating the changing status of a task in several documents.
 
-**For each contradiction found:**
-```markdown
-## Contradiction Found
+Move lengthy procedures, examples, and topic-specific detail to existing appropriate documents where possible. Use a scoped `AGENTS.md` only when its scope matches the rule and the intended agent will load it for the relevant work. For cross-cutting rules, retain a root summary and reading trigger instead of relying on subtree discovery.
 
-**Instruction A:** [quote]
-**Instruction B:** [quote]
+Choose file boundaries from actual responsibilities and lookup needs. Preserve the established directory layout and language; do not create a sample hierarchy or translate instructions just to match this skill.
 
-**Question:** Which should take precedence, or should both be conditional?
-```
+## Preserve coverage during restructuring
 
-Ask the user to resolve before proceeding.
+Track each substantive instruction or coherent rule group through the change. A compact mapping can use:
 
----
+| Original rule or section | Destination | Treatment and reason |
+|---|---|---|
+| Existing section identifier | Root summary plus detailed section | Preserved, moved, merged, or removed with evidence |
 
-### Phase 2: Identify the Essentials
+Keep this mapping in the task's existing working record when needed; a small edit can report it in the response. Do not create a separate report by default.
 
-Extract ONLY what belongs in the root agent file. The root should be minimal - information that applies to **every single task**.
+Merge duplicates only after comparing their conditions, exceptions, force, and scope. Preserve the strongest applicable obligation without broadening it. A familiar or “obvious” rule may encode a deliberate user requirement, authority boundary, or safety constraint; that is not a deletion reason.
 
-**Essential content (keep in root):**
-| Category | Example |
-|----------|---------|
-| Project description | One sentence: "A React dashboard for analytics" |
-| Package manager | Only if not npm (e.g., "Uses pnpm") |
-| Non-standard commands | Custom build/test/typecheck commands |
-| Critical overrides | Things that MUST override defaults |
-| Universal rules | Applies to 100% of tasks |
+Remove instructions only when the requested scope permits it and evidence establishes that they are obsolete, fully duplicated, or intentionally superseded. Preserve ambiguous rules and flag the issue rather than silently deleting them. Do not remove safety rules merely because the model usually follows them.
 
-**NOT essential (move to linked files):**
-- Language-specific conventions
-- Testing guidelines
-- Code style details
-- Framework patterns
-- Documentation standards
-- Git workflow details
+Update affected links and callers with each move. Tracked documents must refer to destinations available to a fresh checkout; keep local Plan or Handoff references within their permitted local context. Preserve existing Plan, Handoff, and ADR ownership instead of copying their changing state into the root.
 
----
+## Verify the resulting instructions
 
-### Phase 3: Group the Rest
+Compare the semantic before and after content, including conditions, exceptions, authority, and language. Confirm that every preserved obligation has a usable destination and that intended removals have a reason. Check local links, anchors, and tracked-file availability where applicable.
 
-Organize remaining instructions into logical categories.
+Walk through representative tasks against the new structure: a small fix, a feature requiring detailed rules, and a task near an authority or scope boundary. Verify that the agent encounters each required rule before the action it governs. Inspect affected Markdown rendering when tables or diagrams change.
 
-**Common categories:**
-| Category | Contents |
-|----------|----------|
-| `typescript.md` | TS conventions, type patterns, strict mode rules |
-| `testing.md` | Test frameworks, coverage, mocking patterns |
-| `code-style.md` | Formatting, naming, comments, structure |
-| `git-workflow.md` | Commits, branches, PRs, reviews |
-| `architecture.md` | Patterns, folder structure, dependencies |
-| `api-design.md` | REST/GraphQL conventions, error handling |
-| `security.md` | Auth patterns, input validation, secrets |
-| `performance.md` | Optimization rules, caching, lazy loading |
-
-**Grouping rules:**
-1. Each file should be self-contained for its topic
-2. Aim for 3-8 files (not too granular, not too broad)
-3. Name files clearly: `{topic}.md`
-4. Include only actionable instructions
-
----
-
-### Phase 4: Create the File Structure
-
-**Output structure:**
-```
-project-root/
-├── CLAUDE.md (or AGENTS.md)     # Minimal root with links
-└── .claude/                      # Or docs/agent-instructions/
-    ├── typescript.md
-    ├── testing.md
-    ├── code-style.md
-    ├── git-workflow.md
-    └── architecture.md
-```
-
-**Root file template:**
-```markdown
-# Project Name
-
-One-sentence description of the project.
-
-## Quick Reference
-
-- **Package Manager:** pnpm
-- **Build:** `pnpm build`
-- **Test:** `pnpm test`
-- **Typecheck:** `pnpm typecheck`
-
-## Detailed Instructions
-
-For specific guidelines, see:
-- [TypeScript Conventions](.claude/typescript.md)
-- [Testing Guidelines](.claude/testing.md)
-- [Code Style](.claude/code-style.md)
-- [Git Workflow](.claude/git-workflow.md)
-- [Architecture Patterns](.claude/architecture.md)
-```
-
-**Each linked file template:**
-```markdown
-# {Topic} Guidelines
-
-## Overview
-Brief context for when these guidelines apply.
-
-## Rules
-
-### Rule Category 1
-- Specific, actionable instruction
-- Another specific instruction
-
-### Rule Category 2
-- Specific, actionable instruction
-
-## Examples
-
-### Good
-\`\`\`typescript
-// Example of correct pattern
-\`\`\`
-
-### Avoid
-\`\`\`typescript
-// Example of what not to do
-\`\`\`
-```
-
----
-
-### Phase 5: Flag for Deletion
-
-Identify instructions that should be removed entirely.
-
-**Delete if:**
-| Criterion | Example | Why Delete |
-|-----------|---------|------------|
-| Redundant | "Use TypeScript" (in a .ts project) | Agent already knows |
-| Too vague | "Write clean code" | Not actionable |
-| Overly obvious | "Don't introduce bugs" | Wastes context |
-| Default behavior | "Use descriptive variable names" | Standard practice |
-| Outdated | References deprecated APIs | No longer applies |
-
-**Output format:**
-```markdown
-## Flagged for Deletion
-
-| Instruction | Reason |
-|-------------|--------|
-| "Write clean, maintainable code" | Too vague to be actionable |
-| "Use TypeScript" | Redundant - project is already TS |
-| "Don't commit secrets" | Agent already knows this |
-| "Follow best practices" | Meaningless without specifics |
-```
-
----
-
-## Execution Checklist
-
-```
-[ ] Phase 1: All contradictions identified and resolved
-[ ] Phase 2: Root file contains ONLY essentials
-[ ] Phase 3: All remaining instructions categorized
-[ ] Phase 4: File structure created with proper links
-[ ] Phase 5: Redundant/vague instructions removed
-[ ] Verify: Each linked file is self-contained
-[ ] Verify: Root file is under 50 lines
-[ ] Verify: All links work correctly
-```
-
----
-
-## Anti-Patterns
-
-| Avoid | Why | Instead |
-|-------|-----|---------|
-| Keeping everything in root | Bloated, hard to maintain | Split into linked files |
-| Too many categories | Fragmentation | Consolidate related topics |
-| Vague instructions | Wastes tokens, no value | Be specific or delete |
-| Duplicating defaults | Agent already knows | Only override when needed |
-| Deep nesting | Hard to navigate | Flat structure with links |
-
----
-
-## Examples
-
-### Before (Bloated Root)
-```markdown
-# CLAUDE.md
-
-This is a React project.
-
-## Code Style
-- Use 2 spaces
-- Use semicolons
-- Prefer const over let
-- Use arrow functions
-... (200 more lines)
-
-## Testing
-- Use Jest
-- Coverage > 80%
-... (100 more lines)
-
-## TypeScript
-- Enable strict mode
-... (150 more lines)
-```
-
-### After (Progressive Disclosure)
-```markdown
-# CLAUDE.md
-
-React dashboard for real-time analytics visualization.
-
-## Commands
-- `pnpm dev` - Start development server
-- `pnpm test` - Run tests with coverage
-- `pnpm build` - Production build
-
-## Guidelines
-- [Code Style](.claude/code-style.md)
-- [Testing](.claude/testing.md)
-- [TypeScript](.claude/typescript.md)
-```
-
----
-
-## Verification
-
-After refactoring, verify:
-
-1. **Root file is minimal** - Under 50 lines, only universal info
-2. **Links work** - All referenced files exist
-3. **No contradictions** - Instructions are consistent
-4. **Actionable content** - Every instruction is specific
-5. **Complete coverage** - No instructions were lost (unless flagged for deletion)
-6. **Self-contained files** - Each linked file stands alone
-
----
+Report the changed files, preserved root responsibilities, justified removals, verification performed, and any uncertain loading behavior. A shorter root alone is not evidence of a successful refactor.

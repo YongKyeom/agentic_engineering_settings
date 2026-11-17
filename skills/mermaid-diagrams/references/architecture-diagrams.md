@@ -1,192 +1,54 @@
-# Architecture Diagrams Reference
+# Infrastructure architecture syntax
 
-Architecture diagrams visualize cloud services, CI/CD deployments, and infrastructure relationships. Introduced in Mermaid v11.1.0.
+Use `architecture-beta` for service/resource topology when that notation fits the task and the destination supports it. It was introduced in Mermaid 11.1.0 and remains version-sensitive. A normal flowchart may be more portable when labels or target-host support matter more than infrastructure icons; preserve an explicit user choice.
 
-## Basic Syntax
-
-```mermaid
-architecture-beta
-    group public_api(cloud)[Public API]
-    service api1(server)[API Server] in public_api
-    service db(database)[Database]
-
-    api1:R --> L:db
-```
-
-## Building Blocks
-
-### Groups
-
-Group related services together:
-
-```
-group {groupId}({icon})[{title}] (in {parentId})?
-```
+## Groups, services, and edges
 
 ```mermaid
 architecture-beta
-    group public_api(cloud)[Public API]
-    group private_api(cloud)[Private API] in public_api
-```
-
-### Services
-
-Declare services (nodes):
-
-```
-service {serviceId}({icon})[{title}] (in {parentId})?
-```
-
-```mermaid
-architecture-beta
-    service api(server)[API Server]
-    service db(database)[Database]
-    service cache(redis)[Cache] in api
-```
-
-### Edges
-
-Connect services with edges:
-
-```
-{serviceId}{{group}}?:{T|B|L|R} {<}?--{>}? {T|B|L|R}:{serviceId}{{group}}?
-```
-
-**Directions:** `T` (top), `B` (bottom), `L` (left), `R` (right)
-
-**Arrows:** `<` for incoming, `>` for outgoing
-
-```mermaid
-architecture-beta
-    service client(browser)[Client]
-    service api(server)[API]
-    service db(database)[Database]
-
-    client:B --> T:api
+    group public(cloud)[Public]
+    group private(cloud)[Private]
+    service client(internet)[Client] in public
+    service api(server)[API] in private
+    service db(database)[Database] in private
+    client:R --> L:api
     api:R --> L:db
 ```
 
-### Junctions
+- `group id(icon)[Label] in parent`: group nested in a previously declared group; omit `in parent` at the top level.
+- `service id(icon)[Label] in groupId`: service inside a group. The parent is a group ID, not another service.
+- `a:R --> L:b`: edge leaving A's right and entering B's left. Endpoint sides are `L`, `R`, `T`, `B`; `--`, `-->`, `<--`, and `<-->` control arrowheads.
+- Declare referenced identifiers first. Group related resources according to the requested topology rather than forcing frontend/backend or public/private layers.
 
-Create 4-way splits:
-
-```
-junction {junctionId} (in {parentId})?
-```
+## Junctions and group boundaries
 
 ```mermaid
 architecture-beta
     service input(server)[Input]
-    service output1(server)[Output 1]
-    service output2(server)[Output 2]
-
-    junction j1
-
-    input:R --> L:j1
-    j1:T --> B:output1
-    j1:B --> T:output2
+    service first(server)[Worker one]
+    service second(server)[Worker two]
+    junction split
+    input:R --> L:split
+    split:R --> L:first
+    split:B --> T:second
 ```
 
-## Icons
+A junction is a routing point, declared with `junction id` and optionally `in groupId`. It does not represent a queue, load balancer, or other service unless the model separately includes that service.
 
-**Default icons:** `cloud`, `database`, `disk`, `internet`, `server`
+For edges that visually reach a group boundary, apply `{group}` to a service in that group, for example `client:R --> L:api{group}`. Do not use the group ID itself as a service endpoint. Inspect grouping and arrow placement in the render.
 
-**Custom icons:** Use any of 200,000+ icons from iconify.design:
+## Icons and portability
 
-```mermaid
-architecture-beta
-    service web(aws:ec2)[Web Server]
-    service storage(aws:s3)[Storage]
-```
+Built-in icons are `cloud`, `database`, `disk`, `internet`, and `server`. Names such as `browser`, `redis`, `api`, and `load_balancer` are not built-in icons. Custom icons require a registered pack and its exact prefix and icon name, such as `logos:docker`.
 
-### Using @iconify-json Icon Packs
-
-Use npm icon packs with Mermaid CLI for a wide variety of technology logos:
+With a CLI that supports the flag, an icon-pack render may use:
 
 ```bash
-npm install @iconify-json/logos @mermaid-js/mermaid-cli
-mmdc --iconPacks @iconify-json/logos -i ./diagram.mmd -o ./output.svg
+rtk proxy mmdc --iconPacks @iconify-json/logos -i diagram.mmd -o diagram.svg
 ```
 
-Use icons with the `logos:` prefix:
+Check the installed CLI's help and the host's icon registration first. A local CLI may fetch the pack during rendering; successful rendering there does not prove a hosted Markdown integration has that pack. Use built-ins when custom packs are unnecessary.
 
-```mermaid
-architecture-beta
-    service web(logos:docker)[Docker Container]
-    service k8s(logos:kubernetes)[Kubernetes Cluster]
-    service aws(logos:aws)[AWS Services]
-    service github(logos:github)[GitHub Actions]
+Architecture syntax has its own grammar. Do not copy flowchart edge labels, quoted-label forms, layout options, or styling into it without confirming support. If protocols or long annotations are essential and unsupported, use nearby prose or discuss a compatible view. Check labels, service positions, group boundaries, and edge crossings in the final render.
 
-    web:R --> L:k8s
-    k8s:R --> L:aws
-    web:R --> L:github
-```
-
-**Popular icon packs:**
-
-| Icon Pack                    | Description                                   | Install                            |
-| ---------------------------- | --------------------------------------------- | ---------------------------------- |
-| `@iconify-json/logos`        | Technology brands (Docker, AWS, GitHub, etc.) | `npm i @iconify-json/logos`        |
-| `@iconify-json/bi`           | Bootstrap icons                               | `npm i @iconify-json/bi`           |
-| `@iconify-json/mdi`          | Material Design icons                         | `npm i @iconify-json/mdi`          |
-| `@iconify-json/simple-icons` | Simple icons                                  | `npm i @iconify-json/simple-icons` |
-
-Usage: `pack:icon-name` (e.g., `logos:docker`, `mdi:database`)
-
-## Complex Example
-
-```mermaid
-architecture-beta
-    group internet(cloud)[Internet]
-    group private_vpc(cloud)[Private VPC]
-
-    service lb(load_balancer)[Load Balancer] in internet
-    service api1(api)[API Server 1] in private_vpc
-    service api2(api)[API Server 2] in private_vpc
-    service db(database)[Primary Database] in private_vpc
-    service replica(database)[Read Replica] in private_vpc
-
-    lb:R --> L:api1
-    lb:R --> L:api2
-    api1:R --> L:db
-    api2:R --> L:db
-    db:R --> L:replica
-```
-
-## Edge Patterns
-
-| Pattern              | Description               |
-| -------------------- | ------------------------- |
-| `A:R -- L:B`         | Horizontal edge           |
-| `A:T -- B:B`         | Vertical edge (90 degree) |
-| `A:R --> L:B`        | Edge with arrow           |
-| `A:R <--> L:B`       | Bidirectional edge        |
-| `A{group}:R --> L:B` | Edge from group boundary  |
-
-## Group Edges
-
-Connect groups using the `{group}` modifier:
-
-```mermaid
-architecture-beta
-    group frontend(cloud)[Frontend]
-    group backend(cloud)[Backend]
-
-    service client(browser)[Client] in frontend
-    service api(server)[API] in backend
-
-    client{group}:B --> T:api{group}
-```
-
-## Best Practices
-
-1. Group services by environment (public/private) or layer (frontend/backend)
-2. Use consistent icons for service types
-3. Label edges with protocols (HTTPS, TCP, etc.)
-4. Use junctions for fan-out patterns
-5. Keep diagrams focused; split complex architectures into multiple views
-
-## Reference
-
-- [Official Documentation](https://mermaid.js.org/syntax/architecture.html)
-- [Iconify Icons](https://iconify.design)
+See [official architecture syntax](https://mermaid.js.org/syntax/architecture.html) and [icon registration](https://mermaid.js.org/config/icons.html) for supported features in the target version.

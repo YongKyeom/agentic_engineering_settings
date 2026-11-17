@@ -1,556 +1,72 @@
-# Advanced Mermaid Features
+# Configuration, layout, and export
 
-Advanced configuration, styling, theming, and other powerful features for creating professional diagrams.
+Read this reference when a task needs styling, host integration, or exported images. Preserve an established document's theme and rendering pipeline.
 
-## Frontmatter Configuration
+## Configuration and appearance
 
-Add YAML configuration at the top of diagrams:
-
-```mermaid
----
-config:
-  theme: dark
-  themeVariables:
-    primaryColor: "#ff6b6b"
-    primaryTextColor: "#fff"
-    primaryBorderColor: "#333"
-    lineColor: "#666"
-    secondaryColor: "#4ecdc4"
-    tertiaryColor: "#ffe66d"
----
-flowchart TD
-    A --> B
-```
-
-## Themes
-
-### Built-in Themes
+Use diagram frontmatter where the destination supports it:
 
 ```mermaid
 ---
-config:
-  theme: default
----
-```
-
-**Available themes:**
-- `default` - Standard blue theme
-- `forest` - Green earth tones
-- `dark` - Dark mode friendly
-- `neutral` - Grayscale professional
-- `base` - Minimal base theme for customization
-
-### Theme Examples
-
-**Default Theme:**
-```mermaid
----
-config:
-  theme: default
----
-flowchart LR
-    A[Start] --> B[Process]
-    B --> C{Decision}
-    C -->|Yes| D[Action 1]
-    C -->|No| E[Action 2]
-```
-
-**Dark Theme:**
-```mermaid
----
-config:
-  theme: dark
----
-flowchart LR
-    A[Start] --> B[Process]
-    B --> C{Decision}
-```
-
-**Forest Theme:**
-```mermaid
----
-config:
-  theme: forest
----
-flowchart LR
-    A[Start] --> B[Process]
-```
-
-## Custom Theme Variables
-
-Override specific colors:
-
-```mermaid
----
+title: Request handling
 config:
   theme: base
   themeVariables:
-    primaryColor: "#ff6b6b"
-    primaryTextColor: "#fff"
-    primaryBorderColor: "#d63031"
-    lineColor: "#74b9ff"
-    secondaryColor: "#00b894"
-    tertiaryColor: "#fdcb6e"
-    background: "#f0f0f0"
-    mainBkg: "#ffffff"
-    textColor: "#333333"
-    nodeBorder: "#333333"
-    clusterBkg: "#f9f9f9"
-    clusterBorder: "#666666"
----
-flowchart TD
-    A --> B --> C
-```
-
-## Layout Options
-
-### Dagre Layout (Default)
-
-```mermaid
----
-config:
-  layout: dagre
----
-flowchart TD
-    A --> B
-```
-
-### ELK Layout (Advanced)
-
-For complex diagrams with better automatic layout:
-
-```mermaid
----
-config:
-  layout: elk
-  elk:
-    mergeEdges: true
-    nodePlacementStrategy: BRANDES_KOEPF
----
-flowchart TD
-    A --> B
-```
-
-**ELK node placement strategies:**
-- `SIMPLE` - Basic placement
-- `NETWORK_SIMPLEX` - Network optimization
-- `LINEAR_SEGMENTS` - Linear arrangement
-- `BRANDES_KOEPF` - Balanced (default)
-
-## Look Options
-
-### Classic Look
-
-Traditional Mermaid appearance:
-
-```mermaid
----
-config:
-  look: classic
+    primaryColor: "#e3f2fd"
+    primaryTextColor: "#111111"
+    primaryBorderColor: "#1565c0"
+    lineColor: "#37474f"
 ---
 flowchart LR
-    A --> B --> C
+    request["Request"] --> process["Process"]
+    process --> result["Result"]
 ```
 
-### Hand-Drawn Look
+Established themes include `default`, `forest`, `dark`, `neutral`, and `base`; newer releases may add themes and change per-diagram defaults. Use `base` for `themeVariables` customization and hexadecimal color values. Dark colors alone do not guarantee a readable dark-background export; inspect text, lines, and background together.
 
-Sketch-like, informal style:
+Legacy `%%{init: ...}%%` directives exist, but prefer supported frontmatter for new configurations. Hosts can restrict configuration and interactions. Do not change host security settings just to enable a diagram feature.
 
-```mermaid
----
-config:
-  look: handDrawn
----
-flowchart LR
-    A --> B --> C
-```
-
-## Complete Configuration Example
-
-```mermaid
----
-config:
-  theme: base
-  look: handDrawn
-  layout: dagre
-  themeVariables:
-    primaryColor: "#ff6b6b"
-    primaryTextColor: "#fff"
-    primaryBorderColor: "#d63031"
-    lineColor: "#74b9ff"
-    secondaryColor: "#00b894"
-    tertiaryColor: "#fdcb6e"
----
-flowchart TD
-    Start([Begin Process]) --> Input[Gather Data]
-    Input --> Process{Valid?}
-    Process -->|Yes| Store[(Save to DB)]
-    Process -->|No| Error[Show Error]
-    Store --> Notify[Send Notification]
-    Error --> Input
-    Notify --> End([Complete])
-```
-
-## Diagram-Specific Styling
-
-### Flowchart Styling
-
-**Class-based styling:**
-```mermaid
-flowchart TD
-    A[Normal]:::success
-    B[Warning]:::warning
-    C[Error]:::error
-    
-    classDef success fill:#00b894,stroke:#00a383,color:#fff
-    classDef warning fill:#fdcb6e,stroke:#e8b923,color:#333
-    classDef error fill:#ff6b6b,stroke:#ee5253,color:#fff
-    
-    A --> B --> C
-```
-
-**Node-specific styling:**
-```mermaid
-flowchart LR
-    A[Node A]
-    B[Node B]
-    C[Node C]
-    
-    style A fill:#ff6b6b,stroke:#333,stroke-width:4px
-    style B fill:#4ecdc4,stroke:#333,stroke-width:2px
-    style C fill:#ffe66d,stroke:#333,stroke-width:2px
-    
-    A --> B --> C
-```
-
-**Link styling:**
-```mermaid
-flowchart LR
-    A --> B
-    B --> C
-    C --> D
-    
-    linkStyle 0 stroke:#ff6b6b,stroke-width:4px
-    linkStyle 1 stroke:#4ecdc4,stroke-width:2px
-    linkStyle 2 stroke:#ffe66d,stroke-width:2px
-```
-
-### Sequence Diagram Styling
-
-```mermaid
-sequenceDiagram
-    participant A
-    participant B
-    participant C
-    
-    A->>B: Message 1
-    B->>C: Message 2
-    
-    Note over A,C: Styled note
-    
-    %%{init: {'theme':'forest'}}%%
-```
-
-### Class Diagram Styling
-
-```mermaid
-classDiagram
-    class User {
-        +String name
-        +login()
-    }
-    
-    class Admin {
-        +manageUsers()
-    }
-    
-    User <|-- Admin
-    
-    %%{init: {'theme':'dark'}}%%
-```
-
-## Directional Hints
-
-Control layout direction for specific nodes:
-
-```mermaid
-flowchart TB
-    A --> B
-    B --> C
-    B --> D
-    C --> E
-    D --> E
-    
-    %% This is a comment - helps organize complex diagrams
-```
-
-## Click Events and Links
-
-Add interactive elements:
+For flowchart-specific styling:
 
 ```mermaid
 flowchart LR
-    A[GitHub]
-    B[Documentation]
-    C[Live Demo]
-    
-    click A "https://github.com" "Go to GitHub"
-    click B "https://mermaid.js.org" "View Docs"
-    click C "https://mermaid.live" "Try Live Editor"
-    
-    A --> B --> C
+    api["API"]:::service --> db[("Store")]
+    classDef service fill:#e3f2fd,stroke:#1565c0,color:#111111
+    style db fill:#fff3e0,stroke:#b45309,color:#111111
 ```
 
-## Tooltips
+## Layout decisions
 
-Add hover information:
+- Choose `LR` for a short horizontal flow and `TD`/`TB` for a taller page; use the direction appropriate to the selected diagram type.
+- Dagre and ELK availability and defaults vary by Mermaid version, build, and integration. Test the target renderer before specifying `config: { layout: elk }`. Older integrations may require explicit ELK registration; a setting alone does not prove it is active.
+- Try a supported alternative layout when crossings or clustering are poor. A node-count threshold does not determine the best layout. Edge merging can obscure separate relationships, so enable it only when meaning remains clear.
+- `look: classic` and `look: handDrawn` are version-sensitive appearance choices, not substitutes for layout. Verify support for the selected diagram type.
+- Shorten labels, reduce irrelevant detail, or split a view before shrinking text below the document's readable size. Check the actual destination width and fonts.
 
-```mermaid
-flowchart LR
-    A[Service A]
-    B[Service B]
-    
-    A -.->|REST API| B
-    
-    %% Tooltips are defined with links
-    link A: API Documentation @ https://api.example.com
-    link B: Service Dashboard @ https://dashboard.example.com
-```
+## Local export
 
-## Subgraph Styling
-
-```mermaid
-flowchart TB
-    subgraph Frontend
-        A[Web App]
-        B[Mobile App]
-    end
-    
-    subgraph Backend
-        C[API]
-        D[Database]
-    end
-    
-    A & B --> C
-    C --> D
-    
-    style Frontend fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-    style Backend fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-```
-
-## Comments and Documentation
-
-```mermaid
-flowchart TD
-    %% This is a single-line comment
-    
-    %% Multi-line comments can be created
-    %% by using multiple comment lines
-    
-    A[Start]
-    B[Process]
-    C[End]
-    
-    %% Define relationships
-    A --> B
-    B --> C
-    
-    %% Add styling
-    style A fill:#90EE90
-    style C fill:#FFB6C1
-```
-
-## Complex Styling Example
-
-```mermaid
-flowchart TB
-    subgraph production[Production Environment]
-        direction LR
-        lb[Load Balancer]
-        
-        subgraph servers[Application Servers]
-            app1[Server 1]
-            app2[Server 2]
-            app3[Server 3]
-        end
-        
-        cache[(Redis Cache)]
-        db[(PostgreSQL)]
-    end
-    
-    subgraph monitoring[Monitoring]
-        logs[Log Aggregator]
-        metrics[Metrics Dashboard]
-    end
-    
-    users[Users] --> lb
-    lb --> app1 & app2 & app3
-    app1 & app2 & app3 --> cache
-    app1 & app2 & app3 --> db
-    app1 & app2 & app3 --> logs
-    logs --> metrics
-    
-    style production fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
-    style servers fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-    style monitoring fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-    
-    style lb fill:#ffeb3b,stroke:#fbc02d,stroke-width:2px
-    style cache fill:#ce93d8,stroke:#ab47bc,stroke-width:2px
-    style db fill:#ce93d8,stroke:#ab47bc,stroke-width:2px
-    
-    classDef serverClass fill:#81c784,stroke:#4caf50,stroke-width:2px,color:#000
-    class app1,app2,app3 serverClass
-    
-    linkStyle 0,1,2,3 stroke:#4caf50,stroke-width:2px
-    linkStyle 4,5,6,7,8,9 stroke:#ff9800,stroke-width:1px
-```
-
-## Responsive Sizing
-
-Use CSS to make diagrams responsive:
-
-```html
-<div style="max-width: 100%; overflow: auto;">
-    <pre class="mermaid">
-        flowchart LR
-            A --> B --> C
-    </pre>
-</div>
-```
-
-## SVG Export Options
-
-When exporting to SVG:
+Use an existing Mermaid CLI and check its available flags. With RTK available:
 
 ```bash
-# Export with custom dimensions
-mmdc -i diagram.mmd -o output.svg -w 1920 -H 1080
-
-# Export with background color
-mmdc -i diagram.mmd -o output.svg -b "#ffffff"
-
-# Export with transparent background
-mmdc -i diagram.mmd -o output.svg -b "transparent"
+rtk proxy mmdc --version
+rtk proxy mmdc --help
+rtk proxy mmdc -i diagram.mmd -o diagram.svg
+rtk proxy mmdc -i diagram.mmd -o diagram.png -b transparent
+rtk proxy mmdc -i diagram.mmd -o diagram.pdf
 ```
 
-## Best Practices for Advanced Features
+Use equivalent commands without the RTK prefix if RTK is unavailable. Keep exports in the requested output location or a temporary inspection directory; keep editable source in the requested artifact. Avoid adding a global dependency solely for a one-off preview when an existing renderer is available.
 
-1. **Use themes consistently** - Pick one theme for related diagrams
-2. **Don't over-style** - Too many colors can reduce clarity
-3. **Test hand-drawn look** - Some diagrams work better with classic look
-4. **Use ELK for complex layouts** - When dagre creates crossed lines
-5. **Comment complex configurations** - Explain non-obvious styling choices
-6. **Keep it accessible** - Ensure sufficient color contrast
-7. **Test exports** - Verify diagrams render correctly in target format
-8. **Version control configs** - Track theme changes in your repository
+CLI `-w` and `-H` set the browser viewport; they do not promise an exact final diagram size or fix unreadable content. Use the documented scale or PDF fitting flags when appropriate and inspect the exported dimensions. SVGs may depend on fonts or HTML labels that behave differently in downstream PDF, document, or image converters. Verify the asset in its final document when that is the deliverable.
 
-## Accessibility Considerations
+## Embedding and verification
 
-```mermaid
----
-config:
-  theme: base
-  themeVariables:
-    primaryColor: "#0066cc"
-    primaryTextColor: "#ffffff"
-    primaryBorderColor: "#003d7a"
-    lineColor: "#333333"
-    background: "#ffffff"
-    mainBkg: "#f0f0f0"
----
-flowchart TD
-    A[High Contrast Text] --> B[Clear Labels]
-    B --> C[Meaningful Colors]
-```
+Markdown hosts generally use fenced `mermaid` blocks where enabled. Support for diagram types, frontmatter, links, fonts, and icon packs varies. Test the destination rather than claiming universal support across GitHub, GitLab, Notion, Obsidian, or Confluence.
 
-**Accessibility tips:**
-- Use high contrast color combinations
-- Don't rely solely on color to convey meaning
-- Include descriptive text labels
-- Test with color blindness simulators
-- Consider dark mode alternatives
+For application integration, reuse the project's Mermaid setup and version. Consult the [API documentation](https://mermaid.js.org/config/usage.html) rather than adding a second global initializer or copying a version-pinned CDN snippet into unrelated code. Dynamic rendering needs the framework's lifecycle and Mermaid's current rendering API.
 
-## Performance Considerations
+Check the rendered diagram for clipping, overlapping labels, wrong arrow direction, crossings that obscure meaning, font substitution, and contrast. Include a text explanation or accessible title/description appropriate to the host when readers need it. Do not rely on color alone for categories or status.
 
-For large diagrams:
+A parser check establishes syntax only. A successful local export establishes that tool's behavior only. State the renderer/version used and distinguish source review, rendering, visual inspection, and final-document checks; report unavailable checks directly.
 
-```mermaid
----
-config:
-  layout: elk
-  elk:
-    mergeEdges: true
----
-flowchart TD
-    %% ELK handles complex layouts better
-    %% Merge edges reduces visual clutter
-```
-
-**Performance tips:**
-- Use ELK layout for diagrams with >20 nodes
-- Enable edge merging for simplified connections
-- Split very large diagrams into multiple focused views
-- Consider using subgraphs to organize complexity
-- Limit styling to essential elements
-
-## Integration Examples
-
-### Markdown Files
-
-````markdown
-# System Architecture
-
-```mermaid
-flowchart LR
-    A --> B
-```
-````
-
-### HTML Files
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <script type="module">
-        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ 
-            startOnLoad: true,
-            theme: 'dark',
-            look: 'handDrawn'
-        });
-    </script>
-</head>
-<body>
-    <pre class="mermaid">
-        flowchart LR
-            A --> B
-    </pre>
-</body>
-</html>
-```
-
-### React Components
-
-```jsx
-import React from 'react';
-import mermaid from 'mermaid';
-
-mermaid.initialize({
-    startOnLoad: true,
-    theme: 'forest'
-});
-
-function DiagramComponent() {
-    React.useEffect(() => {
-        mermaid.contentLoaded();
-    }, []);
-    
-    return (
-        <div className="mermaid">
-            flowchart LR
-                A --> B
-        </div>
-    );
-}
-```
+Sources: [configuration](https://mermaid.js.org/config/configuration.html), [theming](https://mermaid.js.org/config/theming.html), [layouts](https://mermaid.js.org/config/layouts.html), and [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli).

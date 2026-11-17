@@ -1,221 +1,40 @@
 ---
 name: excalidraw
-description: "Use when working with *.excalidraw or *.excalidraw.json files, user mentions diagrams/flowcharts, or requests architecture visualization - delegates all Excalidraw operations to subagents to prevent context exhaustion from verbose JSON (single files: 4k-22k tokens, can exceed read limits)"
+description: Create, inspect, compare, and edit Excalidraw diagrams and .excalidraw or .excalidraw.json files. Use for editable sketches, whiteboard layouts, or an existing Excalidraw artifact; preserve the user's chosen notation and format for other diagram tasks.
 ---
 
-# Excalidraw Subagent Delegation
+# Excalidraw
 
-## Overview
+Keep the diagram editable and make the requested visual change with minimal disruption to its existing content.
 
-**Core principle:** Main agents NEVER read Excalidraw files directly. Always delegate to subagents to isolate context consumption.
+## Choose an approach
 
-Excalidraw files are JSON with high token cost but low information density. Single files range from 4k-22k tokens (largest can exceed read tool limits). Reading multiple diagrams quickly exhausts context budget (7 files = 67k tokens = 33% of budget).
+- Identify the requested operation and source artifact. Use an available Excalidraw editor or integration when it supports the task; otherwise work with the scene data and available local tools.
+- Excalidraw JSON can be verbose. Inspect file size, element counts, labels, IDs, and relevant connections through bounded queries before loading a whole large scene. Retain geometry and bindings when they matter to the task; text alone cannot establish arrow direction or grouping.
+- Small, focused inspections and edits can be handled directly. For large files, comparisons, or substantial layout work, the main agent may delegate a bounded task when authorized and useful. Follow project rules about who may delegate; a worker must not spawn another worker where only the lead may do so. If delegation is unavailable, use focused extraction and continue directly.
+- Do not convert an existing diagram to another format, replace it with a raster image, or rebuild unrelated areas merely to simplify editing.
 
-## The Problem
+## Inspect, create, or edit
 
-Excalidraw JSON structure:
-- Each shape has 20+ properties (x, y, width, height, strokeColor, seed, version, etc.)
-- Most properties are visual metadata (positioning, styling, roughness)
-- Actual content: text labels and element relationships (<10% of file)
-- **Signal-to-noise ratio is extremely low**
+For an explanation or comparison, identify visible elements, arrows, labels, groups, and relevant differences. Distinguish visible relationships from inferred intent; check the rendered view when geometry affects the interpretation. Do not mutate the artifact for a read-only request.
 
-Example: 14-element diagram = 596 lines, 16K, ~4k tokens. 79-element diagram = 2,916 lines, 88K, ~22k tokens (exceeds read limit).
+For creation, use the requested content and level of detail. Select a clear reading direction, consistent shape meanings, enough spacing for labels, and a restrained palette. Return an editable scene file; add PNG or SVG exports when requested or needed for inspection.
 
-## When to Use
+For edits:
 
-**Trigger on ANY of these:**
-- File path contains `.excalidraw` or `.excalidraw.json`
-- User requests: "explain/update/create diagram", "show architecture", "visualize flow"
-- User mentions: "flowchart", "architecture diagram", "Excalidraw file"
-- Architecture/design documentation tasks involving visual artifacts
+- Preserve unaffected element IDs, content, styles, stacking order, groups, frames, embedded image data, and scene settings. Add unique IDs for new elements.
+- Update labels together with their text dimensions and container relationships. Keep arrow endpoints, bindings, and reciprocal bound-element references consistent when adding, moving, or removing connected shapes. Preserve image `fileId` links and their `files` entries.
+- Use supported APIs or an existing valid scene's conventions for the installed version. A JSON object that parses is not necessarily a valid or usable Excalidraw scene. Do not regenerate the entire scene to change one label.
+- When programmatic creation is useful, check the installed API and consult [element conversion](https://plus.excalidraw.com/docs/sdk/excalidraw/api/excalidraw-element-skeleton). `convertToExcalidrawElements` can create elements, text containers, and arrow bindings from skeletons. It regenerates IDs by default; use the installed version's ID-preservation option when retaining existing IDs matters. [Restore utilities](https://docs.excalidraw.com/docs/@excalidraw/excalidraw/api/utils/restore) and [export utilities](https://docs.excalidraw.com/docs/@excalidraw/excalidraw/api/utils/export) are available in supported versions; do not assume their signatures or the SDK are installed.
 
-**Use delegation even for:**
-- "Small" files (smallest is 4k tokens - still significant)
-- "Quick checks" (checking component names still loads full JSON)
-- Single file operations (isolation prevents context pollution)
-- Modifications (don't need full format understanding in main context)
+## Validate the outcome
 
-## Delegation Pattern
+- Parse changed scene JSON and inspect identifiers and changed relationships for duplicate or dangling references. Check that unrelated content and embedded assets remain present.
+- Open the scene in a compatible Excalidraw renderer or export it using available tooling, then visually inspect the changed area and its surrounding connections. Check text fit, arrow direction, crossings, spacing, overlap, clipping, and legibility at the intended size.
+- For an interactive edit, confirm that the scene remains editable and bound text and arrows behave as intended. Inspect the result after the change, not only a pre-edit screenshot.
+- If a renderer is unavailable, state that only structural checks were performed and identify any remaining visual uncertainty. Do not call a scene visually verified from JSON checks alone.
+- Deliver the requested artifact path or explanation, a concise change summary, and checks actually performed. Do not return a whole scene's raw JSON in chat unless requested.
 
-### Main Agent Responsibilities
+## When delegating
 
-**NEVER:**
-- ❌ Use Read tool on *.excalidraw files
-- ❌ Parse Excalidraw JSON in main context
-- ❌ Load multiple diagrams for comparison
-- ❌ Inspect file to "understand the format"
-
-**ALWAYS:**
-- ✅ Delegate ALL Excalidraw operations to subagents
-- ✅ Provide clear task description to subagent
-- ✅ Request text-only summaries (not raw JSON)
-- ✅ Keep diagram analysis isolated from main work
-
-### Subagent Task Templates
-
-#### Read/Understand Operation
-```
-Task: Extract and explain the components in [file.excalidraw.json]
-
-Approach:
-1. Read the Excalidraw JSON
-2. Extract only text elements (ignore positioning/styling)
-3. Identify relationships between components
-4. Summarize architecture/flow
-
-Return:
-- List of components/services with descriptions
-- Connection/dependency relationships
-- Key insights about the architecture
-- DO NOT return raw JSON or verbose element details
-```
-
-#### Modify Operation
-```
-Task: Add [component] to [file.excalidraw.json], connected to [existing-component]
-
-Approach:
-1. Read file to identify existing elements
-2. Find [existing-component] and its position
-3. Create new element JSON for [component]
-4. Add arrow elements for connections
-5. Write updated file
-
-Return:
-- Confirmation of changes made
-- Position of new element
-- IDs of created elements
-```
-
-#### Create Operation
-```
-Task: Create new Excalidraw diagram showing [description]
-
-Approach:
-1. Design layout for [number] components
-2. Create rectangle elements with text labels
-3. Add arrows showing relationships
-4. Use consistent styling (colors, fonts)
-5. Write to [file.excalidraw.json]
-
-Return:
-- Confirmation of file created
-- Summary of components included
-- File location
-```
-
-#### Compare Operation
-```
-Task: Compare architecture approaches in [file1] vs [file2]
-
-Approach:
-1. Read both files
-2. Extract text labels from each
-3. Identify structural differences
-4. Compare component relationships
-
-Return:
-- Key differences in architecture
-- Components unique to each approach
-- Relationship/flow differences
-- DO NOT return full element details from both files
-```
-
-## Common Rationalizations (STOP and Delegate Instead)
-
-| Excuse | Reality | What to Do |
-|--------|---------|------------|
-| "Direct reading is most efficient" | Consumes 4k-22k tokens unnecessarily | Delegate to subagent |
-| "It's token-efficient to read directly" | Baseline tests showed 9-45% budget used | Always delegate |
-| "This is optimal for one-time analysis" | "One-time" still pollutes main context | Subagent isolation |
-| "The JSON is straightforward" | Simplicity ≠ token efficiency | Delegate anyway |
-| "I need to understand the format" | Format understanding not needed in main agent | Subagent handles format |
-| "Within reasonable bounds" (18k tokens) | "Reasonable" is subjective rationalization | Hard rule: delegate |
-| "Just a quick check of components" | "Quick check" still loads full JSON | Extract text via subagent |
-| "File is small (16K)" | 4k tokens is NOT small | Size threshold doesn't matter |
-
-## Red Flags - STOP and Delegate
-
-Catch yourself about to:
-- Use Read tool on .excalidraw file
-- "Quickly check" what components exist
-- "Understand the structure" before modifying
-- Load file to "see what's there"
-- Compare multiple diagrams side-by-side
-- Parse JSON to "extract just the text"
-
-**All of these mean: Use Task tool with subagent instead.**
-
-## Quick Reference
-
-| Operation | Main Agent Action | Subagent Returns |
-|-----------|-------------------|------------------|
-| **Understand diagram** | Delegate with "Extract and explain" template | Component list + relationships |
-| **Modify diagram** | Delegate with "Add [X] connected to [Y]" template | Confirmation + changes made |
-| **Create diagram** | Delegate with "Create showing [description]" template | File location + summary |
-| **Compare diagrams** | Delegate with "Compare [A] vs [B]" template | Key differences (not raw JSON) |
-
-## Token Analysis (Why This Matters)
-
-Real data from baseline testing:
-
-| Scenario | Without Delegation | With Delegation | Savings |
-|----------|-------------------|-----------------|---------|
-| Single large file | 22k tokens (45% budget) | ~500 tokens (subagent summary) | 98% |
-| Two-file comparison | 18k tokens (9% budget) | ~800 tokens (diff summary) | 96% |
-| Modification task | 14k tokens (7% budget) | ~300 tokens (confirmation) | 98% |
-
-**Context pollution impact:**
-- Reading all 7 project diagrams: 67k tokens (33% of 200k budget)
-- With delegation: ~2k tokens (isolated in subagents)
-- **Savings: 97% context budget preserved**
-
-## Implementation Example
-
-**❌ BAD (Direct Read):**
-```
-User: "What architecture is shown in detailed-architecture.excalidraw.json?"
-Agent: Let me read that file... [reads 22k tokens into main context]
-```
-
-**✅ GOOD (Subagent Delegation):**
-```
-User: "What architecture is shown in detailed-architecture.excalidraw.json?"
-Agent: I'll use a subagent to extract the architecture details.
-
-[Dispatches Task tool with general-purpose subagent]
-Task: Extract and explain components in .ryanquinn3/ticketing/detailed-architecture.excalidraw.json
-
-[Receives ~500 token summary with component list and relationships]
-[Responds to user with architecture explanation, main context preserved]
-```
-
-## Why "Straightforward JSON" Doesn't Matter
-
-Agents often rationalize: "The format is simple, I can just read it."
-
-**The problem isn't complexity - it's verbosity:**
-- Simple structure with 20+ properties per element
-- Repetitive metadata (seed, version, nonce, roughness)
-- Positioning data (x, y, width, height) not semantically useful
-- Visual styling (strokeColor, opacity, fillStyle) irrelevant to content
-
-**Token cost comes from volume, not complexity.**
-
-Even "straightforward" JSON consumes 4k-22k tokens because:
-- 79 elements × ~280 tokens/element = 22k tokens
-- Most tokens are metadata noise
-- Only text labels and relationships matter (~10% of content)
-
-## The Iron Law
-
-**Main agents NEVER read Excalidraw files. No exceptions.**
-
-Not for:
-- "Quick checks"
-- "Small files"
-- "Understanding format"
-- "One-time analysis"
-- "Optimal efficiency"
-
-**Always delegate. Isolation is free via subagents.**
+The lead keeps ownership of scope and final verification. Specify the objective, source files, allowed edit paths or read-only scope, applicable rules, and the output needed: a short semantic summary or changed artifact paths, IDs needed for integration, checks performed, and remaining uncertainty. Request no raw full-scene JSON in the response. The lead reviews the actual artifact and evidence before accepting the result.

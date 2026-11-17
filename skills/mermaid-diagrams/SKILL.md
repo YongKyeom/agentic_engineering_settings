@@ -1,217 +1,53 @@
 ---
 name: mermaid-diagrams
-description: Comprehensive guide for creating software diagrams using Mermaid syntax. Use when users need to create, visualize, or document software through diagrams including class diagrams (domain modeling, object-oriented design), sequence diagrams (application flows, API interactions, code execution), flowcharts (processes, algorithms, user journeys), entity relationship diagrams (database schemas), C4 architecture diagrams (system context, containers, components), state diagrams, git graphs, pie charts, gantt charts, or any other diagram type. Triggers include requests to "diagram", "visualize", "model", "map out", "show the flow", or when explaining system architecture, database design, code structure, or user/application flows.
+description: Create, edit, and validate Mermaid diagrams for software and process documentation, including flows, sequences, states, class models, ERDs, and architecture views. Use when Mermaid is requested or text-based diagrams suit the requested explanation; preserve a user's chosen diagram format.
 ---
 
-# Mermaid Diagramming
+# Mermaid Diagrams
 
-Create professional software diagrams using Mermaid's text-based syntax. Mermaid renders diagrams from simple text definitions, making diagrams version-controllable, easy to update, and maintainable alongside code.
+Produce a diagram that answers the user's question and remains easy to edit in its destination.
 
-## Core Syntax Structure
+## Scope and diagram choice
 
-All Mermaid diagrams follow this pattern:
+- Preserve the requested notation, source file, language, and delivery format. A small edit should retain the existing diagram's structure and styling unless the requested change requires more.
+- Choose the view from the question being answered. An architecture request does not require a C4 hierarchy, a database schema, or a source-code audit. Use supplied facts first; inspect relevant implementation only when the requested diagram needs it.
+- Keep facts, proposals, and unknowns distinct. Do not invent components, calls, cardinalities, protocols, or behavior to fill a view.
+- A diagram should clarify a relationship, sequence, state, or decision. Ordinary prose or a table may be sufficient. For publication-quality research figures, use the document's scientific and layout requirements rather than treating Mermaid as the default.
 
-```mermaid
-diagramType
-  definition content
-```
+Read only the reference needed for the chosen view:
 
-**Key principles:**
-- First line declares diagram type (e.g., `classDiagram`, `sequenceDiagram`, `flowchart`)
-- Use `%%` for comments
-- Line breaks and indentation improve readability but aren't required
-- Unknown words break diagrams; parameters fail silently
+| Question | View and reference |
+| --- | --- |
+| What happens next; where does a decision branch? | [Flowchart](references/flowcharts.md) |
+| Who calls whom, and in what order? | [Sequence](references/sequence-diagrams.md) |
+| What classes or domain concepts relate? | [Class](references/class-diagrams.md) |
+| What entities and cardinalities are modeled? | [ERD](references/erd-diagrams.md) |
+| What systems, applications, or components are in scope? | [C4 syntax](references/c4-diagrams.md), when that notation is useful |
+| How are infrastructure resources connected? | [Architecture syntax](references/architecture-diagrams.md), when supported by the renderer |
+| How should styling, layout, embedding, or export work? | [Configuration and export](references/advanced-features.md) |
 
-## Diagram Type Selection Guide
+For other types, consult the relevant [official syntax documentation](https://mermaid.js.org/intro/syntax-reference.html), such as [state diagrams](https://mermaid.js.org/syntax/stateDiagram.html), [Gantt](https://mermaid.js.org/syntax/gantt.html), or [git graphs](https://mermaid.js.org/syntax/gitgraph.html). Verify less familiar syntax against the renderer's version.
 
-**Choose the right diagram type:**
+## Author and refine
 
-1. **Class Diagrams** - Domain modeling, OOP design, entity relationships
-   - Domain-driven design documentation
-   - Object-oriented class structures
-   - Entity relationships and dependencies
+1. Identify the intended reader, the specific question, and the target document or renderer from the request. Ask only if an unresolved choice changes the result.
+2. Include the elements and relationships needed for that question. Use stable, simple IDs and readable labels; keep related diagrams' names consistent.
+3. Select direction and grouping for the available page width. Shorten labels or split views when the result becomes unreadable; do not shrink text to fit an overloaded canvas. Use color and shape consistently, with labels carrying the meaning.
+4. Render the changed diagram when a compatible tool or preview is available. Inspect labels, crossings, arrow direction, clipped content, contrast, and legibility at the intended size; patch and rerender affected output.
+5. Return or save the requested Mermaid source and any requested export. Briefly state assumptions and the checks actually performed. Syntax validation alone does not establish visual quality or factual accuracy.
 
-2. **Sequence Diagrams** - Temporal interactions, message flows
-   - API request/response flows
-   - User authentication flows
-   - System component interactions
-   - Method call sequences
-
-3. **Flowcharts** - Processes, algorithms, decision trees
-   - User journeys and workflows
-   - Business processes
-   - Algorithm logic
-   - Deployment pipelines
-
-4. **Entity Relationship Diagrams (ERD)** - Database schemas
-   - Table relationships
-   - Data modeling
-   - Schema design
-
-5. **C4 Diagrams** - Software architecture at multiple levels
-   - System Context (systems and users)
-   - Container (applications, databases, services)
-   - Component (internal structure)
-   - Code (class/interface level)
-
-6. **State Diagrams** - State machines, lifecycle states
-7. **Git Graphs** - Version control branching strategies
-8. **Gantt Charts** - Project timelines, scheduling
-9. **Pie/Bar Charts** - Data visualization
-
-## Quick Start Examples
-
-### Class Diagram (Domain Model)
-```mermaid
-classDiagram
-    Title -- Genre
-    Title *-- Season
-    Title *-- Review
-    User --> Review : creates
-
-    class Title {
-        +string name
-        +int releaseYear
-        +play()
-    }
-
-    class Genre {
-        +string name
-        +getTopTitles()
-    }
-```
-
-### Sequence Diagram (API Flow)
-```mermaid
-sequenceDiagram
-    participant User
-    participant API
-    participant Database
-
-    User->>API: POST /login
-    API->>Database: Query credentials
-    Database-->>API: Return user data
-    alt Valid credentials
-        API-->>User: 200 OK + JWT token
-    else Invalid credentials
-        API-->>User: 401 Unauthorized
-    end
-```
-
-### Flowchart (User Journey)
-```mermaid
-flowchart TD
-    Start([User visits site]) --> Auth{Authenticated?}
-    Auth -->|No| Login[Show login page]
-    Auth -->|Yes| Dashboard[Show dashboard]
-    Login --> Creds[Enter credentials]
-    Creds --> Validate{Valid?}
-    Validate -->|Yes| Dashboard
-    Validate -->|No| Error[Show error]
-    Error --> Login
-```
-
-### ERD (Database Schema)
-```mermaid
-erDiagram
-    USER ||--o{ ORDER : places
-    ORDER ||--|{ LINE_ITEM : contains
-    PRODUCT ||--o{ LINE_ITEM : includes
-
-    USER {
-        int id PK
-        string email UK
-        string name
-        datetime created_at
-    }
-
-    ORDER {
-        int id PK
-        int user_id FK
-        decimal total
-        datetime created_at
-    }
-```
-
-## Detailed References
-
-For in-depth guidance on specific diagram types, see:
-
-- **[references/class-diagrams.md](references/class-diagrams.md)** - Domain modeling, relationships (association, composition, aggregation, inheritance), multiplicity, methods/properties
-- **[references/sequence-diagrams.md](references/sequence-diagrams.md)** - Actors, participants, messages (sync/async), activations, loops, alt/opt/par blocks, notes
-- **[references/flowcharts.md](references/flowcharts.md)** - Node shapes, connections, decision logic, subgraphs, styling
-- **[references/erd-diagrams.md](references/erd-diagrams.md)** - Entities, relationships, cardinality, keys, attributes
-- **[references/c4-diagrams.md](references/c4-diagrams.md)** - System context, container, component diagrams, boundaries
-- **[references/architecture-diagrams.md](references/architecture-diagrams.md)** - Cloud services, infrastructure, CI/CD deployments
-- **[references/advanced-features.md](references/advanced-features.md)** - Themes, styling, configuration, layout options
-
-## Best Practices
-
-1. **Start Simple** - Begin with core entities/components, add details incrementally
-2. **Use Meaningful Names** - Clear labels make diagrams self-documenting
-3. **Comment Extensively** - Use `%%` comments to explain complex relationships
-4. **Keep Focused** - One diagram per concept; split large diagrams into multiple focused views
-5. **Version Control** - Store `.mmd` files alongside code for easy updates
-6. **Add Context** - Include titles and notes to explain diagram purpose
-7. **Iterate** - Refine diagrams as understanding evolves
-
-## Configuration and Theming
-
-Configure diagrams using frontmatter:
+A small flowchart can start with:
 
 ```mermaid
----
-config:
-  theme: base
-  themeVariables:
-    primaryColor: "#ff6b6b"
----
 flowchart LR
-    A --> B
+    request["Receive request"] --> valid{"Valid?"}
+    valid -->|Yes| process["Process request"]
+    valid -->|No| error["Return validation error"]
 ```
 
-**Available themes:** default, forest, dark, neutral, base
+## Compatibility and verification
 
-**Layout options:**
-- `layout: dagre` (default) - Classic balanced layout
-- `layout: elk` - Advanced layout for complex diagrams (requires integration)
-
-**Look options:**
-- `look: classic` - Traditional Mermaid style
-- `look: handDrawn` - Sketch-like appearance
-
-## Exporting and Rendering
-
-**Native support in:**
-- GitHub/GitLab - Automatically renders in Markdown
-- VS Code - With Markdown Mermaid extension
-- Notion, Obsidian, Confluence - Built-in support
-
-**Export options:**
-- [Mermaid Live Editor](https://mermaid.live) - Online editor with PNG/SVG export
-- Mermaid CLI - `npm install -g @mermaid-js/mermaid-cli` then `mmdc -i input.mmd -o output.png`
-- Docker - `docker run --rm -v $(pwd):/data minlag/mermaid-cli -i /data/input.mmd -o /data/output.png`
-
-## Common Pitfalls
-
-- **Breaking characters** - Avoid `{}` in comments, use proper escape sequences for special characters
-- **Syntax errors** - Misspellings break diagrams; validate syntax in Mermaid Live
-- **Overcomplexity** - Split complex diagrams into multiple focused views
-- **Missing relationships** - Document all important connections between entities
-
-## When to Create Diagrams
-
-**Always diagram when:**
-- Starting new projects or features
-- Documenting complex systems
-- Explaining architecture decisions
-- Designing database schemas
-- Planning refactoring efforts
-- Onboarding new team members
-
-**Use diagrams to:**
-- Align stakeholders on technical decisions
-- Document domain models collaboratively
-- Visualize data flows and system interactions
-- Plan before coding
-- Create living documentation that evolves with code
+- Use the destination's renderer when possible. Mermaid versions, enabled diagram types, fonts, icons, configuration, and security settings differ between hosts. A successful local render does not prove the same result in GitHub, Notion, an editor, or a slide exporter.
+- Prefer existing local tooling. With Mermaid CLI available, export an image for inspection, for example `rtk proxy mmdc -i diagram.mmd -o diagram.svg`. Use the command without the RTK prefix where RTK is unavailable. Check `mmdc --help` before relying on version-specific flags.
+- If the target renderer rejects a feature, simplify while preserving meaning or propose a compatible notation. Do not silently change the requested notation. Avoid global installation or host configuration changes solely to obtain a preview.
+- If rendering is unavailable, check the source against the applicable syntax and explicitly report that rendering and visual inspection were not performed. Do not claim a diagram is validated from a code block alone.

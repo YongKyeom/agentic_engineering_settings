@@ -28,7 +28,7 @@ PRD 초안, task breakdown, 실험 계획, 실행 순서, 조사 메모처럼 �
 
 ```text
 YYYYMMDD_topic-plan.md
-YYYYMMDD_feature-name-v1-prd.md
+YYYYMMDD_feature-name-v1-plan.md
 YYYYMMDD_experiment-name-plan.md
 YYYYMMDD_refactor-target-plan.md
 ```
@@ -37,6 +37,14 @@ YYYYMMDD_refactor-target-plan.md
 
 ```md
 # Title
+
+## 현재 현황 (YYYY-MM-DD)
+
+| 작업 | 담당 | 상태 | 완료 판정·근거 | 다음 조치 |
+|---|---|---|---|---|
+| 기능 단위 | 담당자 | 예정 | 검증 가능한 완료 기준 | 착수할 일 |
+
+상태는 `예정 / 진행 / 대기 / 완료 / 제외`를 사용합니다. 대기에는 담당·차단 사유·재개 조건을 적습니다.
 
 ## Goal
 
@@ -56,12 +64,18 @@ YYYYMMDD_refactor-target-plan.md
 
 ## Tasks
 
-- [ ] Task 1
-- [ ] Task 2
+작업별 상세 스펙·소유 파일·의존 관계·완료 기준을 적고 상단 현황 표의 작업과 연결합니다.
+같은 작업의 담당·상태·다음 조치를 별도 목록에서 중복 관리하지 않습니다.
 
 ## Validation
 
-완료 전에 확인해야 할 테스트, lint, type check, manual check를 적습니다.
+완료 전에 확인해야 할 테스트, lint, type check, manual check와 실제 결과를 적습니다.
+대상 범위·commit, 명령·exit code·실제 결과·근거 경로를 간결한 표로 남깁니다.
+Mock·실모델·Live·외부 연동과 실행하지 못한 검증을 구분합니다.
+
+## 시행착오·결정 이력
+
+문제·원인·수용/기각한 조치·결과를 적습니다. 원문 로그는 문서 밖에 두고 필요한 근거로 연결합니다.
 
 ## Risks
 

@@ -1,12 +1,12 @@
 # Decisions Directory Rules
 
-This directory holds ADRs. The writing procedure, numbering, 6-section template,
-and supersede model are owned by the `decision-record` skill; `README.md` has the
-folder convention. Ask the agent "ADR 남겨줘" to create one.
+This directory holds ADRs. Follow [the docs guide](../AGENTS.md#유형별-템플릿) for the writing procedure, numbering, 6-section template, and supersede model. Use `decision-record` for ADR authoring; `README.md` has the folder convention.
 
 - An ADR is committed as shared documentation (unlike `plan/` and `handoff/`).
+- ADR local-file links must point to Git-tracked files. Do not link to ignored or untracked plans, handoffs, artifacts, or other local files; move needed evidence into a tracked integration document or another suitable tracked document first. External references should be accessible to the team.
 - When a decision is made on a `feature/` or `fix/` branch, put its ADR in the SAME branch and merge it together with the implementation
   — never split the decision record from the code it justifies in history (see `docs/git-convention.md`).
+- Keep the decision date in the top metadata. Summarize current decisions, reasons, and impacts concisely in the body; keep dated progress and pre-change judgments in revision history. Detailed execution and test records belong in the Plan.
 
 ## ADR Scope Gate
 

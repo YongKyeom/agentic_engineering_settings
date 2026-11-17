@@ -1,0 +1,46 @@
+# OS 특성 파일
+.DS_Store
+Thumbs.db
+
+# Python-generated files
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+*.py[co]
+build/
+wheels/
+.coverage
+htmlcov/
+dist/
+*.egg-info/
+
+# Setting files
+.env
+.env.*
+!.env.example
+
+# Virtual environments
+.venv/
+
+# IDE 및 에디터 설정
+.vscode/
+.idea/
+
+# AI 도구 데이터 전체 무시 (단, skills 폴더는 예외)
+.claude/*
+!.claude/skills/
+!.claude/skills/**
+.codex/*
+.agents/*
+!.agents/skills/
+!.agents/skills/**
+.serena/
+
+# Log
+log/*
+!log/.gitkeep
+
+# Test files
+artifacts/*

@@ -1,109 +1,54 @@
----
-description: Curated catalog of software engineering principles. Load this before analyzing code changes so you can map observations to named principles.
----
-
 # Software Engineering Principles
 
-Use this as a lookup table. When you spot a pattern in a diff, find the matching principle here. Each entry includes **code signals** -- what to look for in actual changes.
+Optional vocabulary for explaining a pattern already supported by the work. The signals below suggest questions to investigate, rather than proving a principle was applied or violated. Describe the concrete change and consequence first; omit a principle name when it adds no clarity.
 
-## Design Principles (SOLID)
+## Design principles
 
-**Single Responsibility Principle (SRP)**
-A module should have one reason to change.
-Code signals: A class/file was split into two. A function was extracted. A component stopped handling both UI and data fetching.
+| Principle | Meaning and evidence to consider |
+|---|---|
+| Single Responsibility (SRP) | Group behavior that changes for the same reason. A class split can help when its responsibilities evolve independently; extraction alone does not establish improvement. |
+| Open/Closed (OCP) | Support relevant variation through stable extension points. A hook, strategy, or plugin can reduce repeated edits when the variation is real; speculative extension points add cost. |
+| Liskov Substitution (LSP) | A replacement must preserve the contract callers rely on, including outcomes, invariants, preconditions, and failures. Inspect caller behavior or contract tests; introducing an interface does not prove substitutability. |
+| Interface Segregation (ISP) | Clients should depend only on the operations they need. Splitting an interface helps when distinct clients have distinct contracts; many tiny interfaces can add indirection. |
+| Dependency Inversion (DIP) | Let policy depend on a suitable contract rather than a concrete mechanism. Injection or a provider can isolate a genuine dependency boundary; changed import syntax is insufficient evidence. |
+| Composition over inheritance | Delegation can make behavior easier to vary without coupling it to a hierarchy. Compare the actual contract and state interactions before recommending a replacement. |
 
-**Open/Closed Principle (OCP)**
-Open for extension, closed for modification.
-Code signals: New behavior added without changing existing code. A plugin/hook/callback system introduced. Strategy pattern or configuration used instead of conditionals.
+## Simplicity principles
 
-**Liskov Substitution Principle (LSP)**
-Subtypes must be substitutable for their base types.
-Code signals: An interface was introduced to unify implementations. A subclass override changed behavior in a way that broke callers (violation). Type narrowing or guards added.
+| Principle | Meaning and evidence to consider |
+|---|---|
+| DRY | Give shared knowledge one authoritative representation. Extraction is useful when the duplicated rule must change together; visually similar code may have different owners. |
+| KISS | Use the simplest solution that meets the requirements. Removed indirection can help, but fewer lines do not establish simpler behavior or a complete fix. |
+| YAGNI | Avoid speculative capability without a present requirement. Removed options or generalized behavior may illustrate this; confirmed compatibility and recovery requirements still count. |
+| Rule of Three | Repeated concrete cases can reveal the right abstraction. Three is a heuristic, not a required wait or extraction threshold; use change coupling, risk, and known variation. |
+| Least Surprise | Align behavior with the relevant caller or user contract. Clear names, consistent return types, and explicit effects help when they match those expectations. |
 
-**Interface Segregation Principle (ISP)**
-No client should depend on methods it doesn't use.
-Code signals: A large interface was split into smaller ones. Optional methods removed from an interface. A "fat" props object was broken into focused ones.
+## Structure and ownership
 
-**Dependency Inversion Principle (DIP)**
-Depend on abstractions, not concretions.
-Code signals: A concrete dependency replaced with an interface/injection. A factory or provider pattern introduced. Import paths changed from specific implementations to abstract layers.
+| Principle | Meaning and evidence to consider |
+|---|---|
+| Separation of concerns | Put distinct responsibilities behind useful boundaries, such as domain logic apart from rendering or persistence. Confirm that responsibilities and interactions became clearer. |
+| High cohesion | Keep behavior that serves the same responsibility together. Moving scattered code can help when the new grouping reflects actual change reasons. |
+| Loose coupling | Reduce unnecessary knowledge between modules while retaining required contracts. Events or callbacks can introduce hidden dependencies too; inspect the resulting flow. |
+| Encapsulation | Expose operations that preserve invariants and limit unsupported access. Reducing public methods matters when callers still have the operations they need. |
+| Information hiding | Hide design decisions or representations likely to change behind stable contracts. An accessor alone may still expose internal structure; inspect what callers must know. |
 
-**Composition over Inheritance**
-Favor object composition over class inheritance.
-Code signals: Inheritance hierarchy replaced with delegation. Mixins or HOCs replaced with hooks or composition. A "base class" was removed.
+## Pragmatic principles
 
-## Simplicity Principles
+| Principle | Meaning and evidence to consider |
+|---|---|
+| Boy Scout Rule | Relevant local cleanup can make the requested change easier to understand. It does not authorize unrelated cleanup or expanding a bounded patch. |
+| Fail fast | Detect an invalid condition near the appropriate boundary before it causes misleading or damaging work. Preserve recovery and distinguish invalid input from expected absence. |
+| Defensive programming | Handle realistic unexpected inputs according to the contract. Null checks or defaults help only when they do not conceal invalid state or weaken validation. |
+| Avoid premature optimization | Establish a relevant bottleneck and compare behavior before adding complexity. A profile or benchmark can support a decision; a claimed speedup needs comparable measured results. |
 
-**DRY (Don't Repeat Yourself)**
-Every piece of knowledge should have a single representation.
-Code signals: Duplicate code extracted into a shared function. A constant replaced repeated literals. A template/generator replaced copy-pasted boilerplate.
+## Refactoring vocabulary
 
-**KISS (Keep It Simple, Stupid)**
-The simplest solution that works is the best.
-Code signals: A complex abstraction replaced with a straightforward implementation. Unnecessary indirection removed. A clever one-liner replaced with readable code.
+These describe transformations, not evidence of benefit by themselves:
 
-**YAGNI (You Aren't Gonna Need It)**
-Don't build it until you actually need it.
-Code signals: Speculative features removed. Unused configuration options deleted. An over-engineered solution simplified to match actual requirements.
+- **Extract function:** Name a coherent operation or remove shared knowledge when the extraction clarifies behavior.
+- **Extract class/module:** Establish a useful responsibility boundary without obscuring required interactions.
+- **Replace conditional with polymorphism:** Represent genuine behavioral variation through a stable contract; compare it with a straightforward conditional.
+- **Introduce parameter object:** Group related values with shared meaning or invariants; avoid hiding unrelated arguments in a generic object.
 
-**Rule of Three**
-Wait until the third duplication before abstracting.
-Code signals: Similar code exists in 2 places and was left alone (good). A premature abstraction was introduced after only one use (violation). Third occurrence triggered extraction (textbook application).
-
-**Principle of Least Surprise**
-Code should behave the way most users would expect.
-Code signals: A function renamed to better describe what it does. Return types made consistent. Side effects made explicit or removed.
-
-## Structural Principles
-
-**Separation of Concerns**
-Different responsibilities should live in different modules.
-Code signals: Business logic extracted from UI components. Data access separated from domain logic. Configuration separated from behavior. A "god file" split into focused modules.
-
-**High Cohesion**
-Related functionality should live together.
-Code signals: Scattered related functions gathered into one module. A utility file broken up so each piece lives near its consumers. A feature folder created.
-
-**Loose Coupling**
-Modules should depend on each other as little as possible.
-Code signals: Direct imports replaced with events/callbacks. A shared dependency removed. Modules communicate through well-defined interfaces instead of reaching into internals.
-
-**Encapsulation**
-Hide internal details, expose only what's necessary.
-Code signals: Public methods reduced. Internal helpers made private. A module's API surface shrunk. Implementation details hidden behind a facade.
-
-**Information Hiding**
-Modules should not expose their internal data structures.
-Code signals: Raw data structures wrapped in accessor methods. Internal state made private. A data transformation moved inside the module that owns the data.
-
-## Pragmatic Principles
-
-**Boy Scout Rule**
-Leave the code better than you found it.
-Code signals: Small cleanups alongside a feature change. A renamed variable for clarity. A dead code path removed. An outdated comment updated.
-
-**Fail Fast**
-Detect and report errors as early as possible.
-Code signals: Input validation added at entry points. Assertions added for invariants. Early returns replacing deep nesting. Error handling moved closer to the source.
-
-**Defensive Programming**
-Anticipate and handle unexpected inputs gracefully.
-Code signals: Null checks added. Default values provided. Edge cases handled. Error boundaries introduced.
-
-**Premature Optimization (avoiding it)**
-Don't optimize until you've measured.
-Code signals: A simple implementation chosen over a "faster" complex one. Readability prioritized over micro-performance. A profiling step added before optimization work.
-
-## Refactoring Patterns
-
-**Extract Method/Function**
-Code signals: A long function split into named sub-functions. Inline logic replaced with a well-named call.
-
-**Extract Class/Module**
-Code signals: A file split into multiple files. A class split into two with distinct responsibilities.
-
-**Replace Conditional with Polymorphism**
-Code signals: A switch/if-else chain replaced with a strategy pattern or subclass dispatch. A type map introduced.
-
-**Introduce Parameter Object**
-Code signals: Multiple related parameters grouped into a single options/config object. Function signatures simplified.
+For each lesson, explain which condition made the technique useful in this event and what evidence supports the claimed result.

@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Create or update handoff documents for agent session continuity and coordination with fellow developers or related departments. Use for session wrap-up, context transfer, work resumption, or requests for a technical or business discussion document. Put an overview, item summary, scope and priorities, decisions needed, and related documents before item-level details. Include explanatory diagrams in collaboration documents. General prose editing alone does not require this skill.
+description: Create requested handoff or collaboration documents, update existing handoff notes, or resume authorized work from a handoff. Use when the user requests context transfer, session wrap-up, or a technical/business discussion document. Context length alone does not trigger a new handoff. Put the overview, item summary, priorities, decisions needed, and related documents before details; include useful diagrams in collaboration documents.
 ---
 
 # Handoff
@@ -11,8 +11,8 @@ Transfer context for work continuity and human review. Create a document for aut
 
 | Mode | Use when | Required reference |
 |---|---|---|
-| Session handoff | Ending work or preparing context for another thread | [Session guide and worked example](references/session-handoff.md) |
-| Collaboration document | Discussing technical direction, business rules, interfaces, or ownership with developers or related departments | [Collaboration guide and worked example](references/collaboration-document.md) |
+| Session handoff | The user requests a wrap-up or context transfer, or an existing handoff needs updating | [Session guide and worked example](references/session-handoff.md) |
+| Collaboration document | The user requests a document for discussing technical direction, business rules, interfaces, or ownership | [Collaboration guide and worked example](references/collaboration-document.md) |
 | Combined document | Human reviewers need a proposal and another agent must continue implementation | Both references; use the collaboration structure and add a separate continuation section |
 | Resume from a handoff | The user asks to continue work from an existing handoff | Session reference; recover and reconcile context, then carry out the authorized next action instead of automatically writing another handoff |
 
@@ -26,16 +26,19 @@ When earlier conversation is unavailable, read the target project's instructions
 
 If the goal or target cannot be recovered, ask the smallest necessary question and identify the missing context. A partial draft is useful only when supported facts remain; do not fill a document with invented progress or pretend to recover a lost conversation.
 
-For resumption, read the user-named handoff or identify the same-topic handoff in the target project. Reconcile its recorded state with current project instructions and evidence before starting the authorized next action. Ask only when unresolved ambiguity changes that action; write or update a handoff only when requested or needed for a later transfer. The authoring workflow below applies when creating or updating a document.
+For resumption, read the user-named handoff or identify the same-topic handoff in the target project. Reconcile its recorded state with current project instructions and evidence before starting the authorized next action. Ask only when unresolved ambiguity changes that action. Update an existing handoff as local rules require; create a separate handoff or perform an explicit transfer only at the user's request. The authoring workflow below applies when creating or updating a document.
 
 ## Location and updates
 
 - Honor explicit user filenames and repository conventions. A request for `HANDOFF.md` means that file.
-- When creating a file without a specified location, use `docs/handoff/YYYYMMDD_<topic>.md` for all document types. Choose a recognizable topic and avoid overwriting a different document created on the same date.
-- A short session handoff can remain in the final answer. A file request or a collaboration-document request requires a file, unless the user asks for a chat-only draft.
+- Context length, an agent finishing its turn, or reading another handoff is not a creation trigger. During ordinary work, update the existing same-topic note; if none exists, report status in the conversation unless the user requests a document.
+- For long-running work, the Plan owns detailed specifications, ownership, dependencies, acceptance, verification, and lessons. Keep only the Plan link, current stage, blockers, and next action in a session handoff. Move growing task detail into the relevant Plan before continuing; do not duplicate its status tables.
+- When creating a handoff file without an explicit filename, use `docs/handoff/YYYYMMDD_<topic>-handoff.md`. Related Plan files use `YYYYMMDD_<slug>-plan.md` under the project's Plan directory. Keep an existing filename when updating it, unless renaming is requested; do not rename earlier artifacts just to apply this default. Choose a recognizable topic and avoid overwriting another document.
+- A short session handoff can remain in the final answer. A request for a standalone file or collaboration artifact should produce a file at the requested or project-default destination. An ordinary discussion or chat-only draft does not require creating a document.
 - Read an existing document before updating it. Refresh session state while retaining decisions and reasons needed for continuity. Preserve valid agreements and evidence in collaboration documents; identify changed or superseded material and why it changed.
 - Do not erase evidence merely because Git might retain it. Link previous handoffs when useful.
 - Document creation does not authorize sending, publishing, or committing it. Record relevant local-artifact handling and follow the user's instructions and project rules.
+- Keep local notes untracked by default and preserve existing shared-document tracking rules. Tracked collaboration documents must reference Git-tracked evidence; move necessary local evidence into a suitable shared document before linking it. Do not expose local Plan/Handoff paths as shared contract references.
 
 ## Authoring workflow
 
@@ -78,18 +81,19 @@ Include diagrams that explain the central relationship or behavior in collaborat
 - Introduce the diagram's main point, then explain important conditions or exceptions. Label current behavior, proposed behavior, and unresolved relationships.
 - Derive behavior, approval conditions, terminal states, and recovery paths from the target project's evidence, never from a reference example.
 - Prefer ASCII in fenced `text` blocks when the reading environment is unknown. ASCII may represent structures, sequences, or transitions; do not reduce every diagram to a list of arrows if a richer layout explains the behavior better.
-- Use Mermaid when the target supports it, and verify actual rendering. Otherwise use ASCII or disclose the rendering limit. Available diagram skills can help with complex diagrams, but are not mandatory dependencies.
+- Use Mermaid when the target supports it and verify actual rendering; use ASCII for a destination without Mermaid support, or disclose the rendering limit. Preserve the requested editable format for sketches. Keep the diagram's facts, source, and verification evidence aligned with the handoff.
 - Check width, Korean and monospace alignment, arrows, and agreement with the prose. Keep review renders separate from final project documents.
 
 ## Writing and evidence
 
 - Write in the requested language and appropriate professional register. Open each paragraph with its main point and keep one topic per paragraph.
-- Apply `writing-clearly-and-concisely` and `humanizer` when available; these instructions must still work without them.
+- Apply `writing-clearly-and-concisely` to document structure and wording, and `humanizer` where formulaic phrasing needs improvement. Reuse the established facts and preserve the author's voice; a prose pass does not reopen settled contracts or verification results.
 - Name concrete actors, actions, conditions, and consequences. Replace abstract claims of optimization or reliability with the actual proposed change supported by the source material.
 - Avoid promotional language, noun stacks, formulaic transitions, repeated summaries, gratuitous negative comparisons, decorative emojis, and excessive bolding. Keep chat greetings and narration of the drafting process out of the document.
 - Place uncertainty where it informs a decision; do not repeat the same caveat in every paragraph or enumerate unrelated excluded features.
 - Preserve meaning, numbers, conditions, ownership, and uncertainty during editing. Do not invent identity, emotions, quotations, agreements, estimates, or verification results.
 - Distinguish facts, proposals, assumptions, and open questions; current implementation from target design; completed work from planned work.
+- Use the project's work-status vocabulary. Where none exists, use planned / in progress / blocked / complete / excluded; attach evidence to completion and an owner and unblock condition to blocked work. Keep the current table up to date rather than accumulating a dated work journal.
 - Explain specialized terms enough for the intended reviewers. Keep technical contracts in the main text when they are the subject of review; move agent-only paths, functions, commands, and logs into a continuation section.
 
 ## Final checks

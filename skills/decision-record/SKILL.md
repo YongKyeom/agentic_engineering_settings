@@ -1,11 +1,11 @@
 ---
 name: decision-record
-description: Record a durable technical decision as an ADR (Architecture Decision Record) in docs/decisions/. Use immediately after an architecture, module-boundary, dependency, framework, storage, or API-contract choice is settled, when a hard-to-reverse direction is set, when performance/security/operations tradeoffs were weighed, or when the user says "ADR", "결정 기록", "decision record", or asks to note down why something was decided. Do NOT use for typo fixes, small refactors, test renames, or one-off local experiments.
+description: Create or update an ADR for a durable architecture, module-boundary, dependency, storage, or public-contract decision. Use when a lasting technical choice needs its rationale recorded, or the user requests an ADR or 결정 기록. Reuse related ADRs for refinements; ordinary progress, small refactors, and temporary experiments do not need new decision records.
 ---
 
 # decision-record
 
-오래 유지해야 하는 기술 결정을 ADR로 기록하는 스킬. 목적은 미래 작업자에게 결정의 "왜"를 남기는 것이다.
+오래 유지해야 하는 기술 결정의 이유와 영향을 기록한다. 사용자 지시와 프로젝트 문서 규칙을 먼저 따른다. 기본 위치는 `docs/decisions/`이며, 기존 문서의 형식·언어와 사용자의 선호를 보존한다.
 
 ## 1. ADR감인지 판정
 
@@ -22,15 +22,24 @@ description: Record a durable technical decision as an ADR (Architecture Decisio
 - 단순 typo 수정, 작은 함수 내부 리팩터링, 테스트 이름 변경.
 - 일회성 로컬 실험, 공유할 필요 없는 임시 계획.
 
+### 기존 ADR 우선 확인
+
+새 문서를 만들거나 기존 문서를 고치기 전에 관련 기능을 한 단위로 확인한다. 결정에 해당하는 권위 소유자, API 흐름, 저장·마이그레이션 체인, 실패·롤백 경계, 검증 기준을 함께 본다. 문구 정리만 요청받았다면 기술 결정을 다시 열지 않는다.
+
+- 폴더 README와 관련 ADR을 기능·권위·테이블·라우트·계약 이름으로 검색한다. 같은 기능이나 계약의 보강이면 기존 ADR을 갱신한다.
+- 작은 검수 지적마다 번호를 추가하지 않는다. 배경·결정·기각 대안·근거·영향을 기존 기록에 통합할 수 있는지 먼저 판단한다.
+- 새 번호는 기존 ADR로 설명할 수 없는 지속적인 결정에만 부여하며, 기존 ADR로 부족한 이유를 배경에 적는다. 방향의 반전은 supersede로 처리한다.
+- 구현 순서·Packet 상태·실행 로그·테스트 결과의 상세 기록은 Plan이 소유한다. ADR에는 결정에 필요한 근거와 검증 기준을 남긴다.
+
 ## 2. 저장 위치
 
-- 기본: 프로젝트의 `docs/decisions/`. 폴더가 없으면 만들지 사용자에게 확인한다.
-- 프로젝트에 다른 ADR 위치 규약이 있으면 그것을 따른다.
+- 사용자가 지정한 위치나 프로젝트의 ADR 규약을 따른다. 별도 규약이 없으면 `docs/decisions/`를 사용한다.
+- ADR 작성이 요청되었고 기본 폴더가 없다면 함께 만든다. 위치가 정해져 있다는 이유만으로 별도 승인을 묻지 않는다. 단순 검토 요청은 문서 작성 권한을 뜻하지 않는다.
 
 ## 3. 채번과 파일명
 
-- 번호가 붙은 `NNNN-*.md` 파일만 대상으로 최대 번호 + 1 (README.md 등 번호 없는 파일은 무시). 번호는 4자리 zero-pad, 시간 순서대로 증가.
-- 파일명은 짧은 영어 kebab-case. 문서 제목은 `# ADR-NNNN: 한국어 제목`.
+- 번호가 붙은 `NNNN-*.md` 파일만 대상으로 최대 번호 + 1 (README.md 등 번호 없는 파일은 무시). 기존 번호가 없으면 `0001`부터 시작한다. 번호는 4자리 zero-pad, 시간 순서대로 증가.
+- 파일명은 짧은 영어 kebab-case. 문서 제목은 `# ADR-NNNN: 제목`으로 쓰고, 아래 언어 규칙을 따른다.
 
 ```text
 0003-business-agent-tool-loop.md
@@ -39,15 +48,15 @@ description: Record a durable technical decision as an ADR (Architecture Decisio
 
 ## 4. 본문 작성
 
-기본 구조. 규모는 결정 크기에 비례한다 — 작은 결정은 배경·결정·영향만, 큰 전환은 전체 섹션을 쓴다.
-작성 전에 [references/example-adr.md](references/example-adr.md)를 읽고 밀도와 문체를 맞춘다.
+기본은 아래 6절 구조다. 규모는 결정 크기에 비례하며, 작은 결정은 각 절을 짧게 쓴다. 검토한 대안이나 검증이 없으면 그 사실과 이유를 밝히고 내용을 만들어 채우지 않는다. 프로젝트가 다른 구조를 명시하면 그 규칙을 따른다.
+기존 ADR이나 아래 템플릿으로 충분하면 바로 작성한다. 더 구체적인 밀도·문체 예시가 필요할 때만 [references/example-adr.md](references/example-adr.md)를 읽는다. 예시의 결정·수치·경로를 실제 근거로 사용하지 않는다.
 
 ```md
 # ADR-NNNN: 제목 — 핵심을 요약하는 한 줄
 
 - 상태: 유효
 - 결정일: YYYY-MM-DD
-- 관련: [NNNN-xxx.md](./NNNN-xxx.md), [../architecture.md](../architecture.md) §N
+- 관련: <실제로 존재하고 공유 가능한 관련 문서 링크; 없으면 없음>
 
 ## 1. 배경
 
@@ -77,18 +86,25 @@ description: Record a durable technical decision as an ADR (Architecture Decisio
 
 작성 원칙:
 
-- 본문은 한국어로 쓴다. 파일명, 코드 식별자, API 명은 영어를 유지한다.
+- 별도 언어 지시나 기존 문서 규약이 없으면 본문은 한국어로 쓴다. 파일명, 코드 식별자, API 명은 영어를 유지한다. 기존 지침을 번역 목적으로 바꾸지 않는다.
 - "좋아서 선택했다"가 아니라 어떤 제약 때문에 선택했는지 쓴다.
 - 기각한 대안과 그 사유를 남긴다 — 같은 대안이 다시 제안되는 것을 막는다.
 - 근거는 실측·재현·문서 대조처럼 검증 가능한 사실로 적고, 이미 실행한 검증과 아직 남은 검증을 구분한다.
 - 관련 ADR·설계 문서는 상호 링크한다. 필요하면 §섹션 단위까지 짚는다.
-- 대화 컨텍스트에서 채우되, 모르는 항목을 추측으로 메꾸지 않는다 — 사실과 추정이 섞이면 기록 가치가 사라진다. 불명확하면 사용자에게 묻는다.
+- 공유 ADR의 로컬 파일 링크는 Git 추적 파일만 가리킨다. ignored/untracked Plan·Handoff·artifact를 연결하지 않는다. 필요한 근거는 승인된 범위 안에서 적절한 공유 문서에 요약한다. 추적 정책을 임의로 바꾸지 않으며, 새 공유 파일의 추가가 필요한 경우 그 상태를 명시한다. 외부 근거는 팀이 접근할 수 있는 출처를 사용한다.
+- 상단 메타데이터의 결정일을 유지하고, 본문에는 현재 결정·이유·영향을 적는다. 날짜별 변경과 이전 판정은 개정 이력에 요약하며, 상세 실행 결과는 Plan에 둔다.
+- 기능·수정 브랜치에서 내린 결정은 구현과 같은 브랜치에서 함께 병합한다. 문서 작성이 commit·push·PR 권한을 부여하지는 않는다.
+- 대화·코드·계약의 확인된 근거로 채운다. 미확인 사실, 검토하지 않은 대안, 아직 실행하지 않은 검증은 그대로 구분한다. 결정·권한·기록의 의미를 바꾸는 미결 사항만 질문하고, 그 외에는 한계를 밝히며 작성한다.
 
 ## 5. 결정이 바뀔 때
 
 - 구현 결과 반영, 부분 개정, 세부 결정(D-n) 하나의 대체는 같은 ADR의 **개정 이력**에 날짜와 함께 추가한다.
 - 결정의 방향 자체가 뒤집히면 새 ADR을 만들고, 옛 문서의 상태를 `대체됨(ADR-NNNN)`으로 바꾼 뒤 상호 링크한다.
-- 어느 쪽이든 기존 내용을 조용히 고치지 않는다 — 결정 이력은 audit trail이라, 조용한 수정은 "당시의 왜"를 파괴한다.
+- 개정할 때 본문을 현재 결정으로 갱신하고, 바뀐 내용·이유·이전 판정은 개정 이력에 남긴다. 본문에 서로 다른 시점의 결론을 누적하지 않으며, 당시 결정의 근거를 설명 없이 지우지 않는다.
+
+## 6. 마무리 확인
+
+관련 ADR·폴더 인덱스가 있으면 필요한 항목만 함께 갱신한다. 번호 충돌, 실제 링크 대상과 Git 추적 여부, 결정일·상태·개정 이력의 일관성을 확인한다. 새 공유 파일의 추적 처리는 승인된 Git 작업 범위에 따른다. 사람이 읽는 렌더에서 표와 구조를 확인하고, 렌더가 불가능하면 구조 검사와 그 한계를 보고한다. commit·push·PR·외부 전송은 사용자가 승인한 범위에서만 수행한다.
 
 ## 상태 값
 

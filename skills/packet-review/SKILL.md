@@ -1,105 +1,53 @@
 ---
 name: packet-review
-description: Perform an integrated read-only review of a frozen implementation packet against its active plan and code-quality contracts. Use before starting the next packet to detect direction drift, incomplete work, correctness bugs, type-safety issues, security or performance risks, and maintainability problems. Large packets may use multiple packet-review agents with partitioned scopes, but must not duplicate the packet through a separate broad code-review pass.
+description: Review a frozen functional bundle against its active Plan, acceptance criteria, and code-quality contracts. Use at a feature acceptance boundary, for high-risk changes, or before PR delivery. Combine direction, completeness, and implementation review in one read-only verdict; use code-review for a small diff or hotfix without repeating the same broad review.
 ---
 
 # Packet Review
 
-Assess both plan alignment and code quality inside the packet-review workflow. A small packet needs one reviewer; a large packet may use several reviewers with explicit, complementary scopes.
+Review a complete functional bundle, such as input → apply → query/recovery, against its agreed behavior and implementation. A small implementation Packet or intermediate commit does not by itself require a broad gate. Explicit user instructions and project rules take priority over this workflow.
+
+## Scope and authority
+
+- Default to read-only review. Findings do not authorize source edits, provider calls, live-data changes, commits, merges, or publishing. An explicit fix request may authorize a separate bounded correction; do not infer that permission from a verdict.
+- Use the active Plan and latest user decisions to establish the boundary, supported by relevant ADRs and contracts. If no Plan exists, use the supplied acceptance criteria and identify the missing baseline; do not invent requirements or create a Plan merely to review.
+- Review only the agreed bundle and dependencies needed to assess it. Do not include unrelated dirty-worktree files.
+- Reuse valid, unaffected evidence. Do not add a duplicate broad `code-review` or full-suite run over the same bundle; required project gates and checks invalidated by later changes still apply.
 
 ## Workflow
 
-1. Identify the active plan and the exact packet boundary.
-   - Record the files, intended behavior, acceptance criteria, verification results, and frozen hashes when available.
-   - Read only the relevant plan, ADRs, source, tests, `git diff`, and recent history needed to judge that packet.
-   - If the packet is still moving, wait for a source freeze instead of reviewing a stale intermediate state.
-2. Size the review surface.
-   - Use one reviewer when the packet fits comfortably in one coherent pass.
-   - For a large packet, split reviewers by disjoint module ownership, contract boundary, or risk area. Examples: core allocation invariants; storage and migration authority; web interaction and accessibility.
-   - Give every reviewer the shared packet boundary and source-of-truth priority, plus its exclusive primary scope.
-   - Permit small source overlap only where an interface must be checked from both sides. Do not ask multiple reviewers to reread the whole packet independently.
-   - Prohibit edits, provider calls, artifact writes, and unrelated exploration.
-   - Ask for evidence with file and line references, not a rewrite.
-3. Review the packet in one pass across all dimensions below.
-4. Reproduce important findings with the narrowest read-only check or targeted test.
-5. If several packet reviewers were used, deduplicate their findings and produce one integrated verdict. Conflicting findings must be resolved against the source of truth or reproduced narrowly.
-6. Classify each finding as accepted, deferred, or rejected. The main agent owns this decision and integration.
+1. **Establish the snapshot.** Record the bundle, intended behavior, acceptance criteria, relevant files, source/commit and working-tree state. A commit alone does not identify uncommitted changes. Check for source drift before issuing a final verdict; changed areas and their affected contracts need re-review. If a freeze is unavailable, provide explicitly provisional findings and identify what remains to finalize.
+2. **Read the relevant evidence.** Inspect the Plan/criteria, ADRs, source, tests, diff, and only the history needed to resolve a question. Verify producer-reported hashes and results when they support acceptance; do not treat the producer's report as independent verification.
+3. **Review direction and quality together.** Trace promised behavior, failure/recovery paths, and tests, then assess correctness, types, security/privacy, performance, operations, and maintainability. Use [review-details.md](references/review-details.md) for detailed risk prompts or a larger bundle's evidence tables. Apply only relevant prompts; demand tests for material behavior and invariants rather than tests that mirror every line.
+4. **Verify proportionally.** Reproduce important findings with the narrowest safe local check. Inspect a test's side effects before running it; use isolated temporary output where needed. Record the command, exit code, actual result, target source, and useful artifact path or hash. Distinguish Mock, real-model, Live, and external evidence; label unrun or inaccessible checks.
+5. **Integrate one verdict.** Deduplicate findings, resolve conflicts against the source of truth or a narrow reproduction, and separate confirmed failures from static risks and unknowns. The lead adjudicates feedback as accepted, deferred, or rejected; a reviewer proposes dispositions rather than claiming the lead's authority.
 
-## Review Dimensions
+## Review partitioning
 
-### Direction and completeness
+One coherent reviewer pass is enough for a small bundle. When a large surface would benefit from parallel review and delegation is allowed, the main agent assigns complementary primary scopes by module, contract, or risk. Workers do not delegate further.
 
-- Does the implementation follow the active plan, ADRs, and latest user decisions?
-- Is every promised behavior implemented and directly tested?
-- Did the packet introduce unapproved scope, hidden fallback, or a conflicting source of truth?
-- Are legacy compatibility, migration, authority, and failure semantics preserved where required?
+Each assignment must include the objective, bundle/snapshot, source priority, files to inspect, read-only boundary, forbidden side effects, expected evidence, and verification criteria. Allow limited interface overlap when needed, but avoid duplicate full-bundle passes. Ask reviewers for file/line evidence and concrete failure conditions, then consolidate their results into one verdict.
 
-### Correctness and contracts
+## Findings and acceptance
 
-- Check edge cases, closed enums, digest and replay binding, transaction or state transitions, ordering, idempotency, and fail-closed behavior.
-- Inspect nested validation and `model_construct` or equivalent trust-boundary bypasses.
-- Confirm tests assert outcomes and invariants, not merely successful execution.
+- **Critical:** security/privacy breach, authority or data corruption, wrong required result, broken required workflow, or a design contradiction blocking acceptance.
+- **Warning:** material edge-case, type, performance, compatibility, or maintainability risk. Explain its impact and whether it blocks this bundle.
+- **Suggestion:** bounded improvement that does not block acceptance. Style preferences alone do not justify a blocking finding.
 
-### Type safety, security, and privacy
+For each Critical or Warning, provide `file:line`, triggering conditions, mechanism and impact, and a reproduction or exact reasoning. Mark unverified concerns as such. Missing evidence for a required gate is an acceptance gap even if no defect has been reproduced.
 
-- Flag incorrect narrowing, unchecked `Any`, raw exceptions crossing typed boundaries, secret or private data exposure, injection surfaces, and authority escalation.
-- Confirm user-controlled content cannot silently become trusted instructions, identifiers, or persisted evidence.
+Use the project's verdict scheme when defined; otherwise:
 
-### Performance and operations
+| Verdict | Required evidence |
+|---|---|
+| ACCEPT | Required criteria and gates supported; no open Critical or Warning |
+| ACCEPT WITH DEFERRED ITEMS | No open Critical or blocking Warning; lead-approved non-blocking deferrals have a reason, owner, and revisit condition |
+| REJECT | Open blocking finding or required acceptance evidence missing |
 
-- Look for repeated semantic replay, blocking CPU work in async paths, N+1 access, unbounded loops or memory, unnecessary provider calls, and misleading benchmarks.
-- Require realistic fixtures for performance or capacity claims.
+Recommend immediate containment of approval bypasses, unsafe writes, or state corruption; close other blockers before acceptance. This recommendation does not authorize the reviewer to mutate code or production state. A deferred item must explain its remaining acceptance impact.
 
-### Maintainability
+## Output and evidence ownership
 
-- Check dependency direction, SRP, duplicated policy logic, hidden coupling, stale docs, and version ownership.
-- Treat size alone as a warning only when responsibilities are actually mixed or defects become hard to isolate.
+Start with the verdict and reviewed snapshot, then give requirement coverage, prioritized findings, verification actually performed, gaps, and proposed dispositions. Use a compact result for a small bundle; larger reviews can use the reference's tables. Do not claim end-to-end validation from a narrow test or a static reading.
 
-## Severity
-
-- **Critical**: wrong result, authority or data corruption risk, security/privacy breach, broken required workflow, or a design contradiction that blocks the next packet.
-- **Warning**: material edge-case, type, performance, compatibility, or maintainability risk that should normally close in this packet.
-- **Suggestion**: bounded improvement that does not block acceptance.
-
-Do not inflate severity for stylistic preferences. Include a minimal reproduction or exact reasoning for every Critical or Warning.
-
-## Output
-
-```markdown
-## Integrated Packet Review — <packet>
-
-### Verdict [ACCEPT / ACCEPT WITH DEFERRED ITEMS / REJECT]
-
-### Direction and Completeness
-| Requirement | Status | Evidence or gap |
-|---|---|---|
-
-### Findings
-- C1 ...
-- W1 ...
-- S1 ...
-
-### Verification
-- Commands or read-only reproductions actually run
-- Frozen hash or no-drift result
-
-### Disposition
-| Finding | Accepted / Deferred / Rejected | Reason and owner |
-|---|---|---|
-
-### Must Close Before Next Packet
-- [ ] ...
-```
-
-An `ACCEPT` verdict requires no open Critical or Warning. Deferred Suggestions must name their later owner or stage.
-
-## Anti-Patterns
-
-- Never run a broad `code-review` after broad packet review of the same source packet. `packet-review` already includes correctness, type, security, performance, and maintainability.
-- Never confuse multiple partitioned packet reviewers with duplicated full reviews. Parallel reviewers must have bounded primary scopes and one consolidated verdict.
-- Use `code-review` separately only for a small hotfix with no active plan packet, or when the user explicitly asks for that workflow.
-- Never review a moving diff and call the result final.
-- Never accept producer-reported test output or hashes without an independent no-drift check when quality matters.
-- Never widen a review into unrelated dirty-worktree files.
-- Never present reviewer output as authority; the main agent must adjudicate it against the source of truth.
-- Never rerun the full suite merely to reproduce one localized finding when a focused check can establish it.
+The active Plan owns the bundle boundary, current status, verification, and final disposition. The lead updates its existing rows after adjudication when authorized by the task/project workflow. Keep raw logs separate and link useful evidence. Handoff holds the Plan link, current stage, blockers, and next action; this review does not itself require creating a Handoff or report file.

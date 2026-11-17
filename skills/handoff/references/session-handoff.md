@@ -1,10 +1,14 @@
 # Session handoff reference
 
+For a new file without an explicit name, use `docs/handoff/YYYYMMDD_<topic>-handoff.md`. Follow existing names when updating. Plan filenames end in `-plan.md` according to project conventions.
+
 This compact fictional example demonstrates document structure only. Its statements are not project evidence, source-code descriptions, or implementation requirements. Use the actual task and target project's sources for content; the example's length does not limit real deliverables.
 
 A real session handoff also records known project location, relevant branch or revision, changed and key files, decisions and reasons, blockers, verification results, and the first next action. Include a running job's identifier and output location when needed for continuation. Omit inapplicable fields and identify necessary unknowns.
 
 When receiving a handoff, reconcile its target and recorded state with current project evidence, then continue the work the user authorized. Reading a handoff does not itself require creating another one.
+
+Create a separate handoff only when the user requests a transfer. During ordinary work, update an existing same-topic note if required by project rules. Long-running specifications, task ownership, verification tables, and lessons belong in the Plan; the handoff keeps its link and current stage, blockers, and next action. The worked example below illustrates a short requested transfer, not a replacement for a long-running Plan.
 
 ---
 

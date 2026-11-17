@@ -27,7 +27,7 @@ In case of a conflict, the following order of precedence applies:
 
 - [Coding Convention](docs/coding-convention.md): Python style, docstrings, comments, typing, logging, validation.
 - [Git Convention](docs/git-convention.md): Commit message format and commit hygiene.
-- [Document Writing](docs/AGENTS.md): Writing, skill application by task stage, verification evidence, and document ownership.
+- [Document Writing](docs/AGENTS.md): Writing, source verification, document templates, and record ownership.
 - [Architecture](docs/architecture.md): Module boundaries, SRP, dependency direction, project layout.
 - [Agentic Engineering](docs/agentic-engineering.md): Codex/Claude collaboration, sub-agent use, review discipline.
 - [Plans](docs/plan/README.md): PRDs, plans, task breakdowns, and local execution notes.

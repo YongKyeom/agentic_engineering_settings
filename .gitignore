@@ -30,3 +30,6 @@ venv/
 dist/
 build/
 *.egg-info/
+
+# AI 도구 데이터 전체 무시 (단, skills 폴더는 예외)
+.serena/

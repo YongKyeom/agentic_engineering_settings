@@ -84,6 +84,16 @@ Every delegated task should specify:
 
 Always follow `karpathy-guidelines` when writing or modifying any code.
 
+## Skill Composition
+
+- Use the current user request and applicable project rules to set authority, scope, completion criteria, and record ownership. Apply the relevant skills as the procedures for that work; retain required rules even when they overlap across instruction layers.
+- Resolve action-changing gaps with `requirements-clarity` using existing context first. Use `deep-research` when claims need comparison across original sources, then carry the established evidence into implementation and writing.
+- Apply `karpathy-guidelines` to code and `structured-prompt-template` to tagged/Jinja2 system prompts. Use `writing-clearly-and-concisely` for document structure and wording, and `humanizer` for the necessary voice and style pass while preserving the same facts and uncertainty.
+- Use `code-review` for a local diff or hotfix and `packet-review` for a frozen functional acceptance bundle. Reuse valid evidence rather than repeating the same broad review; the lead owns disposition and final acceptance.
+- Use `decision-record` for durable technical decisions, `handoff` for requested transfers and existing continuity notes, and `lesson-learned` for an evidence-based retrospective. Keep detailed long-running status in the Plan. New default filenames end in `-handoff.md` and `-plan.md` respectively; preserve explicit user filenames and existing names when updating.
+- Apply `mermaid-diagrams` or `excalidraw` according to the chosen diagram format. Use `presentation-slidev` for Slidev deliverables and `dark-theme-pdf` for the specified theme; verify the resulting artifact in its destination.
+- Use `agent-md-refactor` when reorganizing instructions and `skill-judge` when evaluating skill changes. Use `git-commit-helper` for commit-message preparation and review within the user's authorization. Invoking a skill does not authorize additional global changes, commits, publishing, or external messages.
+
 ## Related Skills
 
 - `handoff`: Use for session context transfer and coordination documents with fellow developers or related departments. Put the overview, item summary, priorities, decisions needed, and related documents before item-level details; include diagrams for collaboration. Default file location: `docs/handoff/`. Prefer managed `handoff`; choose `source-command-handoff` only when that legacy skill is explicitly requested.
@@ -94,7 +104,7 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 - `writing-clearly-and-concisely`: Use when producing or editing prose that humans will read.
 - `lesson-learned`: Use after repeated mistakes or significant debugging to extract reusable engineering rules.
 - `karpathy-guidelines`: Use when writing, reviewing, or refactoring code to avoid overcomplication, make surgical changes, surface assumptions, and define verifiable success criteria.
-- `packet-review`: Use for an integrated read-only review of a frozen implementation packet against its active plan and code-quality contracts. For large packets, partition reviewers by bounded scope and consolidate one verdict; do not add a duplicate broad code review.
+- `packet-review`: Use for an integrated read-only review of a frozen functional bundle against its active plan and code-quality contracts. For large packets, partition reviewers by bounded scope and consolidate one verdict; do not add a duplicate broad code review.
 - `decision-record`: Use when a durable technical decision (architecture, module boundary, dependency, storage, API contract, hard-to-reverse direction) has just been made and should be recorded as an ADR in docs/decisions/.
 - `structured-prompt-template`: Use when designing, generating, refactoring, or auditing provider-neutral tagged Jinja2 system prompts, Skill and Tool catalogs, priority rules, or output contracts.
 - `presentation-slidev`: Use when authoring or iteratively refining presentations (thesis defense, side project decks, technical talks) delivered as PDF via Slidev.
@@ -103,7 +113,6 @@ Always follow `karpathy-guidelines` when writing or modifying any code.
 
 ### Diagram Skills
 
-- `c4-architecture`: Use for software system architecture, C4 context/container/component/deployment diagrams, and architecture documentation.
 - `mermaid-diagrams`: Use for software/process diagrams such as flowcharts, sequence diagrams, ERDs, state diagrams, and lightweight technical documentation diagrams.
 - `excalidraw`: Use for rough sketches, planning diagrams, and editable concept sketches.
 

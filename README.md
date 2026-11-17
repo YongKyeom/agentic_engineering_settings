@@ -62,7 +62,7 @@ cd agent_settings
 
 `dev-env.sh`는 `~/.zshrc`, `~/.tmux.conf`, `~/.p10k.zsh`를 항상 repo 기준으로 덮어쓴다. 기존 설정이 있어도 그대로 덮어씌워진다.
 
-`setup/codex.sh`는 RTK 설치/탐지 후 Codex core PATH에서도 `rtk`가 보이도록 보조한다. 자세한 fallback과 검증 방법은 setup 폴더 가이드를 참고한다.
+`setup/codex.sh`와 `setup/claude-code.sh`는 최신 RTK와 Serena도 전역 설치한다. MCP와 hook만 구성하려면 `./setup/rtk.sh` 다음 `./setup/serena.sh`를 실행한다. 기존 설정 백업, hook 공존 방식, 수동 설치는 [setup 가이드](setup/README.md#rtk와-serena-전역-설치)를 참고한다.
 
 스크립트는 자동화 가능한 부분만 처리한다. Claude Dashboard 플러그인 설치 등 수동 단계는 셋업 가이드 참고.
 
@@ -116,7 +116,6 @@ cd agent_settings
 | `structured-prompt-template` | provider-neutral XML 스타일 Jinja2 system prompt 설계·검증 |
 | `presentation-slidev` | Slidev로 발표자료 작성 및 반복 수정 (학위논문/사이드 프로젝트) |
 | `dark-theme-pdf` | 다크+마젠타 하우스 테마 발표자료를 PDF로 생성 (presentation-slidev에 빌드 위임) |
-| `c4-architecture` | C4 아키텍처 다이어그램 |
 | `mermaid-diagrams` | Mermaid 다이어그램 |
 | `excalidraw` | 러프 스케치 다이어그램 |
 | `code-review` | diff 기준 코드 리뷰 (버그, 타입, 스타일, 보안). Claude Code 내장(`/code-review`), Codex는 custom skill |

@@ -25,6 +25,7 @@ class ConfigureHerdrTests(unittest.TestCase):
             home = Path(temporary)
             directory = home / "codex"
             directory.mkdir()
+            (home / ".zshrc").write_text("# keep my shell settings\nexport MY_SETTING=1\n")
             (directory / "config.toml").write_text('[features]\nhooks = false\n')
             with (
                 patch.dict(os.environ, {"CODEX_HOME": str(directory), "HERDR_CONFIG_PATH": str(home / "herdr.toml")}),
@@ -37,8 +38,12 @@ class ConfigureHerdrTests(unittest.TestCase):
             ):
                 MODULE.main()
                 first = (directory / "AGENTS.md").read_bytes()
+                first_zshrc = (home / ".zshrc").read_bytes()
                 MODULE.main()
                 self.assertEqual((directory / "AGENTS.md").read_bytes(), first)
+                self.assertEqual((home / ".zshrc").read_bytes(), first_zshrc)
+                self.assertTrue(first_zshrc.startswith(b"# keep my shell settings\nexport MY_SETTING=1\n"))
+                self.assertEqual((home / ".config/agent-setup/herdr.zsh").read_bytes(), SCRIPT.with_name("herdr.zsh").read_bytes())
             backups = list((home / ".local/state/agent-setup").glob("*/codex-config.toml"))
             self.assertTrue(backups)
             self.assertEqual(backups[0].read_text(), '[features]\nhooks = false\n')

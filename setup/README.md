@@ -17,6 +17,7 @@
 | `configure-agent-hooks.py` | 기존 설정을 백업하고 관리 대상 hook과 MCP만 갱신한다. |
 | `herdr.sh` | Herdr TUI와 zsh를 설치하고 터미널 기본값, 패널 이동 키, Codex/Claude 연동을 설정한다. |
 | `configure-herdr.py` | 기존 TOML을 보존하면서 Herdr 설정을 병합하고 공식 Markdown과 전역 조건부 지침을 갱신한다. |
+| `herdr.zsh` | 인자 없이 실행한 `herdr`를 현재 프로젝트의 고정 세션으로 연결한다. |
 
 ## 실행 순서
 
@@ -64,7 +65,11 @@ focus_pane_up = ["prefix+k", "prefix+up"]
 focus_pane_right = ["prefix+l", "prefix+right"]
 ```
 
-`current`는 Herdr 프로세스의 실행 디렉터리를 사용한다. 프로젝트에서 `cd /path/to/project` 후 `herdr`를 실행한다. 기존 서버에 다시 연결하면 서버의 실행 디렉터리는 바뀌지 않는다. 특정 디렉터리를 확실히 지정할 때는 생성 명령의 `--cwd /path/to/project`를 사용한다. 새 창이 원본 패널의 작업 디렉터리를 따라가게 하려면 `new_cwd = "follow"`로 바꾼다. [공식 설정 문서](https://herdr.dev/tui/docs/configuration/#terminal-defaults)에 각 정책이 정리되어 있다.
+설치 스크립트는 `~/.config/agent-setup/herdr.zsh`를 설치하고 `~/.zshrc`에 불러오는 줄을 추가한다. `ZDOTDIR`이 설정되어 있으면 그 아래의 `.zshrc`를 사용한다. 새 zsh에서 프로젝트 경로로 이동한 뒤 `herdr`만 입력하면 프로젝트별 고정 세션에 연결한다. Git 저장소에서는 최상위 경로, 그 밖에서는 현재 경로의 SHA-256 앞 16자리를 사용해 `project-<hash>` 세션을 선택한다. 경로의 공백을 지원하며 같은 저장소의 하위 폴더는 세션을 공유한다.
+
+새 프로젝트 세션의 첫 터미널은 `herdr`를 실행한 디렉터리에서 시작한다. 같은 프로젝트에 다시 연결하면 기존 패널과 작업 경로를 복원한다. `herdr config check` 같은 인자가 있는 명령과 `--session` 지정은 그대로 전달한다. Herdr 패널 안이거나 `HERDR_SESSION`·`HERDR_SOCKET_PATH`로 대상을 정한 경우에도 자동 선택을 건너뛴다. 기존 공용 세션은 보존하며 `command herdr`로 연결할 수 있다.
+
+`current`는 Herdr 서버 프로세스의 실행 디렉터리를 사용한다. 기존 서버에 다시 연결해도 그 경로는 바뀌지 않으므로 이 설정만으로 프로젝트별 시작 위치를 보장하지는 않는다. 새 창이 원본 패널의 작업 디렉터리를 따라가게 하려면 `new_cwd = "follow"`로 바꾼다. [공식 설정 문서](https://herdr.dev/tui/docs/configuration/#terminal-defaults)에 각 정책이 정리되어 있다.
 
 `shell_mode = "auto"`는 macOS에서 로그인 셸을 사용한다. 기존 패널의 셸과 디렉터리는 그대로이며 새로 만드는 패널부터 기본값을 사용한다. `prefix`는 기존 설정을 보존하며, 미설정 시 `Ctrl+b`다. 따라서 기본 설정에서는 `Ctrl+b` 다음 `h/j/k/l` 또는 방향키로 이동한다. tmux 안에서 중첩 실행하면 같은 prefix를 먼저 tmux가 받으므로 tmux의 전달 키를 사용하거나 둘 중 하나의 prefix를 변경한다.
 
@@ -157,6 +162,8 @@ MCP 등록 명령만으로 Serena hook이 설치되지는 않는다. `./setup/se
 RTK는 셸 명령 rewrite를 담당하고 Serena는 reminder와 plan 제한을 담당한다. Serena 2.1.0의 reminder parser는 `rtk grep`, `rtk proxy rg` 같은 RTK prefix를 해석하지 못해 해당 명령을 검색 횟수에 집계하지 않는다. 원래 검색 명령과 Claude의 Read/Grep/Glob은 집계되며, plan guard와 reset은 별도로 동작한다. Bash hook은 같은 그룹에 등록하며, Serena MCP에는 별도 matcher를 사용한다. 이미지 예시의 중복 `plan-guard`와 머신별 다른 hook은 추가하지 않는다. 이전 `rtk-rewrite.sh` 등록도 native hook으로 교체한다. Codex hook의 Serena timeout은 기본 5초, `SessionEnd`는 지원 범위에 맞춰 3초다. `SessionEnd` 사용에는 Codex 0.145.0 이상이 필요하다.
 
 전역 설정 후 Codex와 Claude Code를 재시작한다. Codex에서는 `/hooks`로 로드 상태를, 두 클라이언트에서는 `/mcp`로 Serena 연결을 확인한다. 프로젝트 hook에 대한 trust 요청이 있으면 해당 클라이언트에서 검토한다.
+
+MCP 실행 인자에 `--open-web-dashboard false`를 지정해 Serena가 시작될 때 대시보드를 브라우저에 자동으로 열지 않도록 한다. 대시보드 서버는 유지하므로 필요하면 표시된 로컬 주소로 직접 접속할 수 있다. 다른 실행 경로에서도 자동 열기를 끄려면 `~/.serena/serena_config.yml`의 `web_dashboard_open_on_launch`를 `false`로 설정한다.
 
 ### 검증과 문제 해결
 

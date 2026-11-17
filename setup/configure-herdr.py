@@ -6,6 +6,7 @@
 
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -60,6 +61,21 @@ def main() -> None:
         config.parent.mkdir(parents=True, exist_ok=True)
         config.write_text(rendered)
     print(f"Config: {config}")
+
+    launcher = home / ".config/agent-setup/herdr.zsh"
+    launcher_source = Path(__file__).with_name("herdr.zsh").read_text()
+    if not launcher.exists() or launcher.read_text() != launcher_source:
+        save(launcher, "herdr.zsh")
+        launcher.parent.mkdir(parents=True, exist_ok=True)
+        launcher.write_text(launcher_source)
+    zshrc = Path(os.environ.get("ZDOTDIR") or home).expanduser() / ".zshrc"
+    existing_zshrc = zshrc.read_text() if zshrc.exists() else ""
+    source_line = f"source {shlex.quote(str(launcher))}"
+    if source_line not in existing_zshrc.splitlines():
+        save(zshrc, "zshrc")
+        zshrc.parent.mkdir(parents=True, exist_ok=True)
+        zshrc.write_text(existing_zshrc.rstrip() + "\n\n# agent-setup: Herdr project sessions\n" + source_line + "\n")
+    print(f"Project session launcher: {launcher} (open a new zsh to activate)")
 
     for name, variable, default, instruction, hooks in (
         ("codex", "CODEX_HOME", home / ".codex", "AGENTS.md", "hooks.json"),

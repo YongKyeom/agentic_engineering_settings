@@ -81,7 +81,8 @@ def main() -> None:
         data = read_json(path)
         merge_hooks(data, "codex" if name == "codex" else "claude-code", binaries["rtk"], binaries["serena-hooks"])
         save(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n", backup)
-        args = ["start-mcp-server", "--project-from-cwd", f"--context={'codex' if name == 'codex' else 'claude-code'}"]
+        args = ["start-mcp-server", "--project-from-cwd", f"--context={'codex' if name == 'codex' else 'claude-code'}",
+                "--open-web-dashboard", "false"]
         if name == "codex":
             config = Path.home() / ".codex/config.toml"
             if config.exists():

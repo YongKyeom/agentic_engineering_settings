@@ -132,6 +132,7 @@ echo ""
 # 기본 settings 생성과 CLAUDE.md 복사 후 hook을 병합한다.
 bash "$REPO_ROOT/setup/rtk.sh" claude
 bash "$REPO_ROOT/setup/serena.sh" claude
+bash "$REPO_ROOT/setup/herdr.sh" claude
 
 # 6. Shell alias
 if ! grep -q "alias claude=" ~/.zshrc 2>/dev/null; then

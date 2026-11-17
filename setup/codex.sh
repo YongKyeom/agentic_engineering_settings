@@ -30,6 +30,7 @@ echo ""
 # RTK 지침은 AGENTS.md 복사 후 연결한다.
 bash "$REPO_ROOT/setup/rtk.sh" codex
 bash "$REPO_ROOT/setup/serena.sh" codex
+bash "$REPO_ROOT/setup/herdr.sh" codex
 
 # 4. Slidev (옵션)
 if [ "${1:-}" = "--with-slidev" ]; then

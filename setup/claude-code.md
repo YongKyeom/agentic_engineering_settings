@@ -4,7 +4,7 @@
 
 ## 빠른 셋업 (권장)
 
-자동화 가능한 부분(RTK, Serena, 전역 지침, 스킬, Codex plugin, settings, alias, Slidev 옵션)은 스크립트로 한 번에 처리:
+자동화 가능한 부분(RTK, Serena, Herdr, 전역 지침, 스킬, Codex plugin, settings, alias, Slidev 옵션)은 스크립트로 한 번에 처리:
 
 ```sh
 ./setup/claude-code.sh                # 기본 셋업
@@ -34,6 +34,8 @@
 RTK는 `rtk init -g --auto-patch`로 native `rtk hook claude`를 등록한다. Serena는 `uv tool install --upgrade serena-agent`로 설치한다. 기존 설정은 백업하며 RTK/Serena hook만 갱신한다. Bash에는 RTK rewrite와 Serena reminder를 함께 연결하고, Serena MCP 호출에는 별도 matcher를 사용한다.
 
 수동 설치, Codex 설정, 전체 hook 표와 검증은 [공통 설치 가이드](README.md#rtk와-serena-전역-설치)를 참고한다.
+
+Herdr는 `setup/herdr.sh claude`로 설치·설정한다. zsh, 실행 디렉터리 기준 시작 위치, 패널 이동 키를 적용하고 공식 `herdr --skill` 출력을 전역 `HERDR.md`에 보관한다. `HERDR_ENV=1`일 때 요청된 Herdr 작업에 적용하는 지침과 상태 hook도 병합한다. [Herdr 셋업 가이드](README.md#herdr-터미널과-agent-연동)를 참고한다.
 
 ## 2. 전역 CLAUDE.md 설치
 

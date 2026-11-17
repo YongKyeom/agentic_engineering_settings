@@ -22,6 +22,8 @@ Codex / Claude Code 개발환경을 다른 머신에서도 같은 방식으로 �
 │   ├── claude-code.sh      # Claude Code 자동 셋업 스크립트
 │   ├── codex.sh            # Codex 자동 셋업 스크립트
 │   ├── dev-env.sh          # 개발 환경 셋업 스크립트 (shell + tmux)
+│   ├── herdr.sh            # Herdr TUI, zsh·이동 키·agent 연동
+│   ├── configure-herdr.py  # Herdr 설정 병합과 공식 Markdown 설치
 │   ├── zshrc               # ~/.zshrc 템플릿 (dev-env.sh가 복사)
 │   └── p10k.zsh            # powerlevel10k 프롬프트 설정 백업
 ├── skills/
@@ -63,6 +65,8 @@ cd agent_settings
 `dev-env.sh`는 `~/.zshrc`, `~/.tmux.conf`, `~/.p10k.zsh`를 항상 repo 기준으로 덮어쓴다. 기존 설정이 있어도 그대로 덮어씌워진다.
 
 `setup/codex.sh`와 `setup/claude-code.sh`는 최신 RTK와 Serena도 전역 설치한다. MCP와 hook만 구성하려면 `./setup/rtk.sh` 다음 `./setup/serena.sh`를 실행한다. 기존 설정 백업, hook 공존 방식, 수동 설치는 [setup 가이드](setup/README.md#rtk와-serena-전역-설치)를 참고한다.
+
+두 agent 셋업은 Herdr TUI도 설치한다. Herdr만 설정하려면 `./setup/herdr.sh`를 실행한다. 새 패널은 zsh와 Herdr 실행 디렉터리를 사용하고, `prefix+h/j/k/l` 및 `prefix+방향키`로 이동한다. 공식 `herdr --skill` Markdown과 환경 감지 규칙을 Codex·Claude 전역 지침에 연결한다. 상세 설정과 확인 방법은 [Herdr 가이드](setup/README.md#herdr-터미널과-agent-연동)를 참고한다.
 
 스크립트는 자동화 가능한 부분만 처리한다. Claude Dashboard 플러그인 설치 등 수동 단계는 셋업 가이드 참고.
 

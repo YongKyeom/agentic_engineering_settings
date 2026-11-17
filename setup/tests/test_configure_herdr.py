@@ -1,0 +1,130 @@
+"""Check config preservation and validation before touching real agent settings."""
+
+import contextlib
+import importlib.util
+import io
+import os
+import subprocess
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+import tomlkit
+
+SCRIPT = Path(__file__).resolve().parents[1] / "configure-herdr.py"
+SPEC = importlib.util.spec_from_file_location("configure_herdr", SCRIPT)
+MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+OFFICIAL = "---\nname: herdr\n---\nCheck HERDR_ENV=1 before controlling panes.\n"
+
+
+class ConfigureHerdrTests(unittest.TestCase):
+    def test_new_instruction_is_stable_and_codex_config_is_backed_up(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            directory = home / "codex"
+            directory.mkdir()
+            (directory / "config.toml").write_text('[features]\nhooks = false\n')
+            with (
+                patch.dict(os.environ, {"CODEX_HOME": str(directory), "HERDR_CONFIG_PATH": str(home / "herdr.toml")}),
+                patch.object(Path, "home", return_value=home),
+                patch.object(MODULE.sys, "argv", [str(SCRIPT), "codex"]),
+                patch.object(MODULE.shutil, "which", return_value="/test/zsh"),
+                patch.object(MODULE.subprocess, "check_output", return_value=OFFICIAL),
+                patch.object(MODULE.subprocess, "run"),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                MODULE.main()
+                first = (directory / "AGENTS.md").read_bytes()
+                MODULE.main()
+                self.assertEqual((directory / "AGENTS.md").read_bytes(), first)
+            backups = list((home / ".local/state/agent-setup").glob("*/codex-config.toml"))
+            self.assertTrue(backups)
+            self.assertEqual(backups[0].read_text(), '[features]\nhooks = false\n')
+
+    def test_merge_custom_paths_and_repeated_install_preserve_user_settings(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            config = home / "custom config.toml"
+            config.write_text(
+                '# keep my comment\n[theme]\nname = "dracula"\n'
+                '[terminal]\nnew_cwd = "home"\nkitty_graphics = false\n'
+                '[keys]\nprefix = "ctrl+a"\nfocus_pane_left = "prefix+x"\n'
+                '[[keys.command]]\nkey = "prefix+z"\ntype = "pane"\ncommand = "pwd"\n'
+            )
+            codex = home / "custom codex"
+            claude = home / "custom claude"
+            codex.mkdir()
+            rules = codex / "AGENTS.md"
+            rules.write_text(
+                "# User rules\nKeep me.\n\n## Herdr Terminal Context\nStale block.\n\n"
+                "## Other rules\nKeep these too.\n"
+            )
+            calls = []
+
+            def run(arguments, **kwargs):
+                calls.append(arguments)
+                if arguments[1:] == ["config", "check"]:
+                    parsed = tomlkit.parse(Path(kwargs["env"]["HERDR_CONFIG_PATH"]).read_text())
+                    self.assertEqual(parsed["terminal"]["default_shell"], "/test/zsh")
+
+            environment = {
+                "HERDR_CONFIG_PATH": str(config),
+                "CODEX_HOME": str(codex),
+                "CLAUDE_CONFIG_DIR": str(claude),
+            }
+            with (
+                patch.dict(os.environ, environment),
+                patch.object(Path, "home", return_value=home),
+                patch.object(MODULE.sys, "argv", [str(SCRIPT), "codex"]),
+                patch.object(MODULE.shutil, "which", return_value="/test/zsh"),
+                patch.object(MODULE.subprocess, "check_output", return_value=OFFICIAL),
+                patch.object(MODULE.subprocess, "run", side_effect=run),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                MODULE.main()
+                first = (config.read_bytes(), rules.read_bytes())
+                MODULE.main()
+                self.assertEqual(first, (config.read_bytes(), rules.read_bytes()))
+            parsed = tomlkit.parse(config.read_text())
+            self.assertIn("# keep my comment", config.read_text())
+            self.assertEqual(parsed["theme"]["name"], "dracula")
+            self.assertFalse(parsed["terminal"]["kitty_graphics"])
+            self.assertEqual(parsed["terminal"]["new_cwd"], "current")
+            self.assertEqual(parsed["keys"]["prefix"], "ctrl+a")
+            self.assertEqual(parsed["keys"]["command"][0]["command"], "pwd")
+            for direction, letter in (("left", "h"), ("down", "j"), ("up", "k"), ("right", "l")):
+                self.assertEqual(parsed["keys"][f"focus_pane_{direction}"], [f"prefix+{letter}", f"prefix+{direction}"])
+            self.assertEqual((codex / "HERDR.md").read_text(), OFFICIAL)
+            self.assertEqual(rules.read_text().count("## Herdr Terminal Context"), 1)
+            self.assertNotIn("Stale block", rules.read_text())
+            self.assertIn("## Other rules\nKeep these too.", rules.read_text())
+            self.assertFalse(claude.exists())
+            self.assertIn(["herdr", "integration", "install", "codex"], calls)
+            self.assertNotIn(["herdr", "integration", "install", "claude"], calls)
+            self.assertTrue(list((home / ".local/state/agent-setup").glob("*/config.toml")))
+
+    def test_rejected_candidate_leaves_config_and_agent_files_untouched(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            home = Path(temporary)
+            config = home / "config.toml"
+            original = '[keys]\nprefix = "ctrl+a"\n'
+            config.write_text(original)
+            with (
+                patch.dict(os.environ, {"HERDR_CONFIG_PATH": str(config)}),
+                patch.object(Path, "home", return_value=home),
+                patch.object(MODULE.sys, "argv", [str(SCRIPT)]),
+                patch.object(MODULE.shutil, "which", return_value="/test/zsh"),
+                patch.object(MODULE.subprocess, "check_output", return_value=OFFICIAL),
+                patch.object(MODULE.subprocess, "run", side_effect=subprocess.CalledProcessError(1, "check")),
+                self.assertRaises(subprocess.CalledProcessError),
+            ):
+                MODULE.main()
+            self.assertEqual(config.read_text(), original)
+            self.assertFalse((home / ".codex").exists())
+            self.assertFalse((home / ".local").exists())
+
+
+if __name__ == "__main__":
+    unittest.main()

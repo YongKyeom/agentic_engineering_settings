@@ -15,6 +15,8 @@
 | `rtk.sh` | 최신 RTK와 Codex/Claude 전역 native hook을 설치한다. |
 | `serena.sh` | Serena를 전역 설치하고 MCP와 RTK 공존 hook을 병합한다. |
 | `configure-agent-hooks.py` | 기존 설정을 백업하고 관리 대상 hook과 MCP만 갱신한다. |
+| `herdr.sh` | Herdr TUI와 zsh를 설치하고 터미널 기본값, 패널 이동 키, Codex/Claude 연동을 설정한다. |
+| `configure-herdr.py` | 기존 TOML을 보존하면서 Herdr 설정을 병합하고 공식 Markdown과 전역 조건부 지침을 갱신한다. |
 
 ## 실행 순서
 
@@ -32,6 +34,68 @@
 ```
 
 `dev-env.sh`는 dotfile을 덮어쓰는 것이 의도된 동작이다. 개인 설정을 보존해야 하는 머신에서는 실행 전에 백업한다.
+
+## Herdr 터미널과 agent 연동
+
+`codex.sh`와 `claude-code.sh`는 Herdr 설정도 함께 적용한다. Herdr만 설치하거나 기존 환경에 설정을 병합하려면:
+
+```sh
+./setup/herdr.sh           # Codex와 Claude 모두 설정
+./setup/herdr.sh codex     # Codex만 연동
+./setup/herdr.sh claude    # Claude만 연동
+```
+
+macOS·Linux를 대상으로 하며 `uv`가 필요하다. zsh와 Herdr가 없으면 설치한다. Herdr는 Homebrew가 있으면 `brew install herdr`, 없으면 [공식 설치 스크립트](https://herdr.dev/tui/docs/install/)를 사용한다. 기존 바이너리는 유지한다. 설정 병합용 `tomlkit`은 `uv run`의 격리 환경에 설치하며, 일반 Python 프로젝트의 의존성은 바꾸지 않는다.
+
+### 셸, 시작 위치, 이동 키
+
+`~/.config/herdr/config.toml`에 아래 값을 병합한다. `default_shell`에는 탐지한 zsh의 절대 경로를 저장한다. `HERDR_CONFIG_PATH`를 지정했다면 해당 파일을 사용한다. 테마, 알림, 다른 키와 TOML 주석은 보존한다.
+
+```toml
+[terminal]
+default_shell = "/bin/zsh" # 예시: 설치 환경에서 탐지한 경로
+shell_mode = "auto"
+new_cwd = "current"
+
+[keys]
+focus_pane_left = ["prefix+h", "prefix+left"]
+focus_pane_down = ["prefix+j", "prefix+down"]
+focus_pane_up = ["prefix+k", "prefix+up"]
+focus_pane_right = ["prefix+l", "prefix+right"]
+```
+
+`current`는 Herdr 프로세스의 실행 디렉터리를 사용한다. 프로젝트에서 `cd /path/to/project` 후 `herdr`를 실행한다. 기존 서버에 다시 연결하면 서버의 실행 디렉터리는 바뀌지 않는다. 특정 디렉터리를 확실히 지정할 때는 생성 명령의 `--cwd /path/to/project`를 사용한다. 새 창이 원본 패널의 작업 디렉터리를 따라가게 하려면 `new_cwd = "follow"`로 바꾼다. [공식 설정 문서](https://herdr.dev/tui/docs/configuration/#terminal-defaults)에 각 정책이 정리되어 있다.
+
+`shell_mode = "auto"`는 macOS에서 로그인 셸을 사용한다. 기존 패널의 셸과 디렉터리는 그대로이며 새로 만드는 패널부터 기본값을 사용한다. `prefix`는 기존 설정을 보존하며, 미설정 시 `Ctrl+b`다. 따라서 기본 설정에서는 `Ctrl+b` 다음 `h/j/k/l` 또는 방향키로 이동한다. tmux 안에서 중첩 실행하면 같은 prefix를 먼저 tmux가 받으므로 tmux의 전달 키를 사용하거나 둘 중 하나의 prefix를 변경한다.
+
+### 공식 Markdown과 전역 지침
+
+설치된 CLI의 `herdr --skill` 출력을 수정 없이 다음 파일에 저장한다.
+
+| 대상 | 공식 Markdown | 조건부 실행 지침 |
+| --- | --- | --- |
+| Codex | `~/.codex/HERDR.md` | `~/.codex/AGENTS.md` |
+| Claude | `~/.claude/HERDR.md` | `~/.claude/CLAUDE.md` |
+
+`CODEX_HOME`과 `CLAUDE_CONFIG_DIR`을 지정하면 해당 경로를 사용한다. 전역 지침은 실행 환경의 `HERDR_ENV=1`을 확인하고, 요청된 Herdr 제어 작업에만 공식 파일을 읽도록 한다. Herdr 밖에서는 일반 셸 작업을 계속하며 다른 세션의 패널·agent를 조회하거나 제어하지 않는다. 공식 파일을 모든 작업에 자동으로 가져오는 `@` import는 사용하지 않는다.
+
+Codex·Claude 상태 연동은 `herdr integration install codex` / `claude`로 설치한다. 기존 RTK·Serena hook을 유지하면서 Herdr가 관리하는 항목을 병합한다. 변경 전 설정과 전역 지침은 `~/.local/state/agent-setup/herdr-<timestamp>-<pid>/`에 백업한다. 설정 파일은 `herdr config check`를 통과한 뒤 적용한다.
+
+### 확인과 갱신
+
+```sh
+rtk proxy herdr --version
+rtk proxy herdr config check
+rtk proxy herdr integration status
+rtk proxy herdr server reload-config # 실행 중인 서버에 설정 반영
+
+# Herdr 패널 안에서만 1이 출력되는지 확인
+rtk proxy printenv HERDR_ENV
+```
+
+현재 세션에 연결되어 있다면 메뉴의 `reload config`로 클라이언트 키 설정도 다시 읽을 수 있다. 서버를 중지하거나 기존 패널을 닫을 필요는 없다.
+
+Herdr 갱신은 설치 방식에 맞춘다. Homebrew에서는 `brew update` 후 `brew upgrade herdr`, 공식 설치 스크립트로 설치했다면 `herdr update`를 사용한다. 갱신 후 `./setup/herdr.sh`를 다시 실행하면 설치된 버전의 공식 Markdown과 연동을 갱신한다. 설치와 설정 병합만으로 셸이나 tmux를 자동 실행하지는 않는다.
 
 ## RTK와 Serena 전역 설치
 

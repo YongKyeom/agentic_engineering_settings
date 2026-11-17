@@ -20,6 +20,14 @@
 - Skills may suggest shell commands. Adapt suggested commands to RTK-prefixed forms before execution.
 - Do not patch every installed skill only to add RTK prefixes. Prefer this global rule plus targeted skill edits only when a specific skill repeatedly emits unsuitable commands.
 
+## Herdr Terminal Context
+
+- Before Herdr terminal work, inspect `HERDR_ENV` in the command execution environment. Only `HERDR_ENV=1` identifies this agent as running inside Herdr; an installed binary, running server, or terminal title does not.
+- For a user-requested Herdr pane, tab, workspace, or agent operation inside Herdr, read `${CODEX_HOME:-$HOME/.codex}/HERDR.md`. This is the unmodified official Markdown exported by the installed CLI with `rtk proxy herdr --skill`. Read it once per task; regenerate it after upgrading Herdr. Use the installed CLI's help for current syntax.
+- Outside Herdr, continue ordinary work with the available shell tools. Installation, configuration, and `--skill` export are allowed there; do not inspect or control another Herdr session from outside a managed pane.
+- In Herdr, prefer the caller's context and explicit IDs, preserve the user's focus, and follow the official skill's task-selection and coordination rules. Being inside Herdr alone does not authorize pane creation, delegation, input to another agent, or session shutdown.
+- Follow RTK rules for Herdr commands too: use `rtk proxy herdr ...` to preserve CLI output. Do not auto-launch bare `herdr` to detect the environment.
+
 ## Agentic Engineering
 
 - Prefer the simplest workflow that can solve the task. Add agentic complexity only when it improves quality, speed, or context control.

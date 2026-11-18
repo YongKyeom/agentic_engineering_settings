@@ -66,17 +66,22 @@ class HerdrLauncherTests(unittest.TestCase):
             with self.subTest(env=env):
                 self.assertEqual(self.invoke(self.root, **env), [str(self.root.resolve())])
 
-    def test_codex_uses_local_server_in_tui_and_core_but_not_outside(self):
-        for env, expected in [({}, []), ({"HERDR_ENV": "1"}, ["--no-daemon"]), ({"HC_TERMINAL_ID": "t9"}, ["--no-daemon"])]:
+    def test_codex_uses_local_server_in_all_terminal_contexts(self):
+        for env in [{}, {"HERDR_ENV": "1"}, {"HC_TERMINAL_ID": "t9"}]:
             with self.subTest(env=env):
                 result = subprocess.run(
-                    ["zsh", "-dfc", 'source "$1"; codex', "test", str(LAUNCHER)],
+                    ["zsh", "-dfc", 'source "$1"; codex resume --last', "test", str(LAUNCHER)],
                     cwd=self.root, env={**self.env, **env}, text=True, capture_output=True, check=True,
                 )
-                self.assertEqual(result.stdout.splitlines()[1:], expected)
+                self.assertEqual(result.stdout.splitlines()[1:], ["--no-daemon", "resume", "--last"])
 
-    def test_codex_preserves_explicit_local_or_remote_launch(self):
-        for args in [("--no-daemon", "resume", "--last"), ("--remote", "unix:///tmp/server.sock")]:
+    def test_codex_preserves_explicit_local_remote_or_daemon_management(self):
+        for args in [
+            ("--no-daemon", "resume", "--last"),
+            ("--remote", "unix:///tmp/server.sock"),
+            ("--remote=unix:///tmp/server.sock",),
+            ("remote-control", "start"),
+        ]:
             with self.subTest(args=args):
                 result = subprocess.run(
                     ["zsh", "-dfc", 'source "$1"; shift; codex "$@"', "test", str(LAUNCHER), *args],

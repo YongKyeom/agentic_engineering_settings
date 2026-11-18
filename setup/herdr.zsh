@@ -13,18 +13,17 @@ function herdr() {
   command herdr --session "project-${session_hash[1,16]}"
 }
 
-# Keep Codex's executor in the terminal that launched it (TUI or herdr-core).
+# Keep Codex's executor in the terminal that launched it.
 function codex() {
-  if [[ ${HERDR_ENV:-} == 1 || -n ${HC_TERMINAL_ID:-} ]]; then
-    local arg
-    for arg in "$@"; do
-      if [[ $arg == --no-daemon || $arg == --remote || $arg == --remote=* ]]; then
+  local arg
+  for arg in "$@"; do
+    case "$arg" in
+      --) break ;;
+      --no-daemon|--remote|--remote=*|remote-control)
         command codex "$@"
         return
-      fi
-    done
-    command codex --no-daemon "$@"
-  else
-    command codex "$@"
-  fi
+        ;;
+    esac
+  done
+  command codex --no-daemon "$@"
 }

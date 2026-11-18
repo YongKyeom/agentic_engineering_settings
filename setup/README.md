@@ -138,8 +138,8 @@ sh /tmp/rtk-install.sh
 uv tool install serena-agent
 rtk init -g --codex
 rtk init -g --auto-patch     # Claude; --codex와 --auto-patch는 함께 쓰지 않는다
-codex mcp add serena -- serena start-mcp-server --context codex --project-from-cwd
-claude mcp add --scope user serena -- serena start-mcp-server --context claude-code --project-from-cwd
+codex mcp add serena -- serena start-mcp-server --context codex --project-from-cwd --open-web-dashboard false
+claude mcp add --scope user serena -- serena start-mcp-server --context claude-code --project-from-cwd --open-web-dashboard false
 ```
 
 MCP 등록 명령만으로 Serena hook이 설치되지는 않는다. `./setup/serena.sh`를 실행하면 아래 구성을 병합한다. 이미 설치된 Serena도 최신 버전으로 갱신하므로, 갱신 없이 hook만 다시 적용하려면 `python3 setup/configure-agent-hooks.py all`을 실행한다.

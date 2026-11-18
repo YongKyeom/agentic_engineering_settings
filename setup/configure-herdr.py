@@ -17,6 +17,50 @@ from pathlib import Path
 import tomlkit
 
 
+def merge_codex_terminal_environment(document: dict) -> None:
+    """Preserve the current allowlist while passing live Herdr terminal context."""
+    policy = document.get("shell_environment_policy")
+    if policy is None:
+        return  # Codex defaults to inheriting all; no allowlist needs widening.
+    filters = policy.get("filters")
+    includes = ([key for key, action in filters.items() if action == "include"]
+                if filters is not None else list(policy.get("include_only", [])))
+    inherit = policy.get("inherit", "all")
+    if inherit in {"core", "none"}:
+        # Unix core names from Codex 0.170.0 protocol/src/shell_environment.rs.
+        names = (["PATH", "SHELL", "TMPDIR", "TEMP", "TMP", "HOME", "LANG",
+                  "LC_ALL", "LC_CTYPE", "LOGNAME", "USER"] if inherit == "core" else [])
+        names += list(policy.get("set", {}))
+        includes = [name for name in dict.fromkeys(names) if not includes or any(
+            re.fullmatch(re.escape(pattern).replace(r"\*", ".*").replace(r"\?", "."), name, re.IGNORECASE)
+            for pattern in includes
+        )]
+        policy["inherit"] = "all"
+    elif not includes:
+        return
+    for pattern in ("HERDR_*", "HC_*"):
+        if pattern not in includes:
+            includes.append(pattern)
+    if filters is None:
+        policy["include_only"] = includes
+    else:
+        excludes = [key for key, action in filters.items() if action == "exclude"]
+        if {key.lower() for key in excludes}.intersection(pattern.lower() for pattern in includes):
+            # The keyed form cannot represent both actions for the same name.
+            # Codex applies set overrides after excludes but before includes.
+            del policy["filters"]
+            policy["exclude"] = excludes
+            policy["include_only"] = includes
+            return
+        for key in list(filters):
+            if filters[key] == "include":
+                del filters[key]
+        excluded = {key.lower() for key in filters}
+        for pattern in includes:
+            if pattern.lower() not in excluded:
+                filters[pattern] = "include"
+
+
 def main() -> None:
     client = sys.argv[1] if len(sys.argv) == 2 else "all"
     if client not in {"codex", "claude", "all"} or len(sys.argv) > 2:
@@ -36,6 +80,7 @@ def main() -> None:
     official = subprocess.check_output(["herdr", "--skill"], text=True)
     if "HERDR_ENV" not in official or not official.startswith("---\n"):
         raise SystemExit("Unexpected herdr --skill output; settings were not changed.")
+    core_official = subprocess.check_output(["hc", "--skill"], text=True) if shutil.which("hc") else None
 
     # Validate with Herdr itself before replacing the user's config.
     with tempfile.TemporaryDirectory(prefix="herdr-config-") as temporary:
@@ -48,7 +93,7 @@ def main() -> None:
         )
 
     backup = home / ".local/state/agent-setup" / (
-        datetime.now().strftime("herdr-%Y%m%d-%H%M%S-") + str(os.getpid())
+        datetime.now().strftime("herdr-%Y%m%d-%H%M%S-%f-") + str(os.getpid())
     )
 
     def save(path: Path, label: str) -> None:
@@ -89,6 +134,11 @@ def main() -> None:
         if not destination.exists() or destination.read_text() != official:
             save(destination, f"{name}-HERDR.md")
             destination.write_text(official)
+        if core_official is not None:
+            core_destination = directory / "HERDR-CORE.md"
+            if not core_destination.exists() or core_destination.read_text() != core_official:
+                save(core_destination, f"{name}-HERDR-CORE.md")
+                core_destination.write_text(core_official)
         # The repo templates contain the same block; merge it for standalone installs too.
         rules = directory / instruction
         marker = "## Herdr Terminal Context"
@@ -112,6 +162,14 @@ def main() -> None:
         save(directory / hooks, f"{name}-{hooks}")
         if name == "codex":
             save(directory / "config.toml", "codex-config.toml")
+            codex_config = directory / "config.toml"
+            if codex_config.exists():
+                original = codex_config.read_text()
+                codex_document = tomlkit.parse(original)
+                merge_codex_terminal_environment(codex_document)
+                updated_config = tomlkit.dumps(codex_document)
+                if updated_config != original:
+                    codex_config.write_text(updated_config)
             save(directory / "herdr-agent-state.sh", "codex-herdr-agent-state.sh")
         else:
             save(directory / "hooks/herdr-agent-state.sh", "claude-herdr-agent-state.sh")

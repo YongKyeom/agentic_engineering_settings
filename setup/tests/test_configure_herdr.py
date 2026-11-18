@@ -1,6 +1,7 @@
 """Check config preservation and validation before touching real agent settings."""
 
 import contextlib
+import fnmatch
 import importlib.util
 import io
 import os
@@ -17,22 +18,82 @@ SPEC = importlib.util.spec_from_file_location("configure_herdr", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
 OFFICIAL = "---\nname: herdr\n---\nCheck HERDR_ENV=1 before controlling panes.\n"
+CORE_OFFICIAL = "# hc manual\nUse HC_TERMINAL_ID as the caller address.\n"
+
+
+def official_output(arguments, **kwargs):
+    return CORE_OFFICIAL if arguments[0] == "hc" else OFFICIAL
 
 
 class ConfigureHerdrTests(unittest.TestCase):
+    def test_core_policy_retains_only_core_overrides_and_terminal_context(self):
+        document = tomlkit.parse(
+            '# keep this\n[shell_environment_policy]\ninherit = "core"\n'
+            'exclude = ["LANG"]\n[shell_environment_policy.set]\nCUSTOM = "mine"\n'
+        )
+        MODULE.merge_codex_terminal_environment(document)
+        policy = document["shell_environment_policy"]
+        self.assertEqual(policy["inherit"], "all")
+        allowed = lambda name: any(fnmatch.fnmatchcase(name, pattern) for pattern in policy["include_only"])
+        for name in ["PATH", "HOME", "CUSTOM", "HERDR_ENV", "HERDR_PANE_ID", "HC_TERMINAL_ID", "HC_TERMINAL_SOCKET", "HC_SCOPE"]:
+            self.assertTrue(allowed(name), name)
+        for name in ["OPENAI_API_KEY", "UNRELATED", "SSH_AUTH_SOCK"]:
+            self.assertFalse(allowed(name), name)
+        self.assertEqual(policy["exclude"], ["LANG"])
+        self.assertEqual(policy["set"], {"CUSTOM": "mine"})
+        first = tomlkit.dumps(document)
+        MODULE.merge_codex_terminal_environment(document)
+        self.assertEqual(tomlkit.dumps(document), first)
+
+    def test_filtered_core_policy_does_not_expand_existing_nonterminal_selection(self):
+        document = tomlkit.parse('[shell_environment_policy]\ninherit = "core"\ninclude_only = ["PATH", "MY_*"]\n')
+        MODULE.merge_codex_terminal_environment(document)
+        self.assertEqual(document["shell_environment_policy"]["include_only"], ["PATH", "HERDR_*", "HC_*"])
+
+    def test_codex_patterns_treat_brackets_literally(self):
+        document = tomlkit.parse('[shell_environment_policy]\ninherit = "core"\ninclude_only = ["[P]ATH"]\n')
+        MODULE.merge_codex_terminal_environment(document)
+        self.assertEqual(document["shell_environment_policy"]["include_only"], ["HERDR_*", "HC_*"])
+
+    def test_canonical_exclude_then_override_preserves_effective_path(self):
+        document = tomlkit.parse(
+            '[shell_environment_policy]\ninherit = "core"\n'
+            '[shell_environment_policy.set]\nPATH = "/custom/bin"\n'
+            '[shell_environment_policy.filters]\n"*" = "include"\nPATH = "exclude"\n'
+        )
+        MODULE.merge_codex_terminal_environment(document)
+        policy = document["shell_environment_policy"]
+        self.assertNotIn("filters", policy)
+        environment = {"PATH": "/usr/bin", "HOME": "/Users/test", "UNRELATED": "no", "HC_TERMINAL_ID": "t9"}
+        environment = {k: v for k, v in environment.items() if k not in policy["exclude"]}
+        environment.update(policy["set"])
+        environment = {k: v for k, v in environment.items() if any(fnmatch.fnmatchcase(k, p) for p in policy["include_only"])}
+        self.assertEqual(environment, {"PATH": "/custom/bin", "HOME": "/Users/test", "HC_TERMINAL_ID": "t9"})
+
+    def test_canonical_filters_preserve_exclusions_and_restrict_core(self):
+        document = tomlkit.parse(
+            '[shell_environment_policy]\ninherit = "core"\n'
+            '[shell_environment_policy.filters]\nPATH = "include"\n"EXTRA_*" = "include"\nHC_SECRET = "exclude"\n'
+        )
+        MODULE.merge_codex_terminal_environment(document)
+        policy = document["shell_environment_policy"]
+        self.assertNotIn("include_only", policy)
+        self.assertEqual(policy["filters"], {"PATH": "include", "HC_SECRET": "exclude", "HERDR_*": "include", "HC_*": "include"})
+
     def test_new_instruction_is_stable_and_codex_config_is_backed_up(self):
         with tempfile.TemporaryDirectory() as temporary:
             home = Path(temporary)
             directory = home / "codex"
             directory.mkdir()
             (home / ".zshrc").write_text("# keep my shell settings\nexport MY_SETTING=1\n")
-            (directory / "config.toml").write_text('[features]\nhooks = false\n')
+            original_config = '[features]\nhooks = false\n[shell_environment_policy]\ninherit = "core"\n'
+            (directory / "config.toml").write_text(original_config)
             with (
                 patch.dict(os.environ, {"CODEX_HOME": str(directory), "HERDR_CONFIG_PATH": str(home / "herdr.toml")}),
                 patch.object(Path, "home", return_value=home),
                 patch.object(MODULE.sys, "argv", [str(SCRIPT), "codex"]),
                 patch.object(MODULE.shutil, "which", return_value="/test/zsh"),
-                patch.object(MODULE.subprocess, "check_output", return_value=OFFICIAL),
+                patch.object(MODULE.subprocess, "check_output", side_effect=official_output),
                 patch.object(MODULE.subprocess, "run"),
                 contextlib.redirect_stdout(io.StringIO()),
             ):
@@ -44,9 +105,13 @@ class ConfigureHerdrTests(unittest.TestCase):
                 self.assertEqual((home / ".zshrc").read_bytes(), first_zshrc)
                 self.assertTrue(first_zshrc.startswith(b"# keep my shell settings\nexport MY_SETTING=1\n"))
                 self.assertEqual((home / ".config/agent-setup/herdr.zsh").read_bytes(), SCRIPT.with_name("herdr.zsh").read_bytes())
+                self.assertEqual((directory / "HERDR-CORE.md").read_text(), CORE_OFFICIAL)
+                installed = tomlkit.parse((directory / "config.toml").read_text())
+                self.assertFalse(installed["features"]["hooks"])
+                self.assertIn("HC_*", installed["shell_environment_policy"]["include_only"])
             backups = list((home / ".local/state/agent-setup").glob("*/codex-config.toml"))
             self.assertTrue(backups)
-            self.assertEqual(backups[0].read_text(), '[features]\nhooks = false\n')
+            self.assertTrue(any(path.read_text() == original_config for path in backups))
 
     def test_merge_custom_paths_and_repeated_install_preserve_user_settings(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -84,7 +149,7 @@ class ConfigureHerdrTests(unittest.TestCase):
                 patch.object(Path, "home", return_value=home),
                 patch.object(MODULE.sys, "argv", [str(SCRIPT), "codex"]),
                 patch.object(MODULE.shutil, "which", return_value="/test/zsh"),
-                patch.object(MODULE.subprocess, "check_output", return_value=OFFICIAL),
+                patch.object(MODULE.subprocess, "check_output", side_effect=official_output),
                 patch.object(MODULE.subprocess, "run", side_effect=run),
                 contextlib.redirect_stdout(io.StringIO()),
             ):
@@ -121,7 +186,7 @@ class ConfigureHerdrTests(unittest.TestCase):
                 patch.object(Path, "home", return_value=home),
                 patch.object(MODULE.sys, "argv", [str(SCRIPT)]),
                 patch.object(MODULE.shutil, "which", return_value="/test/zsh"),
-                patch.object(MODULE.subprocess, "check_output", return_value=OFFICIAL),
+                patch.object(MODULE.subprocess, "check_output", side_effect=official_output),
                 patch.object(MODULE.subprocess, "run", side_effect=subprocess.CalledProcessError(1, "check")),
                 self.assertRaises(subprocess.CalledProcessError),
             ):

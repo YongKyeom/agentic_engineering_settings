@@ -21,7 +21,8 @@ class HerdrLauncherTests(unittest.TestCase):
         binary.parent.mkdir()
         binary.write_text('#!/bin/sh\nprintf "%s\\n" "$PWD" "$@"\n')
         binary.chmod(0o755)
-        self.env = {k: v for k, v in os.environ.items() if not k.startswith("HERDR_")}
+        shutil.copy2(binary, binary.with_name("codex"))
+        self.env = {k: v for k, v in os.environ.items() if not k.startswith(("HERDR_", "HC_"))}
         self.env["PATH"] = str(binary.parent) + os.pathsep + self.env["PATH"]
 
     def invoke(self, cwd, args=(), **env):
@@ -64,6 +65,24 @@ class HerdrLauncherTests(unittest.TestCase):
         for env in [{"HERDR_ENV": "1"}, {"HERDR_SESSION": "manual"}, {"HERDR_SOCKET_PATH": "/tmp/test.sock"}]:
             with self.subTest(env=env):
                 self.assertEqual(self.invoke(self.root, **env), [str(self.root.resolve())])
+
+    def test_codex_uses_local_server_in_tui_and_core_but_not_outside(self):
+        for env, expected in [({}, []), ({"HERDR_ENV": "1"}, ["--no-daemon"]), ({"HC_TERMINAL_ID": "t9"}, ["--no-daemon"])]:
+            with self.subTest(env=env):
+                result = subprocess.run(
+                    ["zsh", "-dfc", 'source "$1"; codex', "test", str(LAUNCHER)],
+                    cwd=self.root, env={**self.env, **env}, text=True, capture_output=True, check=True,
+                )
+                self.assertEqual(result.stdout.splitlines()[1:], expected)
+
+    def test_codex_preserves_explicit_local_or_remote_launch(self):
+        for args in [("--no-daemon", "resume", "--last"), ("--remote", "unix:///tmp/server.sock")]:
+            with self.subTest(args=args):
+                result = subprocess.run(
+                    ["zsh", "-dfc", 'source "$1"; shift; codex "$@"', "test", str(LAUNCHER), *args],
+                    cwd=self.root, env={**self.env, "HC_TERMINAL_ID": "t9"}, text=True, capture_output=True, check=True,
+                )
+                self.assertEqual(result.stdout.splitlines()[1:], list(args))
 
 
 if __name__ == "__main__":

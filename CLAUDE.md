@@ -22,11 +22,12 @@
 
 ## Herdr Terminal Context
 
-- Before Herdr terminal work, inspect `HERDR_ENV` in the command execution environment. Only `HERDR_ENV=1` identifies this agent as running inside Herdr; an installed binary, running server, or terminal title does not.
-- For a user-requested Herdr pane, tab, workspace, or agent operation inside Herdr, read `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/HERDR.md`. This is the unmodified official Markdown exported by the installed CLI with `rtk proxy herdr --skill`. Read it once per task; regenerate it after upgrading Herdr. Use the installed CLI's help for current syntax.
+- Before Herdr terminal work, inspect `HERDR_ENV` and `HC_TERMINAL_ID` in the command execution environment. `HERDR_ENV=1` identifies a Herdr TUI pane; a nonempty `HC_TERMINAL_ID` identifies a herdr-core terminal used by Herdr app. An installed binary, running server, or terminal title does not establish caller context.
+- For requested TUI operations, read `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/HERDR.md` and use `herdr`. For app terminal operations, read `${CLAUDE_CONFIG_DIR:-$HOME/.claude}/HERDR-CORE.md` and use `hc`; for app layout/window changes, read `~/.config/herdr-app/AGENTS.md`. The official manuals are exported unchanged with `rtk proxy herdr --skill` and `rtk proxy hc --skill`. Read the relevant manual once per task and regenerate it after upgrades. These are separate products and APIs.
+- When starting Codex in either managed terminal, use `--no-daemon`; the managed zsh launcher adds it automatically. Preserve live `HERDR_*` and `HC_*` variables without hardcoding terminal IDs or sockets. If a visible managed terminal has no context in its tool environment, diagnose filtering and executor location before concluding it is outside.
 - Outside Herdr, continue ordinary work with the available shell tools. Installation, configuration, and `--skill` export are allowed there; do not inspect or control another Herdr session from outside a managed pane.
 - In Herdr, prefer the caller's context and explicit IDs, preserve the user's focus, and follow the official skill's task-selection and coordination rules. Being inside Herdr alone does not authorize pane creation, delegation, input to another agent, or session shutdown.
-- Follow RTK rules for Herdr commands too: use `rtk proxy herdr ...` to preserve CLI output. Do not auto-launch bare `herdr` to detect the environment.
+- Follow RTK rules for Herdr commands too: use `rtk proxy herdr ...` or `rtk proxy hc ...` to preserve CLI output. Do not auto-launch bare `herdr` to detect the environment.
 
 ## Agentic Engineering
 

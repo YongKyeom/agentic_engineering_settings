@@ -12,3 +12,19 @@ function herdr() {
   session_hash="$(printf '%s' "$project_root" | command shasum -a 256)" || return
   command herdr --session "project-${session_hash[1,16]}"
 }
+
+# Keep Codex's executor in the terminal that launched it (TUI or herdr-core).
+function codex() {
+  if [[ ${HERDR_ENV:-} == 1 || -n ${HC_TERMINAL_ID:-} ]]; then
+    local arg
+    for arg in "$@"; do
+      if [[ $arg == --no-daemon || $arg == --remote || $arg == --remote=* ]]; then
+        command codex "$@"
+        return
+      fi
+    done
+    command codex --no-daemon "$@"
+  else
+    command codex "$@"
+  fi
+}

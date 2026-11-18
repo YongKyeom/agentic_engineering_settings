@@ -17,7 +17,7 @@
 | `configure-agent-hooks.py` | 기존 설정을 백업하고 관리 대상 hook과 MCP만 갱신한다. |
 | `herdr.sh` | Herdr TUI와 zsh를 설치하고 터미널 기본값, 패널 이동 키, Codex/Claude 연동을 설정한다. |
 | `configure-herdr.py` | 기존 TOML을 보존하면서 Herdr 설정을 병합하고 공식 Markdown과 전역 조건부 지침을 갱신한다. |
-| `herdr.zsh` | 인자 없이 실행한 `herdr`를 현재 프로젝트의 고정 세션으로 연결한다. |
+| `herdr.zsh` | `herdr`의 프로젝트별 세션 선택과 관리 터미널 안의 Codex `--no-daemon` 실행을 처리한다. |
 
 ## 실행 순서
 
@@ -75,16 +75,24 @@ focus_pane_right = ["prefix+l", "prefix+right"]
 
 ### 공식 Markdown과 전역 지침
 
-설치된 CLI의 `herdr --skill` 출력을 수정 없이 다음 파일에 저장한다.
+설치된 CLI의 `herdr --skill` 출력을 `HERDR.md`에, `hc`도 설치되어 있으면 `hc --skill` 출력을 `HERDR-CORE.md`에 수정 없이 저장한다.
 
 | 대상 | 공식 Markdown | 조건부 실행 지침 |
 | --- | --- | --- |
-| Codex | `~/.codex/HERDR.md` | `~/.codex/AGENTS.md` |
-| Claude | `~/.claude/HERDR.md` | `~/.claude/CLAUDE.md` |
+| Codex | `~/.codex/HERDR.md`, `HERDR-CORE.md` | `~/.codex/AGENTS.md` |
+| Claude | `~/.claude/HERDR.md`, `HERDR-CORE.md` | `~/.claude/CLAUDE.md` |
 
-`CODEX_HOME`과 `CLAUDE_CONFIG_DIR`을 지정하면 해당 경로를 사용한다. 전역 지침은 실행 환경의 `HERDR_ENV=1`을 확인하고, 요청된 Herdr 제어 작업에만 공식 파일을 읽도록 한다. Herdr 밖에서는 일반 셸 작업을 계속하며 다른 세션의 패널·agent를 조회하거나 제어하지 않는다. 공식 파일을 모든 작업에 자동으로 가져오는 `@` import는 사용하지 않는다.
+`CODEX_HOME`과 `CLAUDE_CONFIG_DIR`을 지정하면 해당 경로를 사용한다. TUI는 `HERDR_ENV=1`과 `herdr`, Herdr 앱의 터미널은 `HC_TERMINAL_ID`와 `hc`를 사용한다. 앱의 창·배치는 `~/.config/herdr-app/AGENTS.md`를 따른다. 전역 지침은 요청된 작업에 맞는 공식 파일만 읽도록 한다. Herdr 밖에서는 일반 셸 작업을 계속하며 다른 세션의 패널·agent를 조회하거나 제어하지 않는다. 공식 파일을 모든 작업에 자동으로 가져오는 `@` import는 사용하지 않는다.
 
 Codex·Claude 상태 연동은 `herdr integration install codex` / `claude`로 설치한다. 기존 RTK·Serena hook을 유지하면서 Herdr가 관리하는 항목을 병합한다. 변경 전 설정과 전역 지침은 `~/.local/state/agent-setup/herdr-<timestamp>-<pid>/`에 백업한다. 설정 파일은 `herdr config check`를 통과한 뒤 적용한다.
+
+### Codex가 관리 터미널을 인식하지 못할 때
+
+Codex 0.170.0의 `shell_environment_policy.inherit = "core"`는 `HERDR_*`와 `HC_*`를 셸 도구에서 제거한다. 설치 스크립트는 기존 기본 변수·명시적 override의 허용 범위를 유지하면서 이 두 접두사만 추가로 통과시키도록 `inherit = "all"`과 `include_only`를 병합한다. 기존 제외 규칙은 보존하며, 실행 중인 패널 ID나 소켓 경로를 설정에 고정하지 않는다. 키 기반 `filters`는 유지하되, 같은 변수의 제외 규칙과 명시적 override를 함께 보존해야 하는 경우에는 동등한 `exclude`·`include_only` 배열로 변환한다.
+
+공유 Codex 서버가 다른 터미널의 실행 문맥을 쓰지 않도록, 설치한 zsh 함수는 TUI 또는 hc 터미널에서 실행한 `codex`에 `--no-daemon`을 추가한다. 명시적인 `--no-daemon`·`--remote` 실행과 Herdr 밖 실행은 그대로 전달한다. `hc run`이나 템플릿처럼 zsh 함수를 거치지 않고 직접 Codex 바이너리를 실행한다면 `codex --no-daemon`을 지정한다. Codex 0.170.0에서 확인한 옵션이며, 이전 CLI에 옵션이 없다면 갱신 후 사용한다.
+
+이미 열린 셸에서는 `source ~/.config/agent-setup/herdr.zsh`로 함수를 다시 읽는다. 실행 중인 Codex는 새 옵션을 받을 수 없으므로 사용자가 종료 후 `codex resume --last`로 재개하거나 새로 시작한다. Herdr 서버나 옆 패널을 중지할 필요는 없다. 이후 TUI에서는 `HERDR_ENV`, 앱에서는 `HC_TERMINAL_ID`가 Codex의 셸 도구에서도 전달되는지 확인한다. UI가 Herdr 안인데 변수가 비어 있으면 환경 필터와 Codex 실행 방식을 먼저 조사한다.
 
 ### 확인과 갱신
 

@@ -48,16 +48,14 @@ def merge_hooks(data: dict, client: str, rtk: str, serena_hooks: str) -> None:
     def add(event: str, matcher: str, hooks: list) -> None:
         events.setdefault(event, []).append({"matcher": matcher, "hooks": hooks})
 
-    # RTK가 명령을 rewrite하고 Serena는 사용 이력을 관찰한다.
+    # RTK만 Bash 명령을 rewrite한다. Serena 사용은 에이전트가 선택한다.
     add("PreToolUse", "Bash", [
         {"type": "command", "command": f"{shlex.quote(rtk)} hook {'codex' if client == 'codex' else 'claude'}"},
-        command("remind"),
     ])
     if client == "codex":
         add("PreToolUse", "^mcp__serena__", [command("plan-guard")])
         add("UserPromptSubmit", "", [command("plan-context")])
     else:
-        add("PreToolUse", "Read|Grep|Glob", [command("remind")])
         add("PreToolUse", "mcp__serena__.*", [command("auto-approve")])
     add("PostToolUse", "^mcp__serena__", [command("reset")])
     add("SessionStart", "startup|resume", [command("activate")])

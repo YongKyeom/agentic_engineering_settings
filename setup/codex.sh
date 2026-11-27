@@ -31,6 +31,7 @@ echo ""
 bash "$REPO_ROOT/setup/rtk.sh" codex
 bash "$REPO_ROOT/setup/serena.sh" codex
 bash "$REPO_ROOT/setup/herdr.sh" codex
+uv run "$REPO_ROOT/setup/configure-statusline.py"
 
 # 4. Slidev (옵션)
 if [ "${1:-}" = "--with-slidev" ]; then

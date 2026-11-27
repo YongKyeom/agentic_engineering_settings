@@ -66,6 +66,8 @@ cd agent_settings
 
 `setup/codex.sh`와 `setup/claude-code.sh`는 최신 RTK와 Serena도 전역 설치한다. MCP와 hook만 구성하려면 `./setup/rtk.sh` 다음 `./setup/serena.sh`를 실행한다. 기존 설정 백업, hook 공존 방식, 수동 설치는 [setup 가이드](setup/README.md#rtk와-serena-전역-설치)를 참고한다.
 
+Codex 셋업은 모델별 이모지와 컨텍스트 칸 게이지가 있는 Workspace statusline도 전역 설치하고 선택한다. 재시작하면 모든 프로젝트에서 사용한다. 상태줄만 설치·갱신하려면 `rtk proxy uv run setup/configure-statusline.py`를 실행한다. 표시 항목과 복구 방법은 [상태줄 가이드](setup/README.md#codex-커스텀-상태줄)를 참고한다.
+
 두 agent 셋업은 Herdr TUI도 설치한다. Herdr만 설정하려면 `./setup/herdr.sh`를 실행한다. 새 zsh에서 `herdr`를 입력하면 현재 프로젝트별 세션을 자동 선택하고, 첫 터미널은 실행한 경로에서 시작한다. 같은 프로젝트에 재접속하면 기존 패널을 복원한다. 기본 셸은 zsh이며 `prefix+h/j/k/l` 및 `prefix+방향키`로 이동한다. 공식 `herdr --skill` Markdown과 환경 감지 규칙을 Codex·Claude 전역 지침에 연결한다. 상세 설정과 확인 방법은 [Herdr 가이드](setup/README.md#herdr-터미널과-agent-연동)를 참고한다.
 
 스크립트는 자동화 가능한 부분만 처리한다. Claude Dashboard 플러그인 설치 등 수동 단계는 셋업 가이드 참고.

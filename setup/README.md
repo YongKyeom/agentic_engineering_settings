@@ -11,7 +11,9 @@
 | `p10k.zsh` | `dev-env.sh`가 `~/.p10k.zsh`로 복사하는 powerlevel10k 설정. |
 | `claude-code.sh` | Claude Code 전역 설정, custom skills, Codex plugin, 기본 settings, alias를 설치한다. |
 | `claude-code.md` | Claude Code 셋업 세부 가이드. Dashboard plugin처럼 수동 확인이 필요한 내용도 포함한다. |
-| `codex.sh` | Codex 전역 지침, custom skills, RTK와 Serena를 설치한다. |
+| `codex.sh` | Codex 전역 지침, custom skills, RTK, Serena, Herdr와 커스텀 상태줄을 설치한다. |
+| `configure-statusline.py` | Codex 전역 설정에 상태줄 제공자를 설치하고 기본으로 선택한다. |
+| `statusline.py` | 모델별 이모지와 컨텍스트 칸 게이지를 표시하는 stdio MCP 제공자. |
 | `rtk.sh` | 최신 RTK와 Codex/Claude 전역 native hook을 설치한다. |
 | `serena.sh` | Serena를 전역 설치하고 MCP와 RTK 공존 hook을 병합한다. |
 | `configure-agent-hooks.py` | 기존 설정을 백업하고 관리 대상 hook과 MCP만 갱신한다. |
@@ -35,6 +37,50 @@
 ```
 
 `dev-env.sh`는 dotfile을 덮어쓰는 것이 의도된 동작이다. 개인 설정을 보존해야 하는 머신에서는 실행 전에 백업한다.
+
+## Codex 커스텀 상태줄
+
+`./setup/codex.sh`는 Workspace statusline을 설치하고 전역 기본값으로 선택한다. Codex CLI를 재시작하면 모든 프로젝트의 새 세션에 적용된다. Codex CLI 0.172.0에서 검증했으며, 해당 기능을 지원하는 CLI와 Python 3, uv가 필요하다.
+
+기존 환경에서 상태줄만 설치하거나 저장소의 최신 디자인을 적용하려면 저장소 루트에서 실행한다.
+
+```sh
+rtk proxy uv run setup/configure-statusline.py
+rtk proxy codex mcp get workspace-statusline
+```
+
+제공자를 `~/.codex/statusline/statusline.py`로 복사하고, `~/.codex/config.toml`에 아래 항목을 병합한다. `CODEX_HOME`이 설정되어 있으면 해당 경로를 사용하며, Python 실행 경로는 설치 환경에서 탐지한다. 설치 후 저장소를 옮겨도 복사된 제공자가 실행된다. 재실행하면 제공자와 관리 설정을 갱신하며 다른 설정과 TOML 주석을 보존한다. 변경 전 파일은 Codex 설정 폴더의 `backups/statusline-<timestamp>/`에 보관한다.
+
+```toml
+[features]
+tui_extensions_statusline = true
+
+[tui]
+status_line_provider = { server = "workspace-statusline", tool = "statusline" }
+status_line_use_colors = true
+
+[mcp_servers.workspace-statusline]
+command = "/absolute/path/to/python3"
+args = ["-u", "/absolute/path/to/.codex/statusline/statusline.py"]
+enabled = true
+```
+
+표시 예시는 다음과 같다. 수치와 제목은 현재 표시 중인 대화에서 가져오며, Codex가 아직 제공하지 않은 값은 생략한다.
+
+```text
+☀️ GPT-6.2-Sol medium │ Context ▧□□□□□□□ 15% · Window 475K · Used 99K · Credits 19.6 │ ● Ready Full Access │ 대화 제목 │ Standard v0.172.0
+```
+
+- 모델 앞 모양은 Luna 🌙, Terra 🌍, Sol ☀️, Astra ✨이며 그 외에는 ◆다.
+- Context는 8칸 중 사용률에 해당하는 칸을 빗금으로 채운다. 75%부터 노란색, 90%부터 빨간색으로 표시한다.
+- Window는 컨텍스트 전체 용량, Used는 누적 입력에서 캐시 읽기를 제외한 값과 출력 토큰의 합계다. Credits는 해당 대화의 크레딧 사용량이다.
+- 제공되는 경우 5시간·주간 한도 잔여율도 표시한다. 실행 상태, 권한, 대화 제목, 처리 모드와 CLI 버전이 뒤따른다.
+
+테마 색상과 옅은 구분자를 사용하며, 창 폭이 좁으면 자동으로 여러 줄에 걸쳐 표시한다. Codex 0.172.0에서 고정 위치의 강제 줄바꿈은 동작하지 않았다. 단축키 안내, IDE 컨텍스트와 경고는 Codex 자체 하단 UI에 표시된다.
+
+기존 세션에서 기본 상태줄이 계속 보이면 `/statusline` → `Choose a status line provider`에서 MCP 검색이 끝날 때까지 기다린 뒤 `Workspace statusline`을 선택한다. 연결은 `/mcp`에서 확인한다. 제공자 오류는 F2로 확인하고, 오류를 수정한 뒤 제공자를 다시 선택하면 polling이 재개된다. 소스를 수정한 후 위 설치 명령을 다시 실행하고 Codex CLI를 재시작한다. 기본 상태줄로 돌아가려면 같은 메뉴에서 `Default status line`을 선택한다.
+
+회사 인증서 환경에서 uv 다운로드가 `UnknownIssuer`로 실패하면 시스템 인증서 구성을 확인한 뒤 `UV_SYSTEM_CERTS=true rtk proxy uv run setup/configure-statusline.py`로 실행한다.
 
 ## Herdr 터미널과 agent 연동
 

@@ -2,9 +2,11 @@
 
 import json
 import sys
+from collections import OrderedDict
 
 
 URI = "ui://workspace-statusline/footer"
+USAGE_CACHE = OrderedDict()
 TOOL = {
     "name": "statusline",
     "title": "Workspace statusline",
@@ -37,6 +39,30 @@ def usage_metric(label, value, color, *, separated):
     return {"type": "row", "props": {"gap": 1, "wrap": "nowrap"}, "children": children}
 
 
+def retain_usage(state):
+    """Keep last known usage during missing snapshots, isolated by thread ID."""
+    thread = state.get("thread") or {}
+    thread_id = thread.get("id")
+    if not thread_id:
+        return state
+    previous = USAGE_CACHE.pop(thread_id, {})
+    current = thread.get("usage") or {}
+    merged = {}
+    stale = []
+    for section in ("context", "total", "cost"):
+        values = dict(previous.get(section) or {})
+        incoming = {key: value for key, value in (current.get(section) or {}).items()
+                    if value is not None}
+        if values.keys() - incoming.keys():
+            stale.append(section)
+        values.update(incoming)
+        merged[section] = values
+    USAGE_CACHE[thread_id] = merged
+    if len(USAGE_CACHE) > 64:
+        USAGE_CACHE.popitem(last=False)
+    return {**state, "thread": {**thread, "usage": merged}, "_stale_usage": stale}
+
+
 def render(state):
     """Return the UI tree for this resource read's thread."""
     thread = state.get("thread", {})
@@ -55,6 +81,7 @@ def render(state):
 
     usage = thread.get("usage") or {}
     context = usage.get("context") or {}
+    stale = state.get("_stale_usage", [])
     usage_group = []
     if (used := context.get("used_percentage")) is not None:
         filled = max(0, min(8, round(used * 8 / 100)))
@@ -70,14 +97,15 @@ def render(state):
             "type": "row",
             "props": {"gap": 1, "wrap": "nowrap"},
             "children": [
-                segment("Context", "status-metadata"),
+                segment("Context (last)" if "context" in stale else "Context", "status-metadata"),
                 meter,
                 segment(f"{used:g}%", color, bold=True),
             ],
         })
     if (window := context.get("context_window_size")) is not None:
         usage_group.append(usage_metric(
-            "Window", compact_tokens(window), "status-usage", separated=bool(usage_group)
+            "Window (last)" if "context" in stale else "Window",
+            compact_tokens(window), "status-usage", separated=bool(usage_group)
         ))
     if total := usage.get("total"):
         used_tokens = (
@@ -85,11 +113,13 @@ def render(state):
             + max(0, total["output_tokens"])
         )
         usage_group.append(usage_metric(
-            "Used", compact_tokens(used_tokens), "status-usage", separated=bool(usage_group)
+            "Used (last)" if "total" in stale else "Used",
+            compact_tokens(used_tokens), "status-usage", separated=bool(usage_group)
         ))
     if (credits := (usage.get("cost") or {}).get("total_credits")) is not None:
         usage_group.append(usage_metric(
-            "Credits", f"{credits:,.1f}", "status-limit", separated=bool(usage_group)
+            "Credits (last)" if "cost" in stale else "Credits",
+            f"{credits:,.1f}", "status-limit", separated=bool(usage_group)
         ))
 
     limits = (state.get("account") or {}).get("rate_limits", [])
@@ -180,7 +210,7 @@ def respond(method, params):
                 {
                     "uri": URI,
                     "mimeType": "application/json",
-                    "text": json.dumps(render(state), ensure_ascii=False),
+                    "text": json.dumps(render(retain_usage(state)), ensure_ascii=False),
                 }
             ]
         }
